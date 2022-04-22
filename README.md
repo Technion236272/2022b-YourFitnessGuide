@@ -1,4 +1,4 @@
-# \<YourFitnessGuide>
+# \YourFitnessGuide
 
 > A social user-friendly app for get and share experiences in nutrition and working out. The application guides users to their fitness goals while interacting with other users. 
 
