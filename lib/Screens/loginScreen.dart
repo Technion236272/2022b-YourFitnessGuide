@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import '../utils/constants.dart';
+import '../utils/users.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final appTheme = const Color(0xff4CC47C);
+  var user;
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
@@ -80,38 +84,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildSignInWithText(double height) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(top: height * 0.02),
-          child: TextButton(
-            onPressed: () => _gotoSignUp(),
-            child: Text('Not an existing user? Click here to sign up!',
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                )),
-          ),
-        ),
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: appTheme,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text('Sign in with',
-            style: TextStyle(
-              color: appTheme,
-              fontSize: 16,
-            )),
       ],
     );
   }
@@ -199,18 +171,27 @@ class _LoginScreenState extends State<LoginScreen> {
     return true;
   }
 
-  bool _validateLogin() {
+  Future<void> _validateLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    const snackBar = SnackBar(content: Text('Login not implemented yet'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
+    var email = emailController.text;
+    emailController.clear();
+    var password = passwordController.text;
+    passwordController.clear();
+
+    if (email != "" && password != "") {
+      if (await user.signIn(email, password)) {
+        const snackBar = SnackBar(content: Text('Login successful'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        setState(() {});
+      } else {
+        const snackBar = SnackBar(content: Text('Login unsuccessful'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
   }
 
-  bool _gotoSignUp() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    const snackBar = SnackBar(content: Text('Sign up not implemented yet'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
+  void _gotoSignUp() {
+    Navigator.pushNamed(context, signupRoute);
   }
 
   @override
@@ -218,6 +199,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenSize = MediaQuery.of(context).size;
     final height = screenSize.height;
     final width = screenSize.width;
+    user = Provider.of<AuthRepository>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -245,26 +228,59 @@ class _LoginScreenState extends State<LoginScreen> {
                     vertical: height * 0.01, horizontal: width * 0.1),
                 child: buildPassword(height),
               ),
-              Container(
-                child: ElevatedButton(
-                  child: Text("SIGN IN"),
-                  style: ElevatedButton.styleFrom(
-                      primary: Color(0xff84C59E),
-                      shadowColor: appTheme,
-                      elevation: 17,
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(20.0)),
-                      fixedSize: Size(width * 0.9, height * 0.055),
-                      textStyle: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
+              user.status == Status.Authenticating
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Container(
+                      child: ElevatedButton(
+                        child: Text("SIGN IN"),
+                        style: ElevatedButton.styleFrom(
+                            primary: Color(0xff84C59E),
+                            shadowColor: appTheme,
+                            elevation: 17,
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(20.0)),
+                            fixedSize: Size(width * 0.9, height * 0.055),
+                            textStyle: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            )),
+                        onPressed: () async {
+                          _validateLogin();
+                        },
+                      ),
+                    ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.only(top: height * 0.02),
+                    child: TextButton(
+                      onPressed: () => _gotoSignUp(),
+                      child:
+                          Text('Not an existing user? Click here to sign up!',
+                              style: TextStyle(
+                                color: appTheme,
+                                fontSize: 16,
+                              )),
+                    ),
+                  ),
+                  Text(
+                    '- OR -',
+                    style: TextStyle(
+                      color: appTheme,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text('Sign in with',
+                      style: TextStyle(
+                        color: appTheme,
+                        fontSize: 16,
                       )),
-                  onPressed: () {
-                    _validateLogin();
-                  },
-                ),
+                ],
               ),
-              _buildSignInWithText(height),
               _buildSocialBtnRow(height),
               _buildSkipSignin(height),
               Image.asset(
