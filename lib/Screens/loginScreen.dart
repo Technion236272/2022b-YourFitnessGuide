@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../utils/constants.dart';
 import '../utils/users.dart';
@@ -13,12 +12,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final appTheme = const Color(0xff4CC47C);
   var user;
+  final appTheme = const Color(0xff4CC47C);
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
-  Widget buildEmail(double height) {
+  Widget _buildEmail(double height) {
     final iconSize = height * 0.065;
     return Row(
       children: [
@@ -53,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget buildPassword(double height) {
+  Widget _buildPassword(double height) {
     final iconSize = height * 0.065;
     return Row(
       children: [
@@ -88,17 +87,68 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSkipSignin(double height) {
-    return Container(
-      child: TextButton(
-        onPressed: () => _skipToHomepage(),
-        child: Text('Continue without signing in',
+  Future<void> _validateLogin() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    var email = emailController.text;
+    emailController.clear();
+    var password = passwordController.text;
+    passwordController.clear();
+
+    if (email != "" && password != "") {
+      if (await user.signIn(email, password)) {
+        const snackBar = SnackBar(content: Text('Homepage still not created'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        setState(() {});
+      } else {
+        const snackBar = SnackBar(content: Text('Login unsuccessful'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
+  Widget _buildSignIn(double height, double width) {
+    return ElevatedButton(
+      child: Text("SIGN IN"),
+      style: ElevatedButton.styleFrom(
+          primary: Color(0xff84C59E),
+          shadowColor: appTheme,
+          elevation: 17,
+          shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(20.0)),
+          fixedSize: Size(width * 0.9, height * 0.055),
+          textStyle: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+          )),
+      onPressed: () async {
+        _validateLogin();
+      },
+    );
+  }
+
+  Widget _buildAlternativeActions() {
+    return Column(children: [
+      TextButton(
+        onPressed: () {
+          Navigator.pushNamed(context, resetPasswordRoute);
+        },
+        child: Text('Forgot password?',
             style: TextStyle(
               color: appTheme,
               fontSize: 16,
             )),
       ),
-    );
+      TextButton(
+        onPressed: () {
+          Navigator.pushNamed(context, signupRoute);
+        },
+        child: Text('Not an existing user? Click here to sign up!',
+            style: TextStyle(
+              color: appTheme,
+              fontSize: 16,
+            )),
+      )
+    ]);
   }
 
   Widget _buildSocialBtn(Function action, String logoPath, double height) {
@@ -151,47 +201,43 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  bool _skipToHomepage() {
-    const snackBar = SnackBar(content: Text('Homepage still not created'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
-  }
-
-  bool _getFBcredintials() {
-    const snackBar =
-        SnackBar(content: Text('Login with FB not implemented yet'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
-  }
-
-  bool _getGooglecredintials() {
-    const snackBar =
-        SnackBar(content: Text('Login with Google not implemented yet'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
-  }
-
-  Future<void> _validateLogin() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    var email = emailController.text;
-    emailController.clear();
-    var password = passwordController.text;
-    passwordController.clear();
-
-    if (email != "" && password != "") {
-      if (await user.signIn(email, password)) {
-        const snackBar = SnackBar(content: Text('Login successful'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        setState(() {});
-      } else {
-        const snackBar = SnackBar(content: Text('Login unsuccessful'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
+  Future<void> _getFBcredintials() async {
+    if (await user.signInWithFacebook()) {
+      const snackBar = SnackBar(content: Text('Homepage still not created'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      const snackBar =
+          SnackBar(content: Text('There was an error logging into the app'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
-  void _gotoSignUp() {
-    Navigator.pushNamed(context, signupRoute);
+  Future<void> _getGooglecredintials() async {
+    if (await user.signInWithGoogle()) {
+      const snackBar = SnackBar(content: Text('Homepage still not created'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      const snackBar =
+          SnackBar(content: Text('There was an error logging into the app'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  Widget _buildSkipSignin(double height) {
+    return Container(
+      child: TextButton(
+        onPressed: () {
+          const snackBar =
+              SnackBar(content: Text('Homepage still not created'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        },
+        child: Text('Continue without signing in',
+            style: TextStyle(
+              color: appTheme,
+              fontSize: 16,
+            )),
+      ),
+    );
   }
 
   @override
@@ -216,55 +262,31 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SizedBox(
-                height: height * 0.03,
+                height: height * 0.012,
               ),
               Container(
                 padding: EdgeInsets.symmetric(
                     vertical: height * 0.01, horizontal: width * 0.1),
-                child: buildEmail(height),
+                child: _buildEmail(height),
               ),
               Container(
                 padding: EdgeInsets.symmetric(
                     vertical: height * 0.01, horizontal: width * 0.1),
-                child: buildPassword(height),
+                child: _buildPassword(height),
               ),
               user.status == Status.Authenticating
                   ? const Center(
                       child: CircularProgressIndicator(),
                     )
                   : Container(
-                      child: ElevatedButton(
-                        child: Text("SIGN IN"),
-                        style: ElevatedButton.styleFrom(
-                            primary: Color(0xff84C59E),
-                            shadowColor: appTheme,
-                            elevation: 17,
-                            shape: new RoundedRectangleBorder(
-                                borderRadius: new BorderRadius.circular(20.0)),
-                            fixedSize: Size(width * 0.9, height * 0.055),
-                            textStyle: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            )),
-                        onPressed: () async {
-                          _validateLogin();
-                        },
-                      ),
+                      child: _buildSignIn(height, width),
                     ),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.only(top: height * 0.02),
-                    child: TextButton(
-                      onPressed: () => _gotoSignUp(),
-                      child:
-                          Text('Not an existing user? Click here to sign up!',
-                              style: TextStyle(
-                                color: appTheme,
-                                fontSize: 16,
-                              )),
-                    ),
+                    child: _buildAlternativeActions(),
                   ),
                   Text(
                     '- OR -',
@@ -286,7 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Image.asset(
                 'images/decorations/LoginDecoration.png',
                 width: width,
-                height: height * 0.22,
+                height: height * 0.21,
               )
             ],
           ),
@@ -295,3 +317,31 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
+/*
+class UserModel {
+  final String? email;
+  final String? id;
+  final String? name;
+  final PictureModel? pictureModel;
+
+  const UserModel({this.id, this.email, this.name, this.pictureModel});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+      id: json['id'],
+      email: json['email'],
+      name: json['name'],
+      pictureModel: PictureModel.fromJson(json['picture']['data']));
+}
+
+class PictureModel {
+  final int? height;
+  final int? width;
+  final String? url;
+
+  const PictureModel({this.url, this.height, this.width});
+
+  factory PictureModel.fromJson(Map<String, dynamic> json) => PictureModel(
+      url: json['url'], height: json['height'], width: json['width']);
+}
+*/
