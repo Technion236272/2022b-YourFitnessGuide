@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:yourfitnessguide/Screens/signUp.dart';
-import 'Screens/loginScreen.dart';
 import '../utils/users.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'dart:io';
-import 'dart:ui' as ui;
+import '../utils/constants.dart';
+import '../utils/router.dart' as router;
 
-import 'constants.dart';
+import 'utils/constants.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,13 +42,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(create: (_) => AuthRepository.instance(),
-        child: MaterialApp(
+        child: const MaterialApp(
           title: 'YourFitnessGuide',
-          initialRoute: '/signup',
-          routes: {
-            '/login': (context) => const LoginScreen(),
-            '/signup': (context) => const SignupScreen(),
-          },
+          onGenerateRoute: router.generateRoute,
+          initialRoute: loginRoute,
         ));
   }
 }

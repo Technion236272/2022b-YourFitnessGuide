@@ -25,7 +25,7 @@ class AuthRepository with ChangeNotifier {
       _status = Status.Authenticating;
       notifyListeners();
 
-      var res =  await _auth.createUserWithEmailAndPassword(
+      var res = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       print(res);
       return res;
