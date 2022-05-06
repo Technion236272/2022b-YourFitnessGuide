@@ -1,47 +1,33 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import '../utils/users.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class CustomWidgets {
-
-  static Widget socialButtonCircle(color, imagePath, {iconColor, Function? onTap}) {
-    return InkWell(
-      onTap: () {
-        onTap!();
-      },
-      child: Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: new BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-          ),
-          child: Image.asset(imagePath, height: 20, width: 20,)),
-    );
-  }
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final appTheme = const Color(0xff4CC47C);
-  final Color facebookColor = const Color(0xff39579A);
-  final Color googleColor = const Color(0xffDF4A32);
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmController = TextEditingController();
+  bool _identicalPasswords = true;
+  var user;
 
-  Widget buildEmail() {
+  Widget buildEmail(double height) {
+    final iconSize = height * 0.065;
     return Row(
       children: [
         Expanded(
             child: Image.asset(
           'images/icons/email.png',
-          height: 50,
-          width: 50,
+          height: iconSize,
+          width: iconSize,
         )),
         Expanded(
           flex: 5,
@@ -68,14 +54,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget buildPassword() {
+  Widget buildPassword(double height, bool confirm) {
+    final iconSize = height * 0.065;
     return Row(
       children: [
         Expanded(
             child: Image.asset(
           'images/icons/padlock.png',
-          height: 50,
-          width: 50,
+          height: iconSize,
+          width: iconSize,
         )),
         Expanded(
           flex: 5,
@@ -83,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Text(
-                "Password",
+                confirm ? "Confirm Password" : "Password",
                 style: TextStyle(
                   color: appTheme,
                   fontSize: 16,
@@ -93,7 +80,10 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 obscureText: true,
                 textAlign: TextAlign.center,
-                controller: passwordController,
+                controller: confirm ? confirmController : passwordController,
+                decoration: InputDecoration(
+                  errorText: !confirm? null : (_identicalPasswords? null : 'Passwords must match')
+                ),
               )
             ],
           ),
@@ -102,170 +92,199 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSignInWithText() {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        /*Container(
-          padding: const EdgeInsets.only(top: 15.0),
-          child: TextButton(
-            onPressed: () => print('Forgot Password Button Pressed'),
-            child: Text('Forgot Password?',
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                )),
-          ),
-        ),*/
-        Container(
-          padding: const EdgeInsets.only(top: 15.0),
-          child: TextButton(
-            onPressed: () =>
-                print('Not an existing user? Click here to sign up!'),
-            child: Text('Not an existing user? Click here to sign up!',
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                )),
-          ),
-        ),
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: appTheme,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text('Sign in with',
-            style: TextStyle(
-              color: appTheme,
-              fontSize: 16,
-            )),
-      ],
-    );
-  }
-
-  Widget _buildSkipSignin() {
+  Widget _buildSignInWithText(double height) {
     return Container(
-      child: TextButton(
-        onPressed: () => print('Continue without signing in'),
-        child: Text('Continue without signing in',
+      padding: EdgeInsets.all(height * 0.025),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            '- OR -',
             style: TextStyle(
               color: appTheme,
               fontSize: 16,
-            )),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text('Sign in with',
+              style: TextStyle(
+                color: appTheme,
+                fontSize: 16,
+              )),
+        ],
       ),
     );
   }
 
-  Widget _buildSocialBtn(Function action, String logoPath) {
+  Widget _buildSocialBtn(Function action, String logoPath, double height) {
+    final logo = AssetImage(logoPath);
+    final logoSize = height * 0.09;
     return InkWell(
       onTap: () {
         action();
       },
       child: Container(
-          padding: const EdgeInsets.all(20.0),
-          decoration: new BoxDecoration(
-            shape: BoxShape.circle,
+        height: logoSize,
+        width: logoSize,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              offset: Offset(0, 2),
+              blurRadius: 6.0,
+            ),
+          ],
+          image: DecorationImage(
+            image: logo,
+            scale: logoSize * 0.14,
           ),
-          child: Image.asset(logoPath, height: 20, width: 20,)),
+        ),
+      ),
     );
   }
 
-  Widget _buildSocialBtnRow() {
+  Widget _buildSocialBtnRow(double height) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 30.0),
+      padding: EdgeInsets.only(top: height * 0.001, bottom: 0.44),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-            () => print('Login with Facebook'),
-
-              'images/logos/facebook.png',
-
+            () => _getFBcredintials(),
+            'images/logos/facebook.png',
+            height,
           ),
           _buildSocialBtn(
-            () => print('Login with Google'),
-
-              'images/logos/google.png',
-
+            () => _getGooglecredintials(),
+            'images/logos/google.png',
+            height,
           ),
         ],
       ),
     );
   }
 
+  bool _skipToHomepage() {
+    const snackBar = SnackBar(content: Text('Homepage still not created'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    return true;
+  }
+
+  bool _getFBcredintials() {
+    const snackBar =
+        SnackBar(content: Text('Sign up with FB not implemented yet'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    return true;
+  }
+
+  bool _getGooglecredintials() {
+    const snackBar =
+        SnackBar(content: Text('Sign up with Google not implemented yet'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    return true;
+  }
+
+  void _validateSignUp() {
+    if(passwordController.text != confirmController.text)
+    {
+      setState(() {
+        _identicalPasswords = false;
+      });
+    }
+    else{
+      setState(() {
+        _identicalPasswords = true;
+      });
+      FocusManager.instance.primaryFocus?.unfocus();
+      user.signUp(emailController.text, passwordController.text);
+      emailController.clear();
+      passwordController.clear();
+      confirmController.clear();
+      const snackBar = SnackBar(content: Text('Sign up not implemented yet'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  bool _gotoSignUp() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    const snackBar = SnackBar(content: Text('Sign up not implemented yet'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final height = screenSize.height;
+    final width = screenSize.width;
+    user = Provider.of<AuthRepository>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Sign in',
+          'Sign up',
         ),
         backgroundColor: appTheme,
         centerTitle: true,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(
-            height: 15,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              SizedBox(
+                height: height * 0.03,
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: height * 0.01, horizontal: width * 0.1),
+                child: buildEmail(height),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: height * 0.01, horizontal: width * 0.1),
+                child: buildPassword(height, false),
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: height * 0.01, horizontal: width * 0.1),
+                child: buildPassword(height, true),
+              ),
+              Container(
+                child: ElevatedButton(
+                  child: Text("SIGN UP"),
+                  style: ElevatedButton.styleFrom(
+                      primary: Color(0xff84C59E),
+                      shadowColor: appTheme,
+                      elevation: 17,
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(20.0)),
+                      fixedSize: Size(width * 0.9, height * 0.055),
+                      textStyle: TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      )),
+                  onPressed: () {
+                    _validateSignUp();
+                  },
+                ),
+              ),
+              _buildSignInWithText(height),
+              _buildSocialBtnRow(height),
+              SizedBox(
+                height: height*0.03,
+              ),
+              Image.asset(
+                'images/decorations/LoginDecoration.png',
+                width: width,
+                height: height * 0.22,
+              )
+            ],
           ),
-          Container(
-            padding: EdgeInsets.all(10),
-            child: buildEmail(),
-          ),
-          Container(
-            padding: EdgeInsets.all(10),
-            child: buildPassword(),
-          ),
-          Container(
-            child: ElevatedButton(
-              child: Text("SIGN IN"),
-              style: ElevatedButton.styleFrom(
-                  primary: Color(0xff84C59E),
-                  shadowColor: appTheme,
-                  elevation: 17,
-                  shape: new RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0)),
-                  fixedSize: Size(350, 45),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  )),
-              onPressed: () {},
-            ),
-          ),
-          _buildSignInWithText(),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                CustomWidgets.socialButtonCircle(
-                    facebookColor, 'images/logos/facebook.png',
-                    iconColor: Colors.white, onTap: () {
-                  print('I am circle facebook');
-                }),
-                CustomWidgets.socialButtonCircle(
-                    googleColor, 'images/logos/google.png',
-                    iconColor: Colors.white, onTap: () {
-                  print('I am circle google');
-                }),
-              ],
-            ),
-          ),
-          _buildSkipSignin(),
-          Container(
-            child: Image.asset(
-              'images/decorations/LoginDecoration.png',
-              width: 170,
-              height: 170,
-            ),
-          )
-        ],
+        ),
       ),
     );
   }
