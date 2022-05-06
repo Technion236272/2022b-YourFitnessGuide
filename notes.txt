@@ -1,0 +1,17 @@
+
+
+Resources Links:
+    - Free icons site: https://www.flaticon.com/
+    - Flutter packages site: https://pub.dev/packages
+
+Tips:
+    - Remember to set all heights width with regard to size of display (no hardcoding)
+    - Remember to add every image you use to pubspec.yaml assets
+    - How to fix keyboard pixels overflow: https://www.youtube.com/watch?v=voARoVV_EDI
+
+
+Conventions:
+    - Green color used code: appTheme = const Color(0xff4CC47C)
+    - For every constant you used frequently, make sure to add it to constants.dart
+
+:)
