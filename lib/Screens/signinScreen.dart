@@ -109,6 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email != "" && password != "") {
       if (await user.signIn(email, password)) {
+        Navigator.pushNamed(context, homeRoute);
         const snackBar = SnackBar(content: Text('Homepage still not created'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         setState(() {});
@@ -234,23 +235,6 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-  }
-
-  Widget _buildSkipSignin(double height) {
-    return Container(
-      child: TextButton(
-        onPressed: () {
-          const snackBar =
-              SnackBar(content: Text('Homepage still not created'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        },
-        child: Text('Continue without signing in',
-            style: TextStyle(
-              color: appTheme,
-              fontSize: 16,
-            )),
-      ),
-    );
   }
 
   @override

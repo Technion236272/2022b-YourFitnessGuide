@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 enum Status { Uninitialized, Authenticated, Authenticating, Unauthenticated }
+enum SignUpErrors { Mail_Already_Exists, InvalidEmail, WeakPassword }
 
 class AuthRepository with ChangeNotifier {
   FirebaseAuth _auth;
@@ -23,17 +26,33 @@ class AuthRepository with ChangeNotifier {
 
   bool get isAuthenticated => status == Status.Authenticated;
 
-  Future<UserCredential?> signUp(String email, String password) async {
+  Future<Object?> signUp(String email, String password) async {
     try {
       _status = Status.Authenticating;
       notifyListeners();
 
       var res = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
-      print(res);
       return res;
-    } catch (e) {
-      print(e);
+    } on FirebaseAuthException catch (error) {
+      print(error);
+      _status = Status.Unauthenticated;
+      notifyListeners();
+
+      var errorCode = error.code;
+      switch(errorCode){
+        case "email-already-in-use":
+          return 0;
+        case "invalid-email":
+          return 1;
+        case "weak-password":
+          return 2;
+        default:
+          return null;
+      }
+    }
+    catch(error){
+      print(error);
       _status = Status.Unauthenticated;
       notifyListeners();
       return null;
@@ -57,8 +76,6 @@ class AuthRepository with ChangeNotifier {
     final String? token;
     try {
       final facebookLoginResult = await FacebookAuth.i.login();
-      // You are logged in
-      // TODO: navigate to homepage
       token = facebookLoginResult.accessToken!.token;
       final OAuthCredential cred = FacebookAuthProvider.credential(token);
       await _auth.signInWithCredential(cred);
@@ -74,8 +91,10 @@ class AuthRepository with ChangeNotifier {
     try {
       var signin = GoogleSignIn(scopes: ['email', 'profile']);
       final googleSignInAccount = await signin.signIn();
-      final GoogleSignInAuthentication? googleAuth = await googleSignInAccount?.authentication;
-      final credit = GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken,idToken: googleAuth?.idToken);
+      final GoogleSignInAuthentication? googleAuth =
+          await googleSignInAccount?.authentication;
+      final credit = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
       await _auth.signInWithCredential(credit);
       return true;
     } catch (e) {
