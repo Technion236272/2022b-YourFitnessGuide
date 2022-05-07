@@ -21,6 +21,61 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Goal? userGoal;
   File? profileImage;
 
+  Widget _buildImageContainer(double height, double width){
+    return Container(
+        width: height * 0.25,
+        height: height * 0.25,
+        decoration: BoxDecoration(
+            border:
+            Border.all(width: 4, color: Colors.white),
+            boxShadow: [
+              BoxShadow(
+                  spreadRadius: 3,
+                  blurRadius: 10,
+                  color: Colors.black.withOpacity(0.1))
+            ],
+            shape: BoxShape.circle,
+            image: profileImage == null ? DecorationImage(
+                fit: BoxFit.cover,
+                image: Image
+                    .asset(
+                    'images/decorations/mclovin.png')
+                    .image) :
+            DecorationImage(
+                fit: BoxFit.cover,
+                image: Image
+                    .file(profileImage!).image
+            )
+
+
+        )
+    );
+  }
+
+  Widget _buildEditImage(double height, double width){
+    return Positioned(
+      bottom: 0,
+      right: 0,
+      child: Container(
+        height: height * 0.065,
+        width: height * 0.065,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(width: 4, color: Colors.white),
+          color: appTheme,
+        ),
+        child: IconButton(
+          icon: Icon(
+            Icons.edit,
+            size: height * 0.035,
+            color: Colors.white,
+          ),
+          onPressed: () => pickImage(),
+        ),
+      ),
+    );
+  }
+
   Widget _buildNameField(double height) {
     return Padding(
         padding: EdgeInsets.only(bottom: height * 0.03),
@@ -173,7 +228,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildfinishButtons(double height, double width) {
+  Widget _buildFinishButtons(double height, double width) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -254,55 +309,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Center(
                     child: Stack(
                       children: [
-                        Container(
-                            width: height * 0.25,
-                            height: height * 0.25,
-                            decoration: BoxDecoration(
-                                border:
-                                Border.all(width: 4, color: Colors.white),
-                                boxShadow: [
-                                  BoxShadow(
-                                      spreadRadius: 3,
-                                      blurRadius: 10,
-                                      color: Colors.black.withOpacity(0.1))
-                                ],
-                                shape: BoxShape.circle,
-                                image: profileImage == null ? DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: Image
-                                        .asset(
-                                        'images/decorations/mclovin.png')
-                                        .image) :
-                                DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: Image
-                                        .file(profileImage!).image
-                                )
-
-
-                            )
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            height: height * 0.065,
-                            width: height * 0.065,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(width: 4, color: Colors.white),
-                              color: appTheme,
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.edit,
-                                size: height * 0.035,
-                                color: Colors.white,
-                              ),
-                              onPressed: () => pickImage(),
-                            ),
-                          ),
-                        ),
+                        _buildImageContainer(height, width),
+                        _buildEditImage(height, width),
                       ],
                     ),
                   ),
@@ -324,7 +332,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     )),
                 _buildGoalChoices(height, width),
-                _buildfinishButtons(height, width),
+                _buildFinishButtons(height, width),
               ],
             ),
           ),
