@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
 import 'package:yourfitnessguide/utils/users.dart';
-
+import 'Screens/profileScreen.dart';
 import 'Screens/searchScreen.dart';
 import 'Screens/notificationsScreen.dart';
 import 'Screens/signinScreen.dart';
@@ -21,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final appTheme = const Color(0xff4CC47C);
+
   int _selectedIndex = 0;
 
   final List<Widget> _views = [
@@ -38,6 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AuthRepository>(context);
+
+    if(user.isAuthenticated){
+      _views.removeAt(3);
+      _views.add(const ProfileScreen());
+    }
+    else{
+      _views.removeAt(3);
+      _views.add(const LoginScreen());
+    }
+
     return Scaffold(
         //appBar: AppBar(title: const Text('YourFitnessGuide'), centerTitle: true),
         body: IndexedStack(

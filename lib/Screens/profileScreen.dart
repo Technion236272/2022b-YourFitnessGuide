@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_1.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_2.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_3.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
+import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/constants.dart';
 import 'dart:io';
+
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -91,11 +96,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildTabBar(){
+    return TabBar(
+      tabs: [
+        Tab(
+          child: Text(
+            'All posts',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'Meals',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'Workouts',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'Saved',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        )
+      ],
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
-
+    var user = Provider.of<AuthRepository>(context);
     final String userName = 'McLovin';
     final rating = 1;
     final savedNum = 2;
@@ -122,7 +163,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )),
                         IconButton(
                             onPressed: () {
-                              print('logout');
+                              user.signOut();
+                              Navigator.pushReplacementNamed(context, homeRoute);
                             },
                             icon: Icon(
                               Icons.logout,
@@ -139,38 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         top: height * 0.035, bottom: height * 0.14),
                     child: _buildTopDisplayRow(height, width, rating, savedNum,
                         followingNum, followersNum)),
-                TabBar(
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        'All posts',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Meals',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Workouts',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Saved',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    )
-                  ],
-                ),
+                _buildTabBar(),
                 Expanded(
                   child: TabBarView(
                     children: [

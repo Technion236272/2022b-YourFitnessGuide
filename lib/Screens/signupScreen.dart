@@ -244,7 +244,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
       var res = await user.signUp(email, password);
       if (res is UserCredential) {
-        Navigator.pushNamed(context, homeRoute);
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, homeRoute);
       }
       else if(res is int){
         switch(res){
