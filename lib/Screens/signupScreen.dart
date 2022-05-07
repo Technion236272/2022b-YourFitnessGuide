@@ -206,7 +206,6 @@ class _SignupScreenState extends State<SignupScreen> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;

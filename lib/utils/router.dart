@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../Screens/signinScreen.dart';
 import '../Screens/signupScreen.dart';
 import '../Screens/resetPasswordScreen.dart';
+import '../home.dart';
 import '../utils/constants.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -12,7 +13,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => SignupScreen());
     case resetPasswordRoute:
       return MaterialPageRoute(builder: (context) => ResetPasswordScreen());
+    case homeRoute:
+      return MaterialPageRoute(builder: (context) => HomeScreen());
     default:
-      return MaterialPageRoute(builder: (context) => LoginScreen());
+      return MaterialPageRoute(builder: (context) => HomeScreen());
   }
 }
