@@ -1,11 +1,7 @@
 Kayyal: I think it's better if we just let them access home page without logging
 in and if someone wants to log in they can go to profile
-
 if we kept it this way we need to change the decoration in sign in page
-
-- I think it is better if we used for example import 'package:yourfitnessguide/utils/TEST'
- instead of import '../utils/TEST'
-
+      - Mahmoud: can do that, consult with Mohamad and I'll handle it
 
 Resources Links:
     - Free icons site: https://www.flaticon.com/
@@ -20,5 +16,6 @@ Tips:
 Conventions:
     - Green color used code: appTheme = const Color(0xff4CC47C)
     - For every constant you used frequently, make sure to add it to constants.dart
+    - use 'package:yourfitnessguide/<path>' as root file to project instead of '../<path>'
 
 :)
