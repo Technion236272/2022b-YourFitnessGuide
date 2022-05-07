@@ -106,7 +106,7 @@ class _SignupScreenState extends State<SignupScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Text('Sign in with',
+          Text('Sign up with',
               style: TextStyle(
                 color: appTheme,
                 fontSize: 16,
@@ -206,14 +206,6 @@ class _SignupScreenState extends State<SignupScreen> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-
-  bool _gotoSignUp() {
-    FocusManager.instance.primaryFocus?.unfocus();
-    const snackBar = SnackBar(content: Text('Sign up not implemented yet'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -223,10 +215,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(
           'Sign up',
         ),
+        backgroundColor: appTheme,
+        centerTitle: true,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -274,12 +267,12 @@ class _SignupScreenState extends State<SignupScreen> {
               _buildSignInWithText(height),
               _buildSocialBtnRow(height),
               SizedBox(
-                height: height*0.03,
+                height: height*0.072,
               ),
               Image.asset(
                 'images/decorations/LoginDecoration.png',
                 width: width,
-                height: height * 0.22,
+                height: height * 0.21,
               )
             ],
           ),

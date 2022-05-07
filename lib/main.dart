@@ -4,7 +4,6 @@ import '../utils/users.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../utils/constants.dart';
 import '../utils/router.dart' as router;
-
 import 'utils/constants.dart';
 
 void main() {
