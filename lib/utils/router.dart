@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../Screens/loginScreen.dart';
-import '../Screens/signUpScreen.dart';
+import '../Screens/signinScreen.dart';
+import '../Screens/signupScreen.dart';
 import '../Screens/resetPasswordScreen.dart';
 import '../utils/constants.dart';
 
