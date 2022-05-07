@@ -223,11 +223,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           'Sign up',
         ),
-        backgroundColor: appTheme,
-        centerTitle: true,
       ),
       body: Center(
         child: SingleChildScrollView(

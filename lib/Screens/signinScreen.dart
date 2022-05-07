@@ -203,11 +203,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           'Sign in',
         ),
-        backgroundColor: appTheme,
-        centerTitle: true,
       ),
       body: Center(
         child: SingleChildScrollView(

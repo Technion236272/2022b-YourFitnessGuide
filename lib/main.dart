@@ -37,15 +37,28 @@ class App extends StatelessWidget {
 
 
 class MyApp extends StatelessWidget {
+  final appTheme = const Color(0xff4CC47C);
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(create: (_) => AuthRepository.instance(),
-        child: const MaterialApp(
+        child: MaterialApp(
           title: 'YourFitnessGuide',
           onGenerateRoute: router.generateRoute,
-          initialRoute: loginRoute,
+          initialRoute: homeRoute,
+          theme: ThemeData(
+            /*colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.grey,
+              accentColor: Colors.lightGreen, //this is temporary!
+            ),*/
+            iconTheme: IconThemeData(color: appTheme), ///might be better if 0xff84C59E
+            appBarTheme: AppBarTheme(
+              iconTheme: const IconThemeData(color: Colors.white),
+              backgroundColor: appTheme,
+            ),
+
+          )
         ));
   }
 }
