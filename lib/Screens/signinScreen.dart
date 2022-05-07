@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-import '../utils/constants.dart';
-import '../utils/users.dart';
+import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/users.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   var user;
   final appTheme = const Color(0xff4CC47C);
+  bool _hiddenPassword = true;
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
@@ -77,9 +77,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               TextField(
-                obscureText: true,
+                obscureText: _hiddenPassword,
                 textAlign: TextAlign.center,
                 controller: passwordController,
+                decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                  icon: Icon(
+                    Icons.remove_red_eye,
+                    color: appTheme,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _hiddenPassword = !_hiddenPassword;
+                    });
+                  },
+                )),
               )
             ],
           ),
@@ -183,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSocialBtnRow(double height) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: height * 0.02),
+      padding: EdgeInsets.symmetric(vertical: height * 0.01),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -263,7 +275,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SizedBox(
-                height: height * 0.012,
+                height: height * 0.009,
               ),
               Container(
                 padding: EdgeInsets.symmetric(
@@ -305,7 +317,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               _buildSocialBtnRow(height),
-              _buildSkipSignin(height),
               Image.asset(
                 'images/decorations/LoginDecoration.png',
                 width: width,
