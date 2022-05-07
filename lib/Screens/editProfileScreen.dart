@@ -27,7 +27,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         height: height * 0.25,
         decoration: BoxDecoration(
             border:
-            Border.all(width: 4, color: Colors.white),
+            Border.all(width: 4, color: Color(0xffD6D6D6)),
             boxShadow: [
               BoxShadow(
                   spreadRadius: 3,
@@ -294,47 +294,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         centerTitle: true,
         title: const Text('Edit your profile'),
       ),
-      body: Container(
-        child: SingleChildScrollView(
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Column(
-              children: [
-                SizedBox(height: height * 0.02),
-                Container(
-                  padding: EdgeInsets.only(
-                      top: 0.25, left: width * 0.05, right: width * 0.1),
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        _buildImageContainer(height, width),
-                        _buildEditImage(height, width),
-                      ],
-                    ),
+      body: SingleChildScrollView(
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Column(
+            children: [
+              SizedBox(height: height * 0.02),
+              Container(
+                padding: EdgeInsets.only(
+                    top: 0.25, left: width * 0.05, right: width * 0.05),
+                child: Center(
+                  child: Stack(
+                    children: [
+                      _buildImageContainer(height, width),
+                      _buildEditImage(height, width),
+                    ],
                   ),
                 ),
-                SizedBox(height: height * 0.02),
-                Container(
-                    padding:
-                    EdgeInsets.only(left: width * 0.05, right: width * 0.1),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildNameField(height),
-                        _buildWeightProgress(height, width),
-                        Text('Goal',
-                            style: TextStyle(
-                              color: appTheme,
-                              fontSize: 23,
-                            )),
-                      ],
-                    )),
-                _buildGoalChoices(height, width),
-                _buildFinishButtons(height, width),
-              ],
-            ),
+              ),
+              SizedBox(height: height * 0.02),
+              Container(
+                  padding:
+                  EdgeInsets.only(left: width * 0.05, right: width * 0.1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildNameField(height),
+                      _buildWeightProgress(height, width),
+                      Text('Goal',
+                          style: TextStyle(
+                            color: appTheme,
+                            fontSize: 23,
+                          )),
+                    ],
+                  )),
+              _buildGoalChoices(height, width),
+              _buildFinishButtons(height, width),
+            ],
           ),
         ),
       ),

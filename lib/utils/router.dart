@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yourfitnessguide/Screens/profileScreen.dart';
 import 'package:yourfitnessguide/Screens/signinScreen.dart';
 import 'package:yourfitnessguide/Screens/signupScreen.dart';
 import 'package:yourfitnessguide/Screens/resetPasswordScreen.dart';
@@ -18,6 +19,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => HomeScreen());
     case editProfileRoute:
       return MaterialPageRoute(builder: (context) => EditProfileScreen());
+    case profileRoute:
+      return MaterialPageRoute(builder: (context) => ProfileScreen());
     default:
       return MaterialPageRoute(builder: (context) => HomeScreen());
   }
