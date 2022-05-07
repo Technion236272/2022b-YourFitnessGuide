@@ -96,6 +96,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildTabBar(){
+    return TabBar(
+      tabs: [
+        Tab(
+          child: Text(
+            'All posts',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'Meals',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'Workouts',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        ),
+        Tab(
+          child: Text(
+            'Saved',
+            style: TextStyle(
+                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+          ),
+        )
+      ],
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -145,38 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         top: height * 0.035, bottom: height * 0.14),
                     child: _buildTopDisplayRow(height, width, rating, savedNum,
                         followingNum, followersNum)),
-                TabBar(
-                  tabs: [
-                    Tab(
-                      child: Text(
-                        'All posts',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Meals',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Workouts',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'Saved',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
-                      ),
-                    )
-                  ],
-                ),
+                _buildTabBar(),
                 Expanded(
                   child: TabBarView(
                     children: [
