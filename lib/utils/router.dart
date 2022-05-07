@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../Screens/signinScreen.dart';
-import '../Screens/signupScreen.dart';
-import '../Screens/resetPasswordScreen.dart';
-import '../home.dart';
-import '../utils/constants.dart';
+import 'package:yourfitnessguide/Screens/signinScreen.dart';
+import 'package:yourfitnessguide/Screens/signupScreen.dart';
+import 'package:yourfitnessguide/Screens/resetPasswordScreen.dart';
+import 'package:yourfitnessguide/Screens/editProfileScreen.dart';
+import 'package:yourfitnessguide/home.dart';
+import 'package:yourfitnessguide/utils/constants.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -15,6 +16,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => ResetPasswordScreen());
     case homeRoute:
       return MaterialPageRoute(builder: (context) => HomeScreen());
+    case editProfileRoute:
+      return MaterialPageRoute(builder: (context) => EditProfileScreen());
     default:
       return MaterialPageRoute(builder: (context) => HomeScreen());
   }

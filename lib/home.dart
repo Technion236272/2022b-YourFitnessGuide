@@ -21,7 +21,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final appTheme = const Color(0xff4CC47C);
-
   int _selectedIndex = 0;
 
   final List<Widget> _views = [
