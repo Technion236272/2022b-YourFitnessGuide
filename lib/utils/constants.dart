@@ -3,3 +3,4 @@ const String signupRoute = '/signup';
 const String resetPasswordRoute = '/reset';
 const String homeRoute = '/home';
 const String editProfileRoute = '/edit';
+const String profileRoute = '/profile';
