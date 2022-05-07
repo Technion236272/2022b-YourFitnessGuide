@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_1.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_2.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_3.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
+import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/constants.dart';
 import 'dart:io';
+
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -95,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
-
+    var user = Provider.of<AuthRepository>(context);
     final String userName = 'McLovin';
     final rating = 1;
     final savedNum = 2;
@@ -122,7 +127,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )),
                         IconButton(
                             onPressed: () {
-                              print('logout');
+                              user.signOut();
+                              Navigator.pushReplacementNamed(context, homeRoute);
                             },
                             icon: Icon(
                               Icons.logout,

@@ -109,9 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (email != "" && password != "") {
       if (await user.signIn(email, password)) {
-        Navigator.pushNamed(context, homeRoute);
-        const snackBar = SnackBar(content: Text('Homepage still not created'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        Navigator.pushReplacementNamed(context, homeRoute);
         setState(() {});
       } else {
         const snackBar = SnackBar(content: Text('Login unsuccessful'));
