@@ -6,6 +6,7 @@ import '../utils/users.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
+
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
@@ -21,29 +22,28 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       children: [
         Expanded(
             child: Image.asset(
-              'images/icons/email.png',
-              height: iconSize,
-              width: iconSize,
-            )),
+          'images/icons/email.png',
+          height: iconSize,
+          width: iconSize,
+        )),
         Expanded(
           flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Email address",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            controller: emailController,
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 5),
+              label: Center(
+                child: Text('Email Address'),
               ),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                controller: emailController,
-                textAlign: TextAlign.center,
-              )
-            ],
+              labelStyle: TextStyle(
+                  color: appTheme,
+                  fontSize: 23,
+                  fontWeight: FontWeight.bold,
+                  ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+            ),
           ),
         ),
       ],
@@ -77,7 +77,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             });
       } else {
         const snackBar =
-        SnackBar(content: Text('There was a problem sending the email'));
+            SnackBar(content: Text('There was a problem sending the email'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
@@ -132,8 +132,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               Container(
                 padding: EdgeInsets.symmetric(
-                    vertical: resetHeight * 0.01,
-                    horizontal: resetWidth * 0.1),
+                    vertical: resetHeight * 0.01, horizontal: resetWidth * 0.1),
                 child: _buildEmail(resetHeight),
               ),
               Container(
