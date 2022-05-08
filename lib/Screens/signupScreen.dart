@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import '../utils/users.dart';
+import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/constants.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -17,6 +18,9 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmController = TextEditingController();
   bool _identicalPasswords = true;
+  bool _strongPassword = true;
+  bool _hiddenPassword = true;
+  bool _hiddenConfirm = true;
   var user;
 
   Widget buildEmail(double height) {
@@ -78,12 +82,32 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               TextField(
-                obscureText: true,
+                obscureText: confirm ? _hiddenConfirm : _hiddenPassword,
                 textAlign: TextAlign.center,
                 controller: confirm ? confirmController : passwordController,
                 decoration: InputDecoration(
-                  errorText: !confirm? null : (_identicalPasswords? null : 'Passwords must match')
-                ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        Icons.remove_red_eye,
+                        color: appTheme,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          if (confirm) {
+                            _hiddenConfirm = !_hiddenConfirm;
+                          } else {
+                            _hiddenPassword = !_hiddenPassword;
+                          }
+                        });
+                      },
+                    ),
+                    errorText: !confirm
+                        ? (_strongPassword
+                            ? null
+                            : 'Your password must be at least 6 characters')
+                        : (_identicalPasswords
+                            ? null
+                            : 'Passwords must match')),
               )
             ],
           ),
@@ -166,46 +190,93 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  bool _skipToHomepage() {
-    const snackBar = SnackBar(content: Text('Homepage still not created'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
-  }
-
-  bool _getFBcredintials() {
-    const snackBar =
-        SnackBar(content: Text('Sign up with FB not implemented yet'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
-  }
-
-  bool _getGooglecredintials() {
-    const snackBar =
-        SnackBar(content: Text('Sign up with Google not implemented yet'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    return true;
-  }
-
-  void _validateSignUp() {
-    if(passwordController.text != confirmController.text)
-    {
-      setState(() {
-        _identicalPasswords = false;
-      });
-    }
-    else{
-      setState(() {
-        _identicalPasswords = true;
-      });
-      FocusManager.instance.primaryFocus?.unfocus();
-      user.signUp(emailController.text, passwordController.text);
-      emailController.clear();
-      passwordController.clear();
-      confirmController.clear();
-      const snackBar = SnackBar(content: Text('Sign up not implemented yet'));
+  Future<void> _getFBcredintials() async {
+    if (await user.signInWithFacebook()) {
+      const snackBar = SnackBar(content: Text('Homepage still not created'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      const snackBar =
+          SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
+
+  Future<void> _getGooglecredintials() async {
+    if (await user.signInWithGoogle()) {
+      const snackBar = SnackBar(content: Text('Homepage still not created'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      const snackBar =
+          SnackBar(content: Text('There was an error logging into the app'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  Future<void> _validateSignUp() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    var email = emailController.text;
+    emailController.clear();
+    var password = passwordController.text;
+    passwordController.clear();
+    var confirm = confirmController.text;
+    confirmController.clear();
+
+    if (password.length < 6) {
+      setState(() {
+        _strongPassword = false;
+        return;
+      });
+    } else {
+      setState(() {
+        _strongPassword = true;
+      });
+    };
+
+    if (password != confirm) {
+      setState(() {
+        _identicalPasswords = false;
+        return;
+      });
+    } else {
+      setState(() {
+        _identicalPasswords = true;
+      });
+
+      var res = await user.signUp(email, password);
+      if (res is UserCredential) {
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, homeRoute);
+      }
+      else if(res is int){
+        switch(res){
+          case 0:
+            const snackBar = SnackBar(content: Text('An error occurred: Email already in use.'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            break;
+
+          case 1:
+            const snackBar = SnackBar(content: Text('An error occurred: Weak password.'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            break;
+
+          case 2:
+            const snackBar = SnackBar(content: Text('An error occurred: Invalid email.'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            break;
+
+          default:
+            const snackBar = SnackBar(content: Text('An error occurred while trying to sign you in, please try again later.'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+        }
+      }
+      else{
+        const snackBar = SnackBar(content: Text('An error occurred while trying to sign you in, please try again later.'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -267,7 +338,7 @@ class _SignupScreenState extends State<SignupScreen> {
               _buildSignInWithText(height),
               _buildSocialBtnRow(height),
               SizedBox(
-                height: height*0.072,
+                height: height * 0.072,
               ),
               Image.asset(
                 'images/decorations/LoginDecoration.png',

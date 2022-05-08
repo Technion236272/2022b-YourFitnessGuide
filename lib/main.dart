@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../utils/users.dart';
+import 'package:yourfitnessguide/utils/users.dart';
 import 'package:firebase_core/firebase_core.dart';
-import '../utils/constants.dart';
-import '../utils/router.dart' as router;
+import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/router.dart' as router;
 import 'utils/constants.dart';
 
 void main() {

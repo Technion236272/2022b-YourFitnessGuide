@@ -3,6 +3,10 @@ in and if someone wants to log in they can go to profile
 if we kept it this way we need to change the decoration in sign in page
       - Mahmoud: can do that, consult with Mohamad and I'll handle it
 
+Mahmoud: change meal costumizing to being a popup instead of a page? simple text
+         on white page looks a little bit ugly
+
+
 Resources Links:
     - Free icons site: https://www.flaticon.com/
     - Flutter packages site: https://pub.dev/packages
