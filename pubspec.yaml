@@ -62,6 +62,11 @@ flutter:
     - images/decorations/LoginDecoration.png
     - images/icons/email.png
     - images/icons/padlock.png
+    - images/icons/post_name.png
+    - images/icons/exercises.png
+    - images/icons/workout.png
+    - images/icons/goal.png
+    - images/icons/description.png
     - images/icons/synchronize.png
     - images/logos/facebook.png
     - images/logos/google.png

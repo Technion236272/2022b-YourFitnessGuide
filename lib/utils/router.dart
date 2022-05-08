@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Screens/BlogPostScreen.dart';
 import '../Screens/signinScreen.dart';
 import '../Screens/signupScreen.dart';
 import '../Screens/resetPasswordScreen.dart';
@@ -15,6 +16,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => ResetPasswordScreen());
     case homeRoute:
       return MaterialPageRoute(builder: (context) => HomeScreen());
+    case blogPostRoute:
+      return MaterialPageRoute(builder: (context) => BlogPostScreen());
     default:
       return MaterialPageRoute(builder: (context) => HomeScreen());
   }
