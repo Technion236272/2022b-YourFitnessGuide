@@ -5,3 +5,4 @@ const String homeRoute = '/home';
 const String blogPostRoute = '/blogpost';
 const String editProfileRoute = '/edit';
 const String profileRoute = '/profile';
+const String workoutPostRoute = '/workoutpost';
