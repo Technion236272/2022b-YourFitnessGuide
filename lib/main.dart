@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'YourFitnessGuide',
           onGenerateRoute: router.generateRoute,
-          initialRoute: blogPostRoute,
+          initialRoute: mealPlanRoute,
           theme: ThemeData(
             /*colorScheme: ColorScheme.fromSwatch(
               primarySwatch: Colors.grey,
