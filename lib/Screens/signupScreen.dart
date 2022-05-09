@@ -237,7 +237,8 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _getFBcredintials() async {
-    if (await user.signUpWithFacebook()) {
+    if (await user.signUpWithFacebook(false)) {
+      Navigator.pop(context);
       Navigator.pushReplacementNamed(context, homeRoute);
     } else {
       const snackBar =
@@ -247,9 +248,9 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _getGooglecredintials() async {
-    if (await user.signInWithGoogle()) {
-      const snackBar = SnackBar(content: Text('Homepage still not created'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    if (await user.signUpWithGoogle(false)) {
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, homeRoute);
     } else {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
@@ -344,80 +345,83 @@ class _SignupScreenState extends State<SignupScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              SizedBox(
-                height: height * 0.025,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 0.012, horizontal: width * 0.1),
-                child: _buildTextField(height, true),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 0.012, horizontal: width * 0.1),
-                child: _buildPassword(height, false),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 0.012, horizontal: width * 0.1),
-                child: _buildPassword(height, true),
-              ),
-              Container(
-                child: ElevatedButton(
-                  child: Text("SIGN UP"),
-                  style: ElevatedButton.styleFrom(
-                      primary: Color(0xff84C59E),
-                      shadowColor: appTheme,
-                      elevation: 17,
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(20.0)),
-                      fixedSize: Size(width * 0.9, height * 0.055),
-                      textStyle: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      )),
-                  onPressed: () {
-                    _validateSignUp();
-                  },
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(top: height * 0.03),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    '- OR -',
-                    style: TextStyle(
-                      color: appTheme,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              height: height * 0.025,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: height * 0.012, horizontal: width * 0.1),
+              child: _buildTextField(height, true),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: height * 0.012, horizontal: width * 0.1),
+              child: _buildPassword(height, false),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: height * 0.012, horizontal: width * 0.1),
+              child: _buildPassword(height, true),
+            ),
+            Container(
+              child: user.status == Status.Authenticating
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : ElevatedButton(
+                      child: Text("SIGN UP"),
+                      style: ElevatedButton.styleFrom(
+                          primary: Color(0xff84C59E),
+                          shadowColor: appTheme,
+                          elevation: 17,
+                          shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(20.0)),
+                          fixedSize: Size(width * 0.9, height * 0.055),
+                          textStyle: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          )),
+                      onPressed: () {
+                        _validateSignUp();
+                      },
                     ),
-                  ),
-                  Text('Sign in with',
+            ),
+            Container(
+                padding: EdgeInsets.only(top: height * 0.03),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      '- OR -',
                       style: TextStyle(
                         color: appTheme,
                         fontSize: 16,
-                      )),
-                ],
-              )),
-              _buildSocialBtnRow(height),
-              SizedBox(
-                height: height * 0.15,
-              ),
-              Image.asset(
-                'images/decorations/LoginDecoration.png',
-                width: width,
-                height: height * 0.21,
-              )
-            ],
-          ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text('Sign in with',
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 16,
+                        )),
+                  ],
+                )),
+            _buildSocialBtnRow(height),
+            SizedBox(
+              height: height * 0.15,
+            ),
+            Image.asset(
+              'images/decorations/LoginDecoration.png',
+              width: width,
+              height: height * 0.21,
+            )
+          ],
         ),
-
+      ),
     );
   }
 }

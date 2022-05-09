@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:yourfitnessguide/utils/users.dart';
 import 'dart:io';
 
 class EditProfileScreen extends StatefulWidget {
@@ -19,15 +21,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _currentController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
   Goal? userGoal;
-  File? profileImage;
+  String? profileImage;
+  XFile? selectedImage;
+  File? newImage;
+  var user;
+  var userData;
 
-  Widget _buildImageContainer(double height, double width){
+  Widget _buildImageContainer(double height, double width) {
     return Container(
         width: height * 0.25,
         height: height * 0.25,
         decoration: BoxDecoration(
-            border:
-            Border.all(width: 4, color: Color(0xffD6D6D6)),
+            border: Border.all(width: 4, color: Color(0xffD6D6D6)),
             boxShadow: [
               BoxShadow(
                   spreadRadius: 3,
@@ -35,24 +40,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   color: Colors.black.withOpacity(0.1))
             ],
             shape: BoxShape.circle,
-            image: profileImage == null ? DecorationImage(
-                fit: BoxFit.cover,
-                image: Image
-                    .asset(
-                    'images/decorations/mclovin.png')
-                    .image) :
-            DecorationImage(
-                fit: BoxFit.cover,
-                image: Image
-                    .file(profileImage!).image
-            )
-
-
-        )
-    );
+            image: newImage != null
+                ? DecorationImage(
+                    fit: BoxFit.cover, image: Image.file(newImage!).image)
+                : (profileImage == null
+                    ? DecorationImage(
+                        fit: BoxFit.cover,
+                        image:
+                            Image.asset('images/decorations/mclovin.png').image)
+                    : DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(profileImage!)))));
   }
 
-  Widget _buildEditImage(double height, double width){
+  Widget _buildEditImage(double height, double width) {
     return Positioned(
       bottom: 0,
       right: 0,
@@ -103,21 +104,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             Expanded(
                 child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    labelText: "Initial\nweight",
-                    labelStyle: TextStyle(
-                      color: appTheme,
-                      fontSize: 23,
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    hintText: "80",
-                    hintStyle:
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                labelText: "Initial\nweight",
+                labelStyle: TextStyle(
+                  color: appTheme,
+                  fontSize: 23,
+                ),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                hintText: "80",
+                hintStyle:
                     TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-                  ),
-                  controller: _initalController,
-                )),
+              ),
+              controller: _initalController,
+            )),
             SizedBox(
               width: 0.05 * width,
             ),
@@ -134,7 +135,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   hintText: "80",
                   hintStyle:
-                  TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+                      TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
                 ),
                 controller: _currentController,
               ),
@@ -144,21 +145,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             Expanded(
                 child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    labelText: "Goal\nweight",
-                    labelStyle: TextStyle(
-                      color: appTheme,
-                      fontSize: 23,
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    hintText: "80",
-                    hintStyle:
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                labelText: "Goal\nweight",
+                labelStyle: TextStyle(
+                  color: appTheme,
+                  fontSize: 23,
+                ),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                hintText: "80",
+                hintStyle:
                     TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-                  ),
-                  controller: _goalController,
-                ))
+              ),
+              controller: _goalController,
+            ))
           ],
         ));
   }
@@ -172,14 +173,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             value: Goal.loseWeight,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value;
                 })),
         Divider(
           color: Colors.grey,
           height: 0,
-          thickness: 0.5,
+          thickness: 1,
           indent: width * 0.05,
           endIndent: width * 0.1,
         ),
@@ -188,14 +188,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             value: Goal.gainMuscle,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value;
                 })),
         Divider(
           color: Colors.grey,
           height: 0,
-          thickness: 0.5,
+          thickness: 1,
           indent: width * 0.05,
           endIndent: width * 0.1,
         ),
@@ -204,14 +203,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             value: Goal.gainWeight,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value;
                 })),
         Divider(
           color: Colors.grey,
           height: 0,
-          thickness: 0.5,
+          thickness: 1,
           indent: width * 0.05,
           endIndent: width * 0.1,
         ),
@@ -220,8 +218,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             value: Goal.maintainHealth,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value;
                 })),
       ],
@@ -247,6 +244,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Flexible(
           child: TextButton(
             onPressed: () {
+              user.updateUserData(
+                  _nameController.text,
+                  int.parse(_initalController.text),
+                  int.parse(_currentController.text),
+                  int.parse(_goalController.text),
+                  userGoal?.index,
+              newImage);
               Navigator.pop(context);
             },
             child: Text('CONFIRM',
@@ -261,34 +265,49 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future pickImage() async {
-    try{
-      final selectedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    try {
+      final selectedImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
       if (selectedImage == null) {
         const snackBar = SnackBar(content: Text('No image was selected'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       }
       setState(() {
-        profileImage = File(selectedImage.path);
+        newImage = File(selectedImage.path);
       });
-    }
-    on PlatformException catch(e)
-    {
-      const snackBar = SnackBar(content: Text('You need to grant permission if you want to select a photo'));
+    } on PlatformException catch (e) {
+      const snackBar = SnackBar(
+          content: Text(
+              'You need to grant permission if you want to select a photo'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final double width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    user = Provider.of<AuthRepository>(context);
+    userData;
+    if (user.isAuthenticated) {
+      userData = user.userData;
+      profileImage = userData?.pictureUrl;
+      _nameController.text =
+          _nameController.text.isEmpty ? userData?.name : _nameController.text;
+      _initalController.text = (_initalController.text.isEmpty
+          ? userData?.iWeight.toString()
+          : _initalController.text)!;
+      _currentController.text = (_currentController.text.isEmpty
+          ? userData?.cWeight.toString()
+          : _currentController.text)!;
+      _goalController.text = (_goalController.text.isEmpty
+          ? userData?.gWeight.toString()
+          : _goalController.text)!;
+      userGoal = userGoal ?? Goal.values[userData?.goal];
+    } else {
+      userData = null;
+    }
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -317,7 +336,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               SizedBox(height: height * 0.02),
               Container(
                   padding:
-                  EdgeInsets.only(left: width * 0.05, right: width * 0.1),
+                      EdgeInsets.only(left: width * 0.05, right: width * 0.1),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -43,7 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: appTheme,
                 fontSize: 23,
                 fontWeight: FontWeight.bold,
-
               ),
               floatingLabelBehavior: FloatingLabelBehavior.always,
             ),
@@ -73,19 +72,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: Padding(
                       padding: EdgeInsets.only(left: height * 0.025),
-                      child:Center(
+                      child: Center(
                         child: Text('Password'),
-                      )
-                  )
-                  ,
+                      )),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 23,
                     fontWeight: FontWeight.bold,
-
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
-
                   suffixIcon: IconButton(
                     icon: Icon(
                       Icons.remove_red_eye,
@@ -218,9 +213,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _getFBcredintials() async {
-    if (await user.signInWithFacebook()) {
-      Navigator.pushReplacementNamed(context, homeRoute);
-    } else {
+    try {
+      if (await user.signInWithFacebook()) {
+        Navigator.pushReplacementNamed(context, homeRoute);
+      } else {
+        const snackBar =
+            SnackBar(content: Text('There was an error logging into the app'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (_) {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -228,9 +229,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _getGooglecredintials() async {
-    if (await user.signInWithGoogle()) {
-      Navigator.pushReplacementNamed(context, homeRoute);
-    } else {
+    try {
+      if (await user.signInWithGoogle()) {
+        Navigator.pushReplacementNamed(context, homeRoute);
+      } else {
+        const snackBar =
+            SnackBar(content: Text('There was an error logging into the app'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (_) {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
