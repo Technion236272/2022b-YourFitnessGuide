@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
 
+import 'editProfileScreen.dart';
+
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
 
@@ -15,51 +17,59 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final appTheme = const Color(0xff4CC47C);
   TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
   TextEditingController confirmController = TextEditingController();
-  bool _identicalPasswords = true;
+  TextEditingController passwordController = TextEditingController();
   bool _strongPassword = true;
   bool _hiddenPassword = true;
   bool _hiddenConfirm = true;
+  bool _identicalPasswords = true;
+  Goal? userGoal;
   var user;
 
-  Widget buildEmail(double height) {
+  Widget _buildTextField(double height, bool isEmail) {
     final iconSize = height * 0.065;
+    String fieldIcon =
+        isEmail ? 'images/icons/email.png' : 'images/icons/user.png';
+    String fieldText = isEmail ? 'Email Address' : 'Full Name';
     return Row(
       children: [
         Expanded(
             child: Image.asset(
-          'images/icons/email.png',
+          fieldIcon,
           height: iconSize,
           width: iconSize,
         )),
         Expanded(
           flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Email address",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            controller: emailController,
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 5),
+              label: isEmail
+                  ? Container(
+                      padding: EdgeInsets.only(left: height * 0.06),
+                      child: Center(child: Text(fieldText)))
+                  : Center(
+                      child: Text(fieldText),
+                    ),
+              labelStyle: TextStyle(
+                color: appTheme,
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
               ),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                controller: emailController,
-                textAlign: TextAlign.center,
-              )
-            ],
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget buildPassword(double height, bool confirm) {
+  Widget _buildPassword(double height, bool isConfirm) {
     final iconSize = height * 0.065;
+    String fieldText = isConfirm ? 'Confirm Password' : 'Password';
     return Row(
       children: [
         Expanded(
@@ -69,49 +79,45 @@ class _SignupScreenState extends State<SignupScreen> {
           width: iconSize,
         )),
         Expanded(
-          flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                confirm ? "Confirm Password" : "Password",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextField(
-                obscureText: confirm ? _hiddenConfirm : _hiddenPassword,
-                textAlign: TextAlign.center,
-                controller: confirm ? confirmController : passwordController,
-                decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        Icons.remove_red_eye,
-                        color: appTheme,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (confirm) {
-                            _hiddenConfirm = !_hiddenConfirm;
-                          } else {
-                            _hiddenPassword = !_hiddenPassword;
-                          }
-                        });
-                      },
+            flex: 5,
+            child: TextField(
+              obscureText: isConfirm ? _hiddenConfirm : _hiddenPassword,
+              textAlign: TextAlign.center,
+              controller: isConfirm ? confirmController : passwordController,
+              decoration: InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom: 5),
+                  errorText: !isConfirm
+                      ? (!_strongPassword
+                          ? 'Your password must be at least 6 characters'
+                          : null)
+                      : (!_identicalPasswords ? 'Passwords must match' : null),
+                  label: Padding(
+                      padding: EdgeInsets.only(left: height * 0.079),
+                      child: Center(
+                        child: Text(fieldText),
+                      )),
+                  labelStyle: TextStyle(
+                    color: appTheme,
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      Icons.remove_red_eye,
+                      color: appTheme,
                     ),
-                    errorText: !confirm
-                        ? (_strongPassword
-                            ? null
-                            : 'Your password must be at least 6 characters')
-                        : (_identicalPasswords
-                            ? null
-                            : 'Passwords must match')),
-              )
-            ],
-          ),
-        ),
+                    onPressed: () {
+                      setState(() {
+                        if (isConfirm) {
+                          _hiddenConfirm = !_hiddenConfirm;
+                        } else {
+                          _hiddenPassword = !_hiddenPassword;
+                        }
+                      });
+                    },
+                  )),
+            )),
       ],
     );
   }
@@ -190,10 +196,50 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
+  Widget _buildGoalChoices(double height, double width) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RadioListTile<Goal>(
+            title: Text('Lose Weight'),
+            value: Goal.loseWeight,
+            groupValue: userGoal,
+            activeColor: appTheme,
+            onChanged: (value) => setState(() {
+                  userGoal = value;
+                })),
+        RadioListTile<Goal>(
+            title: Text('Gain Muscle'),
+            value: Goal.gainMuscle,
+            groupValue: userGoal,
+            activeColor: appTheme,
+            onChanged: (value) => setState(() {
+                  userGoal = value;
+                })),
+        RadioListTile<Goal>(
+            title: Text('Gain Healthy Weight'),
+            value: Goal.gainWeight,
+            groupValue: userGoal,
+            activeColor: appTheme,
+            onChanged: (value) => setState(() {
+                  userGoal = value;
+                })),
+        RadioListTile<Goal>(
+            title: Text('Maintain Healthy Lifestyle'),
+            value: Goal.maintainHealth,
+            groupValue: userGoal,
+            activeColor: appTheme,
+            onChanged: (value) => setState(() {
+                  userGoal = value;
+                })),
+      ],
+    );
+  }
+
   Future<void> _getFBcredintials() async {
-    if (await user.signInWithFacebook()) {
-      const snackBar = SnackBar(content: Text('Homepage still not created'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    if (await user.signUpWithFacebook(false)) {
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, homeRoute);
     } else {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
@@ -202,9 +248,9 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _getGooglecredintials() async {
-    if (await user.signInWithGoogle()) {
-      const snackBar = SnackBar(content: Text('Homepage still not created'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    if (await user.signUpWithGoogle(false)) {
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, homeRoute);
     } else {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
@@ -224,56 +270,62 @@ class _SignupScreenState extends State<SignupScreen> {
     if (password.length < 6) {
       setState(() {
         _strongPassword = false;
-        return;
       });
+      return;
     } else {
       setState(() {
         _strongPassword = true;
       });
-    };
+    }
+    ;
 
     if (password != confirm) {
       setState(() {
         _identicalPasswords = false;
-        return;
       });
+      return;
     } else {
       setState(() {
         _identicalPasswords = true;
       });
+    }
+    ;
 
-      var res = await user.signUp(email, password);
-      if (res is UserCredential) {
-        Navigator.pop(context);
-        Navigator.pushReplacementNamed(context, homeRoute);
+    var res = await user.signUp(email, password);
+    if (res is UserCredential) {
+      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, homeRoute);
+    } else if (res is int) {
+      switch (res) {
+        case 0:
+          const snackBar = SnackBar(
+              content: Text('An error occurred: Email already in use.'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          break;
+
+        case 1:
+          const snackBar =
+              SnackBar(content: Text('An error occurred: Weak password.'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          break;
+
+        case 2:
+          const snackBar =
+              SnackBar(content: Text('An error occurred: Invalid email.'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          break;
+
+        default:
+          const snackBar = SnackBar(
+              content: Text(
+                  'An error occurred while trying to sign you in, please try again later.'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-      else if(res is int){
-        switch(res){
-          case 0:
-            const snackBar = SnackBar(content: Text('An error occurred: Email already in use.'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            break;
-
-          case 1:
-            const snackBar = SnackBar(content: Text('An error occurred: Weak password.'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            break;
-
-          case 2:
-            const snackBar = SnackBar(content: Text('An error occurred: Invalid email.'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            break;
-
-          default:
-            const snackBar = SnackBar(content: Text('An error occurred while trying to sign you in, please try again later.'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-        }
-      }
-      else{
-        const snackBar = SnackBar(content: Text('An error occurred while trying to sign you in, please try again later.'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
+    } else {
+      const snackBar = SnackBar(
+          content: Text(
+              'An error occurred while trying to sign you in, please try again later.'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -292,61 +344,82 @@ class _SignupScreenState extends State<SignupScreen> {
         backgroundColor: appTheme,
         centerTitle: true,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              SizedBox(
-                height: height * 0.03,
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 0.01, horizontal: width * 0.1),
-                child: buildEmail(height),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 0.01, horizontal: width * 0.1),
-                child: buildPassword(height, false),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(
-                    vertical: height * 0.01, horizontal: width * 0.1),
-                child: buildPassword(height, true),
-              ),
-              Container(
-                child: ElevatedButton(
-                  child: Text("SIGN UP"),
-                  style: ElevatedButton.styleFrom(
-                      primary: Color(0xff84C59E),
-                      shadowColor: appTheme,
-                      elevation: 17,
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(20.0)),
-                      fixedSize: Size(width * 0.9, height * 0.055),
-                      textStyle: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      )),
-                  onPressed: () {
-                    _validateSignUp();
-                  },
-                ),
-              ),
-              _buildSignInWithText(height),
-              _buildSocialBtnRow(height),
-              SizedBox(
-                height: height * 0.072,
-              ),
-              Image.asset(
-                'images/decorations/LoginDecoration.png',
-                width: width,
-                height: height * 0.21,
-              )
-            ],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              height: height * 0.025,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: height * 0.012, horizontal: width * 0.1),
+              child: _buildTextField(height, true),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: height * 0.012, horizontal: width * 0.1),
+              child: _buildPassword(height, false),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  vertical: height * 0.012, horizontal: width * 0.1),
+              child: _buildPassword(height, true),
+            ),
+            Container(
+              child: user.status == Status.Authenticating
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : ElevatedButton(
+                      child: Text("SIGN UP"),
+                      style: ElevatedButton.styleFrom(
+                          primary: Color(0xff84C59E),
+                          shadowColor: appTheme,
+                          elevation: 17,
+                          shape: new RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(20.0)),
+                          fixedSize: Size(width * 0.9, height * 0.055),
+                          textStyle: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          )),
+                      onPressed: () {
+                        _validateSignUp();
+                      },
+                    ),
+            ),
+            Container(
+                padding: EdgeInsets.only(top: height * 0.03),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      '- OR -',
+                      style: TextStyle(
+                        color: appTheme,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text('Sign in with',
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 16,
+                        )),
+                  ],
+                )),
+            _buildSocialBtnRow(height),
+            SizedBox(
+              height: height * 0.15,
+            ),
+            Image.asset(
+              'images/decorations/LoginDecoration.png',
+              width: width,
+              height: height * 0.21,
+            )
+          ],
         ),
       ),
     );
