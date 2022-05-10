@@ -92,12 +92,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       Column(
                         crossAxisAlignment:  CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: EdgeInsets.only(right: 10),
-                            child: const Text( 'Jesus died for our sins, Harambe died for our memes. #rip #legend #wow',
-                              textAlign: TextAlign.left,
-                              overflow: TextOverflow.ellipsis,
-                          )),
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.asset(
