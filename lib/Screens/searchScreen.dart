@@ -1,14 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
-import 'package:yourfitnessguide/utils/users.dart';
-import 'package:yourfitnessguide/utils/book.dart';
-import 'package:yourfitnessguide/utils/book_data.dart';
-import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/database.dart';
 
 class SearchScreen extends StatefulWidget {
-  SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -28,14 +23,11 @@ class search extends StatefulWidget {
 
 class _searchState extends State<search> {
   final searchController = TextEditingController();
-  Object? get searchContent => this.searchContent;
   final appTheme = const Color(0xff4CC47C);
 
   @override
   Widget build(BuildContext context) {
-    final styleActive = TextStyle(color: Colors.black);
-    final styleHint = TextStyle(color: Colors.black54);
-    final appTheme = const Color(0xff4CC47C);
+    const appTheme = Color(0xff4CC47C);
     return Container(
       height: 42,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -53,10 +45,10 @@ class _searchState extends State<search> {
           });
         },
         decoration: InputDecoration(
-          icon: Icon(Icons.search, color: appTheme),
+          icon: const Icon(Icons.search, color: appTheme),
           suffixIcon: searchController.text.isNotEmpty
               ? GestureDetector(
-                  child: Icon(Icons.close, color: appTheme),
+                  child: const Icon(Icons.close, color: appTheme),
                   onTap: () {
                     searchController.clear();
                     widget.onChanged('');
@@ -96,8 +88,6 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearch(String Title) {
-    final styleActive = TextStyle(color: Colors.black);
-    final styleHint = TextStyle(color: Colors.black54);
 
     return Container(
       height: 42,
@@ -132,6 +122,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget buildUser(SearchModel model) => ListTile(
+    onTap: () {
+      print('Navigate to profile');
+    },
       title: Container(
           padding: EdgeInsets.symmetric(vertical: height * 0.01),
           child: Column(children: [
@@ -179,17 +172,17 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    var books = allBooks;
 
     return DefaultTabController(
         length: 4,
         child: Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: Text('Search'),
+              title: const Text('Search'),
               actions: [
                 Padding(
                     padding: const EdgeInsets.only(right: 12.0),
@@ -197,17 +190,17 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         IconButton(
                             onPressed: () {
-                              Navigator.pushReplacementNamed(
-                                  context, homeRoute);
+                              const snackBar = SnackBar(content: Text('Filtering options coming soon'));
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.filter_alt,
                               color: Colors.white,
                             ))
                       ],
                     )),
               ],
-              bottom: TabBar(tabs: [
+              bottom: const TabBar(tabs: [
                 Tab(
                   child: Text('Users',
                       style:
@@ -230,59 +223,9 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             body: TabBarView(
               children: [
-                Container(
-                  child: Column(
-                    children: [
-                      search(searchHint: 'Search users',searchContent: searchController.text, onChanged: searchUser,),
-                      Divider(
-                        color: Colors.grey,
-                        height: 0,
-                        thickness: 0.75,
-                        indent: width * 0.05,
-                        endIndent: width * 0.05,
-                      ),
-                      Expanded(
-                          child: ListView.builder(
-                        itemCount: users.length,
-                        itemBuilder: (context, index) {
-                          final user = users[index];
-                          return buildUser(user);
-                        },
-                      ))
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    children: [
-                      _buildSearch('Search Plog posts',),
-                      Divider(
-                        color: Colors.grey,
-                        height: 0,
-                        thickness: 0.75,
-                        indent: width * 0.05,
-                        endIndent: width * 0.05,
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Column(
-                    children: [
-                      _buildSearch('Search Meals posts'),
-                      Divider(
-                        color: Colors.grey,
-                        height: 0,
-                        thickness: 0.75,
-                        indent: width * 0.05,
-                        endIndent: width * 0.05,
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  child: Column(children: [
-                    _buildSearch('Search Workouts Posts'),
+                Column(
+                  children: [
+                    search(searchHint: 'Search users',searchContent: searchController.text, onChanged: searchUser,),
                     Divider(
                       color: Colors.grey,
                       height: 0,
@@ -290,8 +233,50 @@ class _SearchScreenState extends State<SearchScreen> {
                       indent: width * 0.05,
                       endIndent: width * 0.05,
                     ),
-                  ]),
-                )
+                    Expanded(
+                        child: ListView.builder(
+                      itemCount: users.length,
+                      itemBuilder: (context, index) {
+                        final user = users[index];
+                        return buildUser(user);
+                      },
+                    ))
+                  ],
+                ),
+                Column(
+                  children: [
+                    _buildSearch('Search Plog posts',),
+                    Divider(
+                      color: Colors.grey,
+                      height: 0,
+                      thickness: 0.75,
+                      indent: width * 0.05,
+                      endIndent: width * 0.05,
+                    )
+                  ],
+                ),
+                Column(
+                  children: [
+                    _buildSearch('Search Meals posts'),
+                    Divider(
+                      color: Colors.grey,
+                      height: 0,
+                      thickness: 0.75,
+                      indent: width * 0.05,
+                      endIndent: width * 0.05,
+                    )
+                  ],
+                ),
+                Column(children: [
+                  _buildSearch('Search Workouts Posts'),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.75,
+                    indent: width * 0.05,
+                    endIndent: width * 0.05,
+                  ),
+                ])
               ],
             )));
   }

@@ -5,8 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
 
-import 'editProfileScreen.dart';
-
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
 
@@ -46,7 +44,7 @@ class _SignupScreenState extends State<SignupScreen> {
             controller: emailController,
             textAlign: TextAlign.center,
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.only(bottom: 5),
+              contentPadding: const EdgeInsets.only(bottom: 5),
               label: isEmail
                   ? Container(
                       padding: EdgeInsets.only(left: height * 0.06),
@@ -85,7 +83,7 @@ class _SignupScreenState extends State<SignupScreen> {
               textAlign: TextAlign.center,
               controller: isConfirm ? confirmController : passwordController,
               decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom: 5),
+                  contentPadding: const EdgeInsets.only(bottom: 5),
                   errorText: !isConfirm
                       ? (!_strongPassword
                           ? 'Your password must be at least 6 characters'
@@ -122,30 +120,6 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildSignInWithText(double height) {
-    return Container(
-      padding: EdgeInsets.all(height * 0.025),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            '- OR -',
-            style: TextStyle(
-              color: appTheme,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text('Sign up with',
-              style: TextStyle(
-                color: appTheme,
-                fontSize: 16,
-              )),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSocialBtn(Function action, String logoPath, double height) {
     final logo = AssetImage(logoPath);
     final logoSize = height * 0.09;
@@ -159,7 +133,7 @@ class _SignupScreenState extends State<SignupScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               offset: Offset(0, 2),
@@ -193,46 +167,6 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildGoalChoices(double height, double width) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RadioListTile<Goal>(
-            title: Text('Lose Weight'),
-            value: Goal.loseWeight,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-        RadioListTile<Goal>(
-            title: Text('Gain Muscle'),
-            value: Goal.gainMuscle,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-        RadioListTile<Goal>(
-            title: Text('Gain Healthy Weight'),
-            value: Goal.gainWeight,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-        RadioListTile<Goal>(
-            title: Text('Maintain Healthy Lifestyle'),
-            value: Goal.maintainHealth,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-      ],
     );
   }
 
@@ -277,7 +211,6 @@ class _SignupScreenState extends State<SignupScreen> {
         _strongPassword = true;
       });
     }
-    ;
 
     if (password != confirm) {
       setState(() {
@@ -289,7 +222,6 @@ class _SignupScreenState extends State<SignupScreen> {
         _identicalPasswords = true;
       });
     }
-    ;
 
     var res = await user.signUp(email, password);
     if (res is UserCredential) {
@@ -373,15 +305,15 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: CircularProgressIndicator(),
                     )
                   : ElevatedButton(
-                      child: Text("SIGN UP"),
+                      child: const Text("SIGN UP"),
                       style: ElevatedButton.styleFrom(
-                          primary: Color(0xff84C59E),
+                          primary: const Color(0xff84C59E),
                           shadowColor: appTheme,
                           elevation: 17,
-                          shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(20.0)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
                           fixedSize: Size(width * 0.9, height * 0.055),
-                          textStyle: TextStyle(
+                          textStyle: const TextStyle(
                             fontSize: 20,
                             color: Colors.white,
                           )),

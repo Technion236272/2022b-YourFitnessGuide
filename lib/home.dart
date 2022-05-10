@@ -4,11 +4,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
 import 'package:yourfitnessguide/utils/users.dart';
-import 'Screens/profileScreen.dart';
+import 'Screens/ProfileScreens/profileScreen.dart';
 import 'Screens/searchScreen.dart';
 import 'Screens/notificationsScreen.dart';
-import 'Screens/signinScreen.dart';
-import 'Screens/signupScreen.dart';
+import 'Screens/AuthenticationScreens/signinScreen.dart';
+import 'Screens/AuthenticationScreens/signupScreen.dart';
 import 'Screens/timelineScreen.dart';
 
 

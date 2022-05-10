@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'dart:io';
+import 'package:yourfitnessguide/utils/constants.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -11,8 +12,6 @@ class EditProfileScreen extends StatefulWidget {
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
-
-enum Goal { loseWeight, gainMuscle, gainWeight, maintainHealth }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final appTheme = const Color(0xff4CC47C);
@@ -32,7 +31,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         width: height * 0.25,
         height: height * 0.25,
         decoration: BoxDecoration(
-            border: Border.all(width: 4, color: Color(0xffD6D6D6)),
+            border: Border.all(width: 4, color: const Color(0xffD6D6D6)),
             boxShadow: [
               BoxShadow(
                   spreadRadius: 3,
@@ -82,7 +81,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         padding: EdgeInsets.only(bottom: height * 0.03),
         child: TextField(
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(bottom: 5),
+            contentPadding: const EdgeInsets.only(bottom: 5),
             labelText: "Full Name",
             labelStyle: TextStyle(
               color: appTheme,
@@ -90,7 +89,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: "Mclovin",
-            hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+            hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
           ),
           controller: _nameController,
         ));
@@ -106,7 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: TextField(
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                 labelText: "Initial\nweight",
                 labelStyle: TextStyle(
                   color: appTheme,
@@ -115,7 +114,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 hintText: "80",
                 hintStyle:
-                    TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+                    const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
               ),
               controller: _initalController,
             )),
@@ -126,7 +125,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: TextField(
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                   labelText: "Current\nweight",
                   labelStyle: TextStyle(
                     color: appTheme,
@@ -135,7 +134,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   hintText: "80",
                   hintStyle:
-                      TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+                      const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
                 ),
                 controller: _currentController,
               ),
@@ -147,7 +146,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: TextField(
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                 labelText: "Goal\nweight",
                 labelStyle: TextStyle(
                   color: appTheme,
@@ -156,7 +155,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 hintText: "80",
                 hintStyle:
-                    TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+                    const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
               ),
               controller: _goalController,
             ))
@@ -169,7 +168,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RadioListTile<Goal>(
-            title: Text('Lose Weight'),
+            title: const Text('Lose Weight'),
             value: Goal.loseWeight,
             groupValue: userGoal,
             activeColor: appTheme,
@@ -184,7 +183,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           endIndent: width * 0.1,
         ),
         RadioListTile<Goal>(
-            title: Text('Gain Muscle'),
+            title: const Text('Gain Muscle'),
             value: Goal.gainMuscle,
             groupValue: userGoal,
             activeColor: appTheme,
@@ -199,7 +198,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           endIndent: width * 0.1,
         ),
         RadioListTile<Goal>(
-            title: Text('Gain Healthy Weight'),
+            title: const Text('Gain Healthy Weight'),
             value: Goal.gainWeight,
             groupValue: userGoal,
             activeColor: appTheme,
@@ -214,7 +213,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           endIndent: width * 0.1,
         ),
         RadioListTile<Goal>(
-            title: Text('Maintain Healthy Lifestyle'),
+            title: const Text('Maintain Healthy Lifestyle'),
             value: Goal.maintainHealth,
             groupValue: userGoal,
             activeColor: appTheme,
@@ -276,7 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       setState(() {
         newImage = File(selectedImage.path);
       });
-    } on PlatformException catch (e) {
+    } on PlatformException catch (_) {
       const snackBar = SnackBar(
           content: Text(
               'You need to grant permission if you want to select a photo'));
@@ -322,7 +321,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         onPressed: () {
                           Navigator.pushNamed(context, '/edit');
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           color: Colors.white,
                         )),

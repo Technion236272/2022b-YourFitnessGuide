@@ -15,8 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   var user;
   final appTheme = const Color(0xff4CC47C);
   bool _hiddenPassword = true;
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   Widget _buildEmail(double height) {
     final iconSize = height * 0.065;
@@ -35,8 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
             controller: emailController,
             textAlign: TextAlign.center,
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.only(bottom: 5),
-              label: Center(
+              contentPadding: const EdgeInsets.only(bottom: 5),
+              label: const Center(
                 child: Text('Email Address'),
               ),
               labelStyle: TextStyle(
@@ -69,10 +69,10 @@ class _LoginScreenState extends State<LoginScreen> {
               textAlign: TextAlign.center,
               controller: passwordController,
               decoration: InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom: 5),
+                  contentPadding: const EdgeInsets.only(bottom: 5),
                   label: Padding(
                       padding: EdgeInsets.only(left: height * 0.025),
-                      child: Center(
+                      child: const Center(
                         child: Text('Password'),
                       )),
                   labelStyle: TextStyle(
@@ -117,15 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignIn(double height, double width) {
     return ElevatedButton(
-      child: Text("SIGN IN"),
+      child: const Text("SIGN IN"),
       style: ElevatedButton.styleFrom(
-          primary: Color(0xff84C59E),
+          primary: const Color(0xff84C59E),
           shadowColor: appTheme,
           elevation: 17,
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(20.0)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0)),
           fixedSize: Size(width * 0.9, height * 0.055),
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 20,
             color: Colors.white,
           )),
@@ -175,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               offset: Offset(0, 2),
