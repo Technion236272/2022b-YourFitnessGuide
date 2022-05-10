@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:yourfitnessguide/utils/constants.dart';
 
+//Temporary
 import 'package:yourfitnessguide/posts/mypost_1.dart';
 import 'package:yourfitnessguide/posts/mypost_2.dart';
 import 'package:yourfitnessguide/posts/mypost_3.dart';
@@ -21,9 +23,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'YourFitnessGuide',
-        ),
+        title: const Text('YourFitnessGuide'),
         centerTitle: true,
       ),
       floatingActionButton: SpeedDial(
@@ -39,19 +39,25 @@ class _TimelineScreenState extends State<TimelineScreen> {
           SpeedDialChild(
               child: const Icon(Icons.add),
               label: 'Blog Post',
-              onTap: (){
+              onTap: () {
+                isDialOpen.value = false;
+                Navigator.pushNamed(context, blogPostRoute);
               }
           ),
           SpeedDialChild(
               child: const Icon(Icons.add),
               label: 'Meals Plan',
-              onTap: (){
+              onTap: () {
+                isDialOpen.value = false;
+                //todo add this when ready Navigator.pushNamed(context, mealPostRoute);
               }
           ),
           SpeedDialChild(
               child: const Icon(Icons.add),
               label: 'Workout Routine',
-              onTap: (){
+              onTap: () {
+                isDialOpen.value = false;
+                Navigator.pushNamed(context, workoutPostRoute);
               }
           ),
         ],
