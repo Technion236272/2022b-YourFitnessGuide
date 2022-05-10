@@ -45,18 +45,12 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'YourFitnessGuide',
           onGenerateRoute: router.generateRoute,
-          initialRoute: homeRoute,
           theme: ThemeData(
-            /*colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: Colors.grey,
-              accentColor: Colors.lightGreen, //this is temporary!
-            ),*/
             iconTheme: IconThemeData(color: appTheme), ///might be better if 0xff84C59E
             appBarTheme: AppBarTheme(
               iconTheme: const IconThemeData(color: Colors.white),
               backgroundColor: appTheme,
             ),
-
           )
         ));
   }
