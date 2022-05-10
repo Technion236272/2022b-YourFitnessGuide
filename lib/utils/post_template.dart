@@ -26,7 +26,7 @@ class PostTemplate extends StatelessWidget {
     return Card(
           elevation: 5,
           color: Theme.of(context).cardColor,
-          margin: const EdgeInsets.all(16),
+          margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
