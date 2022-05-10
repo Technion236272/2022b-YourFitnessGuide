@@ -190,8 +190,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         IconButton(
                             onPressed: () {
-                              Navigator.pushReplacementNamed(
-                                  context, homeRoute);
+                              const snackBar = SnackBar(content: Text('Filtering options coming soon'));
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             },
                             icon: const Icon(
                               Icons.filter_alt,
