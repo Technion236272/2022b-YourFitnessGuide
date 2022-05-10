@@ -5,6 +5,7 @@ import 'package:yourfitnessguide/utils/constants.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/book.dart';
 import 'package:yourfitnessguide/utils/book_data.dart';
+import 'package:yourfitnessguide/utils/users.dart';
 
 class SearchScreen extends StatefulWidget {
   SearchScreen({Key? key}) : super(key: key);
@@ -75,11 +76,11 @@ class _SearchScreenState extends State<SearchScreen> {
   final appTheme = const Color(0xff4CC47C);
   double height = 10;
   double width = 10;
-  List<Book> books = allBooks;
+  List<SearchModel> allUsers = [];
+  List<SearchModel> users = [];
+
   String query = '';
   final searchController = TextEditingController();
-  var user;
-
 
   @override
   void initState(){
@@ -88,14 +89,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future init() async{
-    user.getUsers().then((result) {print(result);});
-
+      FirebaseDB().getUsers().then((result) {
+        allUsers = List.from(result);
+        users = List.from(result);
+      });
   }
 
   Widget _buildSearch(String Title) {
     final styleActive = TextStyle(color: Colors.black);
     final styleHint = TextStyle(color: Colors.black54);
-    user = Provider.of<AuthRepository>(context);
 
     return Container(
       height: 42,
@@ -129,7 +131,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget buildBook(Book book) => ListTile(
+  Widget buildUser(SearchModel model) => ListTile(
       title: Container(
           padding: EdgeInsets.symmetric(vertical: height * 0.01),
           child: Column(children: [
@@ -146,7 +148,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               color: Colors.black.withOpacity(0.1))
                         ],
                         shape: BoxShape.circle,
-                        image: book.urlImage == null
+                        image: model.pictureUrl == null
                             ? DecorationImage(
                                 fit: BoxFit.cover,
                                 image: Image.asset(
@@ -154,11 +156,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                     .image)
                             : DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(book.urlImage)))),
+                                image: NetworkImage(model.pictureUrl!)))),
                 SizedBox(
                   width: width * 0.02,
                 ),
-                Text(book.title)
+                Text(model.name!)
               ],
             ),
             SizedBox(height: height * 0.02),
@@ -166,21 +168,21 @@ class _SearchScreenState extends State<SearchScreen> {
 
 
   void searchUser(String searchContent){
-    print(searchContent);
-    final users = allBooks.where((book) {
-      final titleLower = book.title.toLowerCase();
+    final filteredUsers = allUsers.where((user) {
+      final titleLower = user.name!.toLowerCase();
       final searchContentLower = searchContent.toLowerCase();
       return titleLower.contains(searchContentLower);
     }).toList();
     setState(() {
-      this.books = users;
-      this.query = searchContent;
+      users = filteredUsers;
+      query = searchContent;
     });
   }
 
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
+    var books = allBooks;
 
     return DefaultTabController(
         length: 4,
@@ -241,10 +243,10 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       Expanded(
                           child: ListView.builder(
-                        itemCount: books.length,
+                        itemCount: users.length,
                         itemBuilder: (context, index) {
-                          final book = books[index];
-                          return buildBook(book);
+                          final user = users[index];
+                          return buildUser(user);
                         },
                       ))
                     ],
