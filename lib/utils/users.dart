@@ -37,6 +37,23 @@ class UserModel {
 
 }
 
+class SearchModel {
+  String? name;
+  String? uid;
+  String? pictureUrl;
+
+  SearchModel(
+      {required this.name,
+        required this.uid,
+        required this.pictureUrl});
+/*
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+
+      name: json['name'],
+  pictureUrl: json['picture'],*/
+
+}
+
 class AuthRepository with ChangeNotifier {
   FirebaseAuth _auth;
   User? _user;
@@ -102,6 +119,22 @@ class AuthRepository with ChangeNotifier {
       return null;
     }
   }
+
+  Future<Set<SearchModel>> getUsers() async{
+    Set<SearchModel> res = {};
+
+    await _db.collection("users").get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currentDocument = doc.get('name');
+        print(currentDocument);
+        var currentUser = SearchModel(name: doc.get('name'), uid: doc.id.toString(),pictureUrl: doc.get('picture'));
+        res.add(currentUser);
+      });
+    });
+    return Future<Set<SearchModel>>.value(res);
+  }
+
 
   Future<bool> signIn(String email, String password) async {
     try {

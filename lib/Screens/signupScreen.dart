@@ -403,7 +403,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Text('Sign in with',
+                    Text('Sign up with',
                         style: TextStyle(
                           color: appTheme,
                           fontSize: 16,
