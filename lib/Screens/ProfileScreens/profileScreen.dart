@@ -6,9 +6,6 @@ import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_3.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
-import 'dart:io';
-
-
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -18,7 +15,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  File? profileImage;
+  String? profileImage;
   final appTheme = const Color(0xff4CC47C);
 
   Widget _buildImageContainer(double height, double width) {
@@ -26,8 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         width: height * 0.15,
         height: height * 0.15,
         decoration: BoxDecoration(
-            border:
-            Border.all(width: 4, color: Color(0xffD6D6D6)),
+            border: Border.all(width: 4, color: const Color(0xffD6D6D6)),
             boxShadow: [
               BoxShadow(
                   spreadRadius: 3,
@@ -41,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     image: Image.asset('images/decorations/mclovin.png').image)
                 : DecorationImage(
                     fit: BoxFit.cover,
-                    image: Image.file(profileImage!).image)));
+                    image: NetworkImage(profileImage!))));
   }
 
   Widget _buildStatline(String stat, int value) {
@@ -50,15 +46,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             value.toString(),
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Text(
             stat,
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
           )
         ],
       ),
@@ -96,52 +92,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTabBar(){
+  Widget _buildTabBar() {
     return TabBar(
       tabs: [
         Tab(
           child: Text(
             'All posts',
             style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
           ),
         ),
         Tab(
           child: Text(
             'Meals',
             style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
           ),
         ),
         Tab(
           child: Text(
             'Workouts',
             style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
           ),
         ),
         Tab(
           child: Text(
             'Saved',
             style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme,fontSize: 15),
+                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
           ),
         )
       ],
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
     var user = Provider.of<AuthRepository>(context);
-    final String userName = 'McLovin';
-    final rating = 1;
-    final savedNum = 2;
-    final followingNum = 3;
-    final followersNum = 4;
+    var userData;
+    if (user.isAuthenticated) {
+      userData = user.userData;
+      profileImage = userData?.pictureUrl;
+    } else {
+      userData = null;
+    }
+    final String userName = userData?.name ?? 'McLovin';
+    const rating = 1;
+    const savedNum = 2;
+    const followingNum = 3;
+    const followersNum = 4;
     return DefaultTabController(
         length: 4,
         child: Scaffold(
@@ -157,16 +159,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Navigator.pushNamed(context, '/edit');
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.edit,
                               color: Colors.white,
                             )),
                         IconButton(
                             onPressed: () {
                               user.signOut();
-                              Navigator.pushReplacementNamed(context, homeRoute);
+                              Navigator.pushReplacementNamed(
+                                  context, homeRoute);
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.logout,
                               color: Colors.white,
                             ))

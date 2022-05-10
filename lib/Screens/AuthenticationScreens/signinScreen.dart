@@ -15,8 +15,8 @@ class _LoginScreenState extends State<LoginScreen> {
   var user;
   final appTheme = const Color(0xff4CC47C);
   bool _hiddenPassword = true;
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   Widget _buildEmail(double height) {
     final iconSize = height * 0.065;
@@ -30,23 +30,22 @@ class _LoginScreenState extends State<LoginScreen> {
         )),
         Expanded(
           flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Email address",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            controller: emailController,
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(bottom: 5),
+              label: const Center(
+                child: Text('Email Address'),
               ),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                controller: emailController,
-                textAlign: TextAlign.center,
-              )
-            ],
+              labelStyle: TextStyle(
+                color: appTheme,
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+              ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+            ),
           ),
         ),
       ],
@@ -64,38 +63,36 @@ class _LoginScreenState extends State<LoginScreen> {
           width: iconSize,
         )),
         Expanded(
-          flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Password",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextField(
-                obscureText: _hiddenPassword,
-                textAlign: TextAlign.center,
-                controller: passwordController,
-                decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                  icon: Icon(
-                    Icons.remove_red_eye,
+            flex: 5,
+            child: TextField(
+              obscureText: _hiddenPassword,
+              textAlign: TextAlign.center,
+              controller: passwordController,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(bottom: 5),
+                  label: Padding(
+                      padding: EdgeInsets.only(left: height * 0.025),
+                      child: const Center(
+                        child: Text('Password'),
+                      )),
+                  labelStyle: TextStyle(
                     color: appTheme,
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _hiddenPassword = !_hiddenPassword;
-                    });
-                  },
-                )),
-              )
-            ],
-          ),
-        ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      Icons.remove_red_eye,
+                      color: appTheme,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _hiddenPassword = !_hiddenPassword;
+                      });
+                    },
+                  )),
+            )),
       ],
     );
   }
@@ -120,15 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignIn(double height, double width) {
     return ElevatedButton(
-      child: Text("SIGN IN"),
+      child: const Text("SIGN IN"),
       style: ElevatedButton.styleFrom(
-          primary: Color(0xff84C59E),
+          primary: const Color(0xff84C59E),
           shadowColor: appTheme,
           elevation: 17,
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(20.0)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0)),
           fixedSize: Size(width * 0.9, height * 0.055),
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 20,
             color: Colors.white,
           )),
@@ -142,6 +139,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(children: [
       TextButton(
         onPressed: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          emailController.clear();
           Navigator.pushNamed(context, resetPasswordRoute);
         },
         child: Text('Forgot password?',
@@ -176,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               offset: Offset(0, 2),
@@ -214,10 +213,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _getFBcredintials() async {
-    if (await user.signInWithFacebook()) {
-      const snackBar = SnackBar(content: Text('Homepage still not created'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
+    try {
+      if (await user.signInWithFacebook()) {
+        Navigator.pushReplacementNamed(context, homeRoute);
+      } else {
+        const snackBar =
+            SnackBar(content: Text('There was an error logging into the app'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (_) {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -225,10 +229,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _getGooglecredintials() async {
-    if (await user.signInWithGoogle()) {
-      const snackBar = SnackBar(content: Text('Homepage still not created'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
+    try {
+      if (await user.signInWithGoogle()) {
+        Navigator.pushReplacementNamed(context, homeRoute);
+      } else {
+        const snackBar =
+            SnackBar(content: Text('There was an error logging into the app'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    } catch (_) {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -257,16 +266,16 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SizedBox(
-                height: height * 0.009,
+                height: height * 0.025,
               ),
               Container(
                 padding: EdgeInsets.symmetric(
-                    vertical: height * 0.01, horizontal: width * 0.1),
+                    vertical: height * 0.012, horizontal: width * 0.1),
                 child: _buildEmail(height),
               ),
               Container(
                 padding: EdgeInsets.symmetric(
-                    vertical: height * 0.01, horizontal: width * 0.1),
+                    vertical: height * 0.012, horizontal: width * 0.1),
                 child: _buildPassword(height),
               ),
               user.status == Status.Authenticating
@@ -299,6 +308,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               _buildSocialBtnRow(height),
+              SizedBox(
+                height: height * 0.025,
+              ),
               Image.asset(
                 'images/decorations/LoginDecoration.png',
                 width: width,

@@ -1,18 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../utils/constants.dart';
-import '../utils/users.dart';
+import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/users.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
+
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final appTheme = const Color(0xff4CC47C);
-  TextEditingController emailController = new TextEditingController();
+  TextEditingController emailController = TextEditingController();
   var user;
 
   Widget _buildEmail(double height) {
@@ -21,29 +22,28 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       children: [
         Expanded(
             child: Image.asset(
-              'images/icons/email.png',
-              height: iconSize,
-              width: iconSize,
-            )),
+          'images/icons/email.png',
+          height: iconSize,
+          width: iconSize,
+        )),
         Expanded(
           flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Email address",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            controller: emailController,
+            textAlign: TextAlign.center,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(bottom: 5),
+              label: const Center(
+                child: Text('Email Address'),
               ),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                controller: emailController,
-                textAlign: TextAlign.center,
-              )
-            ],
+              labelStyle: TextStyle(
+                  color: appTheme,
+                  fontSize: 23,
+                  fontWeight: FontWeight.bold,
+                  ),
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+            ),
           ),
         ),
       ],
@@ -58,14 +58,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       bool sent = await user.resetPassword(email);
 
       AlertDialog alert = AlertDialog(
-        title: Text("Email sent"),
-        content: Text("check your inbox!"),
+        title: const Text("Email sent"),
+        content: const Text("check your inbox!"),
         actions: [
           TextButton(
               onPressed: () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
-              child: Text("OK"))
+              child: const Text("OK"))
         ],
       );
 
@@ -77,7 +77,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             });
       } else {
         const snackBar =
-        SnackBar(content: Text('There was a problem sending the email'));
+            SnackBar(content: Text('There was a problem sending the email'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
@@ -85,15 +85,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   Widget _buildSubmitReset(double height, double width) {
     return ElevatedButton(
-      child: Text("SUBMIT"),
+      child: const Text("SUBMIT"),
       style: ElevatedButton.styleFrom(
-          primary: Color(0xff84C59E),
+          primary: const Color(0xff84C59E),
           shadowColor: appTheme,
           elevation: 17,
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(20.0)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0)),
           fixedSize: Size(width * 0.9, height * 0.055),
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 20,
             color: Colors.white,
           )),
@@ -132,8 +132,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               Container(
                 padding: EdgeInsets.symmetric(
-                    vertical: resetHeight * 0.01,
-                    horizontal: resetWidth * 0.1),
+                    vertical: resetHeight * 0.01, horizontal: resetWidth * 0.1),
                 child: _buildEmail(resetHeight),
               ),
               Container(
