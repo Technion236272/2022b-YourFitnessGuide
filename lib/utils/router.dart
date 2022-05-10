@@ -7,6 +7,8 @@ import 'package:yourfitnessguide/Screens/AuthenticationScreens/resetPasswordScre
 import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'package:yourfitnessguide/home.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/Screens/mealPlanScreen.dart';
+import 'package:yourfitnessguide/Screens/mealAddScreen.dart';
 import 'package:yourfitnessguide/Screens/workoutScreen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -25,6 +27,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => WorkoutScreen());
     case editProfileRoute:
       return MaterialPageRoute(builder: (context) => EditProfileScreen());
+    case mealPlanRoute:
+      return MaterialPageRoute(builder: (context) => MealPlanScreen());
+    case mealAddRoute:
+      return MaterialPageRoute(builder: (context) => MealScreen());
     case profileRoute:
       return MaterialPageRoute(builder: (context) => ProfileScreen());
     default:
