@@ -51,12 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-        //appBar: AppBar(title: const Text('YourFitnessGuide'), centerTitle: true),
         body: IndexedStack(
           children: _views,
           index: _selectedIndex,
         ),
         bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
           //fixedColor: Colors.black,
           items: const [
             BottomNavigationBarItem(
