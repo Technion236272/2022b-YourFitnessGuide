@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:yourfitnessguide/Screens/editProfileScreen.dart';
+import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'dart:io';
 
 enum Status { Uninitialized, Authenticated, Authenticating, Unauthenticated }
@@ -37,20 +37,7 @@ class UserModel {
 
 }
 
-class SearchModel {
-  String? name;
-  String? uid;
-  String? pictureUrl;
 
-  SearchModel(
-      {required this.name, required this.uid, required this.pictureUrl});
-/*
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-
-      name: json['name'],
-  pictureUrl: json['picture'],*/
-
-}
 
 class AuthRepository with ChangeNotifier {
   FirebaseAuth _auth;
@@ -315,25 +302,5 @@ class AuthRepository with ChangeNotifier {
       await setUserData();
     }
     notifyListeners();
-  }
-}
-
-class FirebaseDB with ChangeNotifier {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-
-  Future<List<SearchModel>> getUsers() async {
-    List<SearchModel> res = [];
-
-    await _db.collection("users").get().then((querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        var currentDocument = doc.get('name');
-        var currentUser = SearchModel(
-            name: doc.get('name'),
-            uid: doc.id.toString(),
-            pictureUrl: doc.get('picture'));
-        res.add(currentUser);
-      });
-    });
-    return Future<List<SearchModel>>.value(res);
   }
 }

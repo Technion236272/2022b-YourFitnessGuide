@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-
-import 'package:yourfitnessguide/Screens/profileScreen.dart';
+import 'package:yourfitnessguide/Screens/ProfileScreens/profileScreen.dart';
 import 'package:yourfitnessguide/Screens/BlogPostScreen.dart';
-import 'package:yourfitnessguide/Screens/signinScreen.dart';
-import 'package:yourfitnessguide/Screens/signupScreen.dart';
-import 'package:yourfitnessguide/Screens/resetPasswordScreen.dart';
-import 'package:yourfitnessguide/Screens/editProfileScreen.dart';
+import 'package:yourfitnessguide/Screens/AuthenticationScreens/signinScreen.dart';
+import 'package:yourfitnessguide/Screens/AuthenticationScreens/signupScreen.dart';
+import 'package:yourfitnessguide/Screens/AuthenticationScreens/resetPasswordScreen.dart';
+import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'package:yourfitnessguide/home.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
 import 'package:yourfitnessguide/Screens/workoutScreen.dart';

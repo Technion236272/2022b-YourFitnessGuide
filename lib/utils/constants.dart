@@ -7,3 +7,4 @@ const String editProfileRoute = '/edit';
 const String profileRoute = '/profile';
 const String workoutPostRoute = '/workoutpost';
 const String searchRoute = '/search';
+enum Goal { loseWeight, gainMuscle, gainWeight, maintainHealth }

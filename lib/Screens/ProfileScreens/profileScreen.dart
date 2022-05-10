@@ -6,7 +6,6 @@ import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_3.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/constants.dart';
-import 'dart:io';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -24,7 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         width: height * 0.15,
         height: height * 0.15,
         decoration: BoxDecoration(
-            border: Border.all(width: 4, color: Color(0xffD6D6D6)),
+            border: Border.all(width: 4, color: const Color(0xffD6D6D6)),
             boxShadow: [
               BoxShadow(
                   spreadRadius: 3,
@@ -47,15 +46,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             value.toString(),
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Text(
             stat,
-            style: TextStyle(color: Colors.grey, fontSize: 14),
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
           )
         ],
       ),
@@ -141,10 +140,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userData = null;
     }
     final String userName = userData?.name ?? 'McLovin';
-    final rating = 1;
-    final savedNum = 2;
-    final followingNum = 3;
-    final followersNum = 4;
+    const rating = 1;
+    const savedNum = 2;
+    const followingNum = 3;
+    const followersNum = 4;
     return DefaultTabController(
         length: 4,
         child: Scaffold(
@@ -160,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Navigator.pushNamed(context, '/edit');
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.edit,
                               color: Colors.white,
                             )),
@@ -170,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Navigator.pushReplacementNamed(
                                   context, homeRoute);
                             },
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.logout,
                               color: Colors.white,
                             ))
