@@ -310,8 +310,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+
         centerTitle: true,
         title: const Text('Edit your profile'),
+          actions: [
+            Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/edit');
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        )),
+                  ],
+                )),
+          ]
       ),
       body: SingleChildScrollView(
         child: GestureDetector(
