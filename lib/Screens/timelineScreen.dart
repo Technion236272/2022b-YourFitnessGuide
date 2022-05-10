@@ -47,7 +47,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
           SpeedDialChild(
               child: const Icon(Icons.add),
               label: 'Meals Plan',
-              onTap: () async {
+              onTap: () {
                 isDialOpen.value = false;
                 //todo add this when ready Navigator.pushNamed(context, mealPostRoute);
               }
