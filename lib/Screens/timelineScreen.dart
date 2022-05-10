@@ -49,7 +49,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
               label: 'Meals Plan',
               onTap: () {
                 isDialOpen.value = false;
-                //todo add this when ready Navigator.pushNamed(context, mealPostRoute);
+                Navigator.pushNamed(context, mealPlanRoute);
               }
           ),
           SpeedDialChild(
