@@ -45,6 +45,7 @@ dependencies:
   cloud_firestore: ^3.1.14
   firebase_storage: ^10.2.15
   flutter_speed_dial: ^6.0.0
+  timeago: ^3.2.2
 
 dev_dependencies:
   flutter_test:
