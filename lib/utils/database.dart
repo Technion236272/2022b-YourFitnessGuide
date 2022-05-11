@@ -35,4 +35,25 @@ class FirebaseDB with ChangeNotifier {
     });
     return Future<List<SearchModel>>.value(res);
   }
+
+  Future<void> deleteUserData(String uid) async {
+    await _db.collection('users').doc(uid).delete();
+
+  }
+
+  ///get user info from db
+  Future<Map<String, dynamic>?> getUserInfo(String userUid) async {
+    Map<String, dynamic>? userData;
+    await _db.collection("users")
+        .doc(userUid)
+        .get()
+        .then((DocumentSnapshot<Map<String, dynamic>> doc) {
+      if (doc.exists) {
+        userData = doc.data();
+      } else {
+        userData = null;
+      }
+    });
+    return userData;
+  }
 }

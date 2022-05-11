@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var user;
-  final appTheme = const Color(0xff4CC47C);
   bool _hiddenPassword = true;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -214,14 +214,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _getFBcredintials() async {
     try {
-      if (await user.signInWithFacebook()) {
-        Navigator.pushReplacementNamed(context, homeRoute);
-      } else {
-        const snackBar =
-            SnackBar(content: Text('There was an error logging into the app'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      var signinRes = await user.signInWithFacebook();
+      switch(signinRes){
+        case 1:
+          Navigator.pushReplacementNamed(context, homeRoute);
+          return;
+        case 2:
+          Navigator.pushReplacementNamed(context, homeRoute);
+          Navigator.pushNamed(context, setupProfileRoute);
+          return;
       }
-    } catch (_) {
+    } catch (e) {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -230,16 +233,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _getGooglecredintials() async {
     try {
-      if (await user.signInWithGoogle()) {
-        Navigator.pushReplacementNamed(context, homeRoute);
-      } else {
-        const snackBar =
-            SnackBar(content: Text('There was an error logging into the app'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      var signinRes = await user.signInWithGoogle();
+      print('nino' + signinRes.toString());
+      switch(signinRes){
+        case 1:
+          Navigator.pushReplacementNamed(context, homeRoute);
+          return;
+        case 2:
+          Navigator.pushReplacementNamed(context, homeRoute);
+          Navigator.pushNamed(context, setupProfileRoute);
+          return;
       }
-    } catch (_) {
+    } catch (e) {
       const snackBar =
-          SnackBar(content: Text('There was an error logging into the app'));
+      SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }

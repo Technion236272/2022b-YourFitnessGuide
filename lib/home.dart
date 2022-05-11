@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'Screens/ProfileScreens/profileScreen.dart';
 import 'Screens/searchScreen.dart';
@@ -20,8 +20,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final appTheme = const Color(0xff4CC47C);
-
   int _selectedIndex = 0;
 
   final List<Widget> _views = [
@@ -43,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if(user.isAuthenticated){
       _views.removeAt(3);
-      _views.add(const ProfileScreen());
+      _views.add(ProfileScreen());
     }
     else{
       _views.removeAt(3);

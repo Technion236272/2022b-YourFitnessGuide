@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/router.dart' as router;
-import 'utils/constants.dart';
+import 'utils/globals.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +36,6 @@ class App extends StatelessWidget {
 
 
 class MyApp extends StatelessWidget {
-  final appTheme = const Color(0xff4CC47C);
   const MyApp({Key? key}) : super(key: key);
 
   @override

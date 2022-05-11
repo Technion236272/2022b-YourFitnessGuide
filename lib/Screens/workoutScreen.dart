@@ -2,6 +2,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:yourfitnessguide/utils/globals.dart';
+
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({Key? key}) : super(key: key);
 
@@ -10,7 +12,6 @@ class WorkoutScreen extends StatefulWidget {
 }
 
 class _WorkoutScreenState extends State<WorkoutScreen> {
-  final appTheme = const Color(0xff4CC47C);
   TextEditingController workoutNameController = TextEditingController();
   TextEditingController DescriptionController = TextEditingController();
   bool? loseWeight = false;

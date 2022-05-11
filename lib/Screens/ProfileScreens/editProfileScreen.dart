@@ -4,17 +4,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'dart:io';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  late bool firstTime;
+  EditProfileScreen({Key? key, required this.firstTime}) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final appTheme = const Color(0xff4CC47C);
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _initialController = TextEditingController();
   final TextEditingController _currentController = TextEditingController();
@@ -26,6 +26,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   var user;
   var userData;
 
+  get firstTime => widget.firstTime;
+
+
   Widget _buildImageContainer(double height, double width) {
     return Container(
         width: height * 0.25,
@@ -36,18 +39,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               BoxShadow(
                   spreadRadius: 3,
                   blurRadius: 10,
-                  color: Colors.black.withOpacity(0.1)
-              )
+                  color: Colors.black.withOpacity(0.1))
             ],
             shape: BoxShape.circle,
             image: newImage != null
-                ? DecorationImage(fit: BoxFit.cover, image: Image.file(newImage!).image)
+                ? DecorationImage(
+                    fit: BoxFit.cover, image: Image.file(newImage!).image)
                 : (profileImage == null
-                    ? DecorationImage(fit: BoxFit.cover, image: Image.asset('images/decorations/mclovin.png').image)
-                    : DecorationImage(fit: BoxFit.cover, image: NetworkImage(profileImage!))
-                  )
-        )
-    );
+                    ? DecorationImage(
+                        fit: BoxFit.cover,
+                        image:
+                            Image.asset('images/decorations/mclovin.png').image)
+                    : DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(profileImage!)))));
   }
 
   Widget _buildEditImage(double height, double width) {
@@ -87,7 +92,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: "Mclovin",
-            hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+            hintStyle:
+                const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
           ),
           controller: _nameController,
         ));
@@ -101,19 +107,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             Expanded(
                 child: TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _initialController,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                    labelText: "Initial\nweight",
-                    labelStyle: TextStyle(color: appTheme, fontSize: 23),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    hintText: "80",
-                    hintStyle:
-                      const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-                  ),
-                )
-            ),
+              keyboardType: TextInputType.number,
+              controller: _initialController,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+                labelText: "Initial\nweight",
+                labelStyle: TextStyle(color: appTheme, fontSize: 23),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                hintText: "80",
+                hintStyle: const TextStyle(
+                    height: 2.8, fontSize: 16, color: Colors.grey),
+              ),
+            )),
             SizedBox(
               width: 0.05 * width,
             ),
@@ -127,8 +132,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   labelStyle: TextStyle(color: appTheme, fontSize: 23),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   hintText: "80",
-                  hintStyle:
-                      const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+                  hintStyle: const TextStyle(
+                      height: 2.8, fontSize: 16, color: Colors.grey),
                 ),
               ),
             ),
@@ -147,8 +152,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 hintText: "80",
-                hintStyle:
-                    const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+                hintStyle: const TextStyle(
+                    height: 2.8, fontSize: 16, color: Colors.grey),
               ),
               controller: _goalController,
             ))
@@ -167,8 +172,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })
-        ),
+                })),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -183,8 +187,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })
-        ),
+                })),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -199,8 +202,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })
-        ),
+                })),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -215,8 +217,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })
-        ),
+                })),
       ],
     );
   }
@@ -249,7 +250,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   newImage);
               Navigator.pop(context);
             },
-            child: Text('CONFIRM', style: TextStyle(color: appTheme, fontSize: 14)),
+            child: Text('CONFIRM',
+                style: TextStyle(color: appTheme, fontSize: 14)),
           ),
         ),
       ],
@@ -279,22 +281,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AuthRepository>(context);
-    userData;
     if (user.isAuthenticated) {
       userData = user.userData;
+      if(userData == null){
+        print('okkkk');
+      }
       profileImage = userData?.pictureUrl;
       _nameController.text =
-          _nameController.text.isEmpty ? userData?.name : _nameController.text;
-      _initialController.text = (_initialController.text.isEmpty
-          ? userData?.iWeight.toString()
-          : _initialController.text)!;
-      _currentController.text = (_currentController.text.isEmpty
-          ? userData?.cWeight.toString()
-          : _currentController.text)!;
-      _goalController.text = (_goalController.text.isEmpty
-          ? userData?.gWeight.toString()
-          : _goalController.text)!;
-      userGoal = userGoal ?? Goal.values[userData?.goal];
+          _nameController.text.isEmpty ? (userData!= null ? userData.name : _nameController.text) : _nameController.text;
+      _initialController.text = (_initialController.text.isEmpty ? (userData !=null ? userData.iWeight.toString() : _initialController.text) : _initialController.text);
+      _currentController.text = (_currentController.text.isEmpty ? (userData !=null ? userData.cWeight.toString(): _currentController.text) : _currentController.text);
+      _goalController.text = (_goalController.text.isEmpty ? (userData !=null ? userData.gWeight.toString(): _goalController.text) : _goalController.text);
+      userGoal = userGoal ?? Goal.values[userData != null? userData.goal : 0];
     } else {
       userData = null;
     }
@@ -302,8 +300,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Edit your profile'),
+          centerTitle: true,
+          title:  Text(firstTime? 'Set up your profile' : 'Edit your profile'),
           actions: [
             Padding(
                 padding: const EdgeInsets.only(right: 12.0),
@@ -311,13 +309,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     IconButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/edit');
+                          user.updateUserData(
+                              _nameController.text,
+                              int.parse(_initialController.text),
+                              int.parse(_currentController.text),
+                              int.parse(_goalController.text),
+                              userGoal?.index,
+                              newImage);
+                          Navigator.pop(context);
                         },
-                        icon: const Icon(Icons.delete, color: Colors.white)),
+                        icon:
+                            const Icon(Icons.check_sharp, color: Colors.white)),
                   ],
                 )),
-          ]
-      ),
+          ]),
       body: SingleChildScrollView(
         child: GestureDetector(
           onTap: () {
@@ -338,7 +343,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: height * 0.02),
+              SizedBox(height: height * 0.01),
               Container(
                   padding:
                       EdgeInsets.only(left: width * 0.05, right: width * 0.1),
@@ -355,7 +360,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   )),
               _buildGoalChoices(height, width),
-              _buildFinishButtons(height, width),
+              firstTime? Container() :
+              ElevatedButton(
+                child: const Text("DELETE ACCOUNT"),
+                style: ElevatedButton.styleFrom(
+                    primary: const Color(0xff84C59E),
+                    shadowColor: appTheme,
+                    elevation: 17,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)),
+                    fixedSize: Size(width * 0.9, height * 0.055),
+                    textStyle: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    )),
+                onPressed: () async {
+                  user.deleteUser();
+                  Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
+                  print('aaa');
+                },
+              ),
             ],
           ),
         ),

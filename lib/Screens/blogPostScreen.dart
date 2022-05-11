@@ -1,11 +1,11 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
+
 
 
 class BlogPostScreen extends StatefulWidget {
@@ -16,7 +16,6 @@ class BlogPostScreen extends StatefulWidget {
 }
 
 class _BlogPostScreenState extends State<BlogPostScreen> {
-  final appTheme = const Color(0xff4CC47C);
   TextEditingController postNameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 

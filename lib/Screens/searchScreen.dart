@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/database.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -23,11 +23,9 @@ class search extends StatefulWidget {
 
 class _searchState extends State<search> {
   final searchController = TextEditingController();
-  final appTheme = const Color(0xff4CC47C);
 
   @override
   Widget build(BuildContext context) {
-    const appTheme = Color(0xff4CC47C);
     return Container(
       height: 42,
       margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -65,7 +63,6 @@ class _searchState extends State<search> {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final appTheme = const Color(0xff4CC47C);
   double height = 10;
   double width = 10;
   List<SearchModel> allUsers = [];
