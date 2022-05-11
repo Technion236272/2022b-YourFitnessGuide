@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:yourfitnessguide/services/file_upload_service.dart';
+
 
 class PostManager with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -12,14 +17,20 @@ class PostManager with ChangeNotifier {
   final CollectionReference<Map<String, dynamic>> _userCollection =
       _firebaseFirestore.collection("users");
 
-  Future<bool> submitBlog({required String title, required description, pictureUrl}) async {
+  final FileUploadService _fileUploadService = FileUploadService();
+
+  Future<bool> submitBlog({required String title, required description, File? postImage}) async {
     bool isSubmitted = false;
 
     String userUid = _firebaseAuth.currentUser!.uid;
     FieldValue timeStamp = FieldValue.serverTimestamp();
 
-    //todo: check if user is signed in? i think its better if we just prevent them from getting here.
-    await _postCollection.doc().set({
+    if(postImage != null) {
+      String? pictureUrl =
+      await _fileUploadService.uploadPostFile(file: postImage);
+
+      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
+      await _postCollection.doc().set({
         "category": 'blog',
         "title": title,
         "description": description,
@@ -33,7 +44,22 @@ class PostManager with ChangeNotifier {
       }).timeout(const Duration(seconds: 20), onTimeout: () {
         isSubmitted = false;
       });
-
+    }
+    else{
+      await _postCollection.doc().set({
+        "category": 'blog',
+        "title": title,
+        "description": description,
+        "createdAt": timeStamp,
+        "user_uid": userUid
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    }
       return isSubmitted;
     }
 

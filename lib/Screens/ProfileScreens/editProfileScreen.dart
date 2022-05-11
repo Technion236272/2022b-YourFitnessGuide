@@ -16,7 +16,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final appTheme = const Color(0xff4CC47C);
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _initalController = TextEditingController();
+  final TextEditingController _initialController = TextEditingController();
   final TextEditingController _currentController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
   Goal? userGoal;
@@ -36,20 +36,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               BoxShadow(
                   spreadRadius: 3,
                   blurRadius: 10,
-                  color: Colors.black.withOpacity(0.1))
+                  color: Colors.black.withOpacity(0.1)
+              )
             ],
             shape: BoxShape.circle,
             image: newImage != null
-                ? DecorationImage(
-                    fit: BoxFit.cover, image: Image.file(newImage!).image)
+                ? DecorationImage(fit: BoxFit.cover, image: Image.file(newImage!).image)
                 : (profileImage == null
-                    ? DecorationImage(
-                        fit: BoxFit.cover,
-                        image:
-                            Image.asset('images/decorations/mclovin.png').image)
-                    : DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(profileImage!)))));
+                    ? DecorationImage(fit: BoxFit.cover, image: Image.asset('images/decorations/mclovin.png').image)
+                    : DecorationImage(fit: BoxFit.cover, image: NetworkImage(profileImage!))
+                  )
+        )
+    );
   }
 
   Widget _buildEditImage(double height, double width) {
@@ -103,40 +101,35 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             Expanded(
                 child: TextField(
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Initial\nweight",
-                labelStyle: TextStyle(
-                  color: appTheme,
-                  fontSize: 23,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                hintText: "80",
-                hintStyle:
-                    const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-              ),
-              controller: _initalController,
-            )),
+                  keyboardType: TextInputType.number,
+                  controller: _initialController,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+                    labelText: "Initial\nweight",
+                    labelStyle: TextStyle(color: appTheme, fontSize: 23),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    hintText: "80",
+                    hintStyle:
+                      const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+                  ),
+                )
+            ),
             SizedBox(
               width: 0.05 * width,
             ),
             Expanded(
               child: TextField(
                 keyboardType: TextInputType.number,
+                controller: _currentController,
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                   labelText: "Current\nweight",
-                  labelStyle: TextStyle(
-                    color: appTheme,
-                    fontSize: 23,
-                  ),
+                  labelStyle: TextStyle(color: appTheme, fontSize: 23),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   hintText: "80",
                   hintStyle:
                       const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
                 ),
-                controller: _currentController,
               ),
             ),
             SizedBox(
@@ -174,7 +167,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })),
+                })
+        ),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -189,7 +183,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })),
+                })
+        ),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -204,7 +199,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })),
+                })
+        ),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -219,7 +215,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value;
-                })),
+                })
+        ),
       ],
     );
   }
@@ -245,18 +242,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onPressed: () {
               user.updateUserData(
                   _nameController.text,
-                  int.parse(_initalController.text),
+                  int.parse(_initialController.text),
                   int.parse(_currentController.text),
                   int.parse(_goalController.text),
                   userGoal?.index,
-              newImage);
+                  newImage);
               Navigator.pop(context);
             },
-            child: Text('CONFIRM',
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 14,
-                )),
+            child: Text('CONFIRM', style: TextStyle(color: appTheme, fontSize: 14)),
           ),
         ),
       ],
@@ -292,9 +285,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       profileImage = userData?.pictureUrl;
       _nameController.text =
           _nameController.text.isEmpty ? userData?.name : _nameController.text;
-      _initalController.text = (_initalController.text.isEmpty
+      _initialController.text = (_initialController.text.isEmpty
           ? userData?.iWeight.toString()
-          : _initalController.text)!;
+          : _initialController.text)!;
       _currentController.text = (_currentController.text.isEmpty
           ? userData?.cWeight.toString()
           : _currentController.text)!;
@@ -309,7 +302,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-
         centerTitle: true,
         title: const Text('Edit your profile'),
           actions: [
@@ -321,10 +313,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         onPressed: () {
                           Navigator.pushNamed(context, '/edit');
                         },
-                        icon: const Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        )),
+                        icon: const Icon(Icons.delete, color: Colors.white)),
                   ],
                 )),
           ]
