@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
+
+import 'package:yourfitnessguide/utils/users.dart';
 
 
 class TimelineScreen extends StatefulWidget {
@@ -20,12 +23,14 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   final _controller = PageController(initialPage: 0);
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
-
+  var user;
   final PostManager _postManager = PostManager();
 
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AuthRepository>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('YourFitnessGuide'),
@@ -40,6 +45,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
         spacing: 15,
         spaceBetweenChildren: 15,
         closeManually: true,
+        visible: user.isAuthenticated,
         children: [
           SpeedDialChild(
               child: const Icon(Icons.add),

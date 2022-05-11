@@ -4,11 +4,14 @@ import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_1.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_2.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_3.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
+import 'package:yourfitnessguide/utils/database.dart';
 import 'package:yourfitnessguide/utils/users.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  late String? uid;
+
+  ProfileScreen({Key? key, this.uid}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -16,7 +19,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? profileImage;
-  final appTheme = const Color(0xff4CC47C);
+
+  get uid => widget.uid;
 
   Widget _buildImageContainer(double height, double width) {
     return Container(
@@ -36,8 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fit: BoxFit.cover,
                     image: Image.asset('images/decorations/mclovin.png').image)
                 : DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(profileImage!))));
+                    fit: BoxFit.cover, image: NetworkImage(profileImage!))));
   }
 
   Widget _buildStatline(String stat, int value) {
@@ -133,7 +136,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final double width = MediaQuery.of(context).size.width;
     var user = Provider.of<AuthRepository>(context);
     var userData;
-    if (user.isAuthenticated) {
+
+    if (uid != null) {
+      userData = FirebaseDB().getUserInfo(uid);
+    } else if (user.isAuthenticated) {
       userData = user.userData;
       profileImage = userData?.pictureUrl;
     } else {

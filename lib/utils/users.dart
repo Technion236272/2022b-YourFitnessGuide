@@ -10,6 +10,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'dart:io';
 
+import 'database.dart';
+
 enum Status { Uninitialized, Authenticated, Authenticating, Unauthenticated }
 
 enum SignUpErrors { Mail_Already_Exists, InvalidEmail, WeakPassword }
@@ -65,9 +67,9 @@ class AuthRepository with ChangeNotifier {
     try {
       _status = Status.Authenticating;
       notifyListeners();
-
-      var res = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      var res;
+      _auth.createUserWithEmailAndPassword(
+          email: email, password: password).then((value) => res = value);
       await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
         'name': 'Undefined Name',
         'picture': null,
@@ -80,6 +82,7 @@ class AuthRepository with ChangeNotifier {
         'following': 2,
         'followers': 1
       });
+
       return res;
     } on FirebaseAuthException catch (error) {
       print(error);
@@ -118,7 +121,7 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
-  Future<bool> signInWithFacebook() async {
+  Future<int> signInWithFacebook() async {
     final String? token;
     try {
       final facebookLoginResult = await FacebookAuth.i.login();
@@ -126,17 +129,17 @@ class AuthRepository with ChangeNotifier {
       final OAuthCredential cred = FacebookAuthProvider.credential(token);
       var res = await _auth.signInWithCredential(cred);
       if (res.additionalUserInfo!.isNewUser) {
-        signUpWithFacebook(true);
+        return signUpWithFacebook(true);
       }
-      return true;
+      return 1;
     } catch (e) {
       _status = Status.Unauthenticated;
       notifyListeners();
-      return false;
+      return 0;
     }
   }
 
-  Future<bool> signUpWithFacebook(bool redirected) async {
+  Future<int> signUpWithFacebook(bool redirected) async {
     final String? token;
     try {
       if (!redirected) {
@@ -160,15 +163,18 @@ class AuthRepository with ChangeNotifier {
         'following': 2,
         'followers': 1
       });
-      return true;
+      if(redirected) {
+        return 2;
+      }
+      return 1;
     } catch (e) {
       _status = Status.Unauthenticated;
       notifyListeners();
-      return false;
+      return 0;
     }
   }
 
-  Future<bool> signInWithGoogle() async {
+  Future<int> signInWithGoogle() async {
     try {
       var signin = GoogleSignIn(scopes: ['profile']);
       final googleSignInAccount = await signin.signIn();
@@ -178,18 +184,18 @@ class AuthRepository with ChangeNotifier {
           accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
       var res = await _auth.signInWithCredential(cred);
       if (res.additionalUserInfo!.isNewUser) {
-        signUpWithGoogle(true);
+        return signUpWithGoogle(true);
       }
 
-      return true;
+      return 1;
     } catch (e) {
       _status = Status.Unauthenticated;
       notifyListeners();
-      return false;
+      return 0;
     }
   }
 
-  Future<bool> signUpWithGoogle(bool redirected) async {
+  Future<int> signUpWithGoogle(bool redirected) async {
     try {
       if (!redirected) {
         var signin = GoogleSignIn(scopes: ['profile']);
@@ -212,11 +218,13 @@ class AuthRepository with ChangeNotifier {
         'goal_weight': 0,
         'goal': 0,
       });
-      return true;
+      if(redirected)
+        return 2;
+      return 1;
     } catch (e) {
       _status = Status.Unauthenticated;
       notifyListeners();
-      return false;
+      return 0;
     }
   }
 
@@ -232,6 +240,17 @@ class AuthRepository with ChangeNotifier {
   Future signOut() async {
     _auth.signOut();
     _status = Status.Unauthenticated;
+    notifyListeners();
+    return Future.delayed(Duration.zero);
+  }
+
+  Future deleteUser() async{
+    var uid = _auth.currentUser?.uid;
+    _auth.currentUser?.delete();
+    FirebaseDB().deleteUserData(uid!);
+    _user = null;
+    _status = Status.Unauthenticated;
+    await unsetUserData();
     notifyListeners();
     return Future.delayed(Duration.zero);
   }

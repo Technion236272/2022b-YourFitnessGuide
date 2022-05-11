@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -13,7 +13,6 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final appTheme = const Color(0xff4CC47C);
   TextEditingController emailController = TextEditingController();
   TextEditingController confirmController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -171,9 +170,10 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _getFBcredintials() async {
-    if (await user.signUpWithFacebook(false)) {
+    if (await user.signUpWithFacebook(false) > 0) {
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, homeRoute);
+      Navigator.pushNamed(context, setupProfileRoute);
     } else {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
@@ -182,9 +182,10 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _getGooglecredintials() async {
-    if (await user.signUpWithGoogle(false)) {
+    if (await user.signUpWithGoogle(false) > 0) {
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, homeRoute);
+      Navigator.pushNamed(context, setupProfileRoute);
     } else {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
@@ -227,6 +228,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (res is UserCredential) {
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, homeRoute);
+      Navigator.pushNamed(context, setupProfileRoute);
     } else if (res is int) {
       switch (res) {
         case 0:
