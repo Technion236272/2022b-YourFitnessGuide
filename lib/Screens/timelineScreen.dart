@@ -178,24 +178,36 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
-                            children: const [
+                            children: [
                               IconButton(
-                                  onPressed: null,
-                                  icon: Icon(Icons.arrow_upward, color: Colors.grey)
+                                  onPressed: (){
+                                    const _snackBar = SnackBar(content: Text('Not implemented yet'));
+                                    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                                  },
+                                  icon: const Icon(Icons.arrow_upward, color: Colors.grey)
                               ),
                               IconButton(
-                                  onPressed: null,
-                                  icon: Icon(Icons.arrow_downward, color: Colors.grey)
+                                  onPressed: (){
+                                    const _snackBar = SnackBar(content: Text('Not implemented yet'));
+                                    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                                  },
+                                  icon: const Icon(Icons.arrow_downward, color: Colors.grey)
                               )
                             ],
                           ),
-                          const IconButton(
-                              onPressed: null,
-                              icon: Icon(Icons.chat_bubble, color: Colors.grey)
+                          IconButton(
+                              onPressed: (){
+                                const _snackBar = SnackBar(content: Text('Not implemented yet'));
+                                ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                              },
+                              icon: const Icon(Icons.chat_bubble, color: Colors.grey)
                           ),
-                          const IconButton(
-                              onPressed: null,
-                              icon: Icon(Icons.bookmark, color: Colors.grey)
+                          IconButton(
+                              onPressed: (){
+                                const _snackBar = SnackBar(content: Text('Not implemented yet'));
+                                ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+                              },
+                              icon: const Icon(Icons.bookmark, color: Colors.grey)
                           )
                         ],
                       )
