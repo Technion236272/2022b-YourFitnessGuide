@@ -34,6 +34,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case mealAddRoute:
       return MaterialPageRoute(builder: (context) => MealScreen());
     case profileRoute:
+      if(settings.arguments != null){
+        final args = settings.arguments as SearchArguments;
+        return MaterialPageRoute(builder: (context) => ProfileScreen(uid: args.uid));
+      }
       return MaterialPageRoute(builder: (context) => ProfileScreen());
     default:
       return MaterialPageRoute(builder: (context) => HomeScreen());

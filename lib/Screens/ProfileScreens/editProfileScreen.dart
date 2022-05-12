@@ -17,7 +17,10 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  textField nameField = textField(fieldName: 'Email Address', hint: 'McLovin',);
+  textField nameField = textField(
+    fieldName: 'Name',
+    hint: 'McLovin',
+  );
   final TextEditingController _initialController = TextEditingController();
   final TextEditingController _currentController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
@@ -62,8 +65,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildNameField(double height) {
     return Padding(
-        padding: EdgeInsets.only(bottom: height * 0.03),
-        child: nameField);
+        padding: EdgeInsets.only(bottom: height * 0.03), child: nameField);
   }
 
   Widget _buildWeightField(String label, TextEditingController ctrl) {
@@ -74,7 +76,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 5),
         labelText: label,
-        labelStyle: TextStyle(color: appTheme, fontSize: 23),
+        labelStyle: TextStyle(
+          color: appTheme,
+          fontSize: 23,
+          fontWeight: FontWeight.bold,
+        ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         hintText: "80",
         hintStyle:
@@ -234,6 +240,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           style: TextStyle(
                             color: appTheme,
                             fontSize: 23,
+                            fontWeight: FontWeight.bold
                           )),
                     ],
                   )),

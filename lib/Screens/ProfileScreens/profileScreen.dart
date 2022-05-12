@@ -20,8 +20,15 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? profileImage;
-
+  bool visiting = false;
+  var user;
+  var userData;
+  late String username;
   get uid => widget.uid;
+  int rating = 0,
+      savedNum = 0,
+      followingNum = 0,
+      followersNum = 0;
 
   Widget _buildStatline(String stat, int value) {
     return Center(
@@ -56,11 +63,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         Expanded(
-          child: Container(
+          child: visiting
+              ? Container()
+              : Container(
             child: _buildStatline('Saved', savedNum),
           ),
         ),
-        imageContainer(height: height,width: width, imageLink: profileImage, percent: 0.15,),
+        imageContainer(
+          height: height,
+          width: width,
+          imageLink: profileImage,
+          percent: 0.15,
+        ),
         Expanded(
           child: Container(
             child: _buildStatline('Following', followingNum),
@@ -75,57 +89,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTab(String tabText){
+  Widget _buildTab(String tabText) {
     return Tab(
         child: Text(
-        tabText,
-        style: TextStyle(
-        fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-    ));
+          tabText,
+          style:
+          TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
+        ));
   }
 
   Widget _buildTabBar() {
     return TabBar(
-      tabs: [ _buildTab('All posts'),
+      tabs: !visiting
+          ? [
+        _buildTab('All posts'),
         _buildTab('Meals'),
         _buildTab('Workouts'),
         _buildTab('Saved'),
+      ]
+          : [
+        _buildTab('All posts'),
+        _buildTab('Meals'),
+        _buildTab('Workouts'),
       ],
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
-    var user = Provider.of<AuthRepository>(context);
-    var userData;
-    int rating = 0;
-    int savedNum = 0;
-    int followingNum = 0;
-    int followersNum = 0;
-
-    if (uid != null) {
-      userData = FirebaseDB().getUserInfo(uid);
-    } else if (user.isAuthenticated) {
-      userData = user.userData;
+  Widget _buildView(double height, double width) {
+    if (userData != null) {
       profileImage = userData?.pictureUrl;
       rating = userData?.rating;
       savedNum = userData?.saved;
       followingNum = userData?.following;
       followersNum = userData?.followers;
-    } else {
-      userData = null;
+      username = userData?.name; 'McLovin';
     }
-    final String userName = userData?.name ?? 'McLovin';
 
     return DefaultTabController(
-        length: 4,
+        length: visiting ? 3 : 4,
         child: Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: Text(userName),
-              actions: [
+              title: Text(username),
+              actions: visiting
+                  ? []
+                  : [
                 Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: Row(
@@ -141,8 +149,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         IconButton(
                             onPressed: () {
                               user.signOut();
-                              Navigator.pushReplacementNamed(
-                                  context, homeRoute);
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, '/home', (_) => false);
                             },
                             icon: const Icon(
                               Icons.logout,
@@ -156,21 +164,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Container(
                     padding: EdgeInsets.only(
-                        top: height * 0.035, bottom: height * 0.14),
+                        top: height * 0.035, bottom: height * 0.008),
                     child: _buildTopDisplayRow(height, width, rating, savedNum,
                         followingNum, followersNum)),
+                !visiting
+                    ? Container(
+                  padding: EdgeInsets.only(bottom: height * 0.008),
+                )
+                    : ElevatedButton(
+                  child: const Text("Follow"),
+                  style: ElevatedButton.styleFrom(
+                      primary: const Color(0xff84C59E),
+                      shadowColor: appTheme,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)),
+                      fixedSize: Size(width * 0.25, height * 0.03),
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      )),
+                  onPressed: () async {
+                    const snackBar =
+                    SnackBar(content: Text('Feature coming soon'));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  },
+                ),
+                SizedBox(
+                  height: height * 0.05,
+                ),
                 _buildTabBar(),
                 Expanded(
                   child: TabBarView(
-                    children: [
+                    children: !visiting
+                        ? [
                       FirstTab(),
                       SecondTab(),
                       ThirdTab(),
                       FourthTab(),
+                    ]
+                        : [
+                      FirstTab(),
+                      SecondTab(),
+                      ThirdTab(),
                     ],
                   ),
                 ),
               ],
             )));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
+    user = Provider.of<AuthRepository>(context);
+
+    if (uid != null) {
+      if (user.isAuthenticated && user.getCurrUid() == uid) {
+        userData = user.userData;
+        visiting = false;
+      } else {
+        visiting = true;
+      }
+    } else if (user.isAuthenticated) {
+      userData = user.userData;
+    } else {
+      userData = null;
+    }
+
+    if (userData != null) {
+      profileImage = userData?.pictureUrl;
+      rating = userData?.rating;
+      savedNum = userData?.saved;
+      followingNum = userData?.following;
+      followersNum = userData?.followers;
+    }
+
+    if (visiting) {
+      return FutureBuilder(
+        future: FirebaseDB().getUserModel(uid),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator(),);
+          }
+          if (snapshot.hasError) {
+            Navigator.pop(context);
+            const snackBar =
+            SnackBar(content: Text('Something went wrong'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+          userData = snapshot.data;
+          return _buildView(height,width);
+        },);
+    }
+
+    return _buildView(height,width);
   }
 }

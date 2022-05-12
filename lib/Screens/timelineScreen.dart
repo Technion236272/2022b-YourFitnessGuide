@@ -35,6 +35,23 @@ class _TimelineScreenState extends State<TimelineScreen> {
       appBar: AppBar(
         title: const Text('YourFitnessGuide'),
         centerTitle: true,
+          actions: [
+            Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                        onPressed: () {
+                          const snackBar = SnackBar(content: Text('Filtering options coming soon'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        },
+                        icon: const Icon(
+                          Icons.filter_alt,
+                          color: Colors.white,
+                        ))
+                  ],
+                )),
+          ]
       ),
       floatingActionButton: SpeedDial(
         animatedIcon: AnimatedIcons.menu_close,
@@ -76,8 +93,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
         stream: _postManager.getAllPosts(),
-        builder: (context, snapshot) {
-          return ListView.builder(
+        builder: (context, snapshot) { return RefreshIndicator( onRefresh: () async{ print('Refreshing'); return null; },
+        child:
+          ListView.builder(
             //separatorBuilder: (context, index) => const Divider(),
             itemCount: snapshot.data == null ? 0 : snapshot.data!.docs.length,
             itemBuilder: (context, index) {
@@ -222,7 +240,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 ),
               );
             },
-          );
+          ));
           }
       )
 

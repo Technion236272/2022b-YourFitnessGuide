@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:yourfitnessguide/utils/users.dart';
 
 class SearchModel {
   String? name;
@@ -54,6 +55,32 @@ class FirebaseDB with ChangeNotifier {
         userData = null;
       }
     });
+    return userData;
+  }
+
+  Future<UserModel?> getUserModel(String userUid) async {
+    UserModel? userData;
+    await _db.collection("users")
+        .doc(userUid)
+        .get()
+        .then((DocumentSnapshot<Map<String, dynamic>> dataDocument) {
+      if (dataDocument.exists) {
+        userData = UserModel(
+            name: dataDocument.get('name'),
+            goal: dataDocument.get('goal'),
+            iWeight: dataDocument.get('initial_weight'),
+            cWeight: dataDocument.get('current_weight'),
+            gWeight: dataDocument.get('goal_weight'),
+            pictureUrl: dataDocument.get('picture'),
+            following: dataDocument.get('following'),
+            followers: dataDocument.get('followers'),
+            rating: dataDocument.get('rating'),
+            saved: dataDocument.get('saved'));
+      } else {
+        userData = null;
+      }
+    });
+    print(userData!.name);
     return userData;
   }
 }
