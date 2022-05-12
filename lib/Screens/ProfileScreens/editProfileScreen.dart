@@ -17,7 +17,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController _nameController = TextEditingController();
+  textField nameField = textField(fieldName: 'Email Address', hint: 'McLovin',);
   final TextEditingController _initialController = TextEditingController();
   final TextEditingController _currentController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
@@ -63,21 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildNameField(double height) {
     return Padding(
         padding: EdgeInsets.only(bottom: height * 0.03),
-        child: TextField(
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.only(bottom: 5),
-            labelText: "Full Name",
-            labelStyle: TextStyle(
-              color: appTheme,
-              fontSize: 23,
-            ),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintText: "Mclovin",
-            hintStyle:
-                const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
-          ),
-          controller: _nameController,
-        ));
+        child: nameField);
   }
 
   Widget _buildWeightField(String label, TextEditingController ctrl) {
@@ -144,9 +130,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       userData = user.userData;
 
       profileImage = userData?.pictureUrl;
-      _nameController.text = _nameController.text.isEmpty
-          ? (userData != null ? userData.name : _nameController.text)
-          : _nameController.text;
+      nameField.controller.text = nameField.controller.text.isEmpty
+          ? (userData != null ? userData.name : nameField.controller.text)
+          : nameField.controller.text;
       _initialController.text = (_initialController.text.isEmpty
           ? (userData != null
               ? userData.iWeight.toString()
@@ -198,7 +184,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     IconButton(
                         onPressed: () {
                           user.updateUserData(
-                              _nameController.text,
+                              nameField.controller.text,
                               int.parse(_initialController.text),
                               int.parse(_currentController.text),
                               int.parse(_goalController.text),

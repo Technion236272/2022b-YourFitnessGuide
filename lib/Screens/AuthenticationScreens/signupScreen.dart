@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -13,7 +14,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  TextEditingController emailController = TextEditingController();
+  textField emailField = textField(fieldName: 'Email Address', centered: true,);
   TextEditingController confirmController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _strongPassword = true;
@@ -23,42 +24,19 @@ class _SignupScreenState extends State<SignupScreen> {
   Goal? userGoal;
   var user;
 
-  Widget _buildTextField(double height, bool isEmail) {
+  Widget _buildEmail(double height, Widget field) {
     final iconSize = height * 0.065;
-    String fieldIcon =
-        isEmail ? 'images/icons/email.png' : 'images/icons/user.png';
-    String fieldText = isEmail ? 'Email Address' : 'Full Name';
     return Row(
       children: [
         Expanded(
             child: Image.asset(
-          fieldIcon,
-          height: iconSize,
-          width: iconSize,
-        )),
+              'images/icons/email.png',
+              height: iconSize,
+              width: iconSize,
+            )),
         Expanded(
           flex: 5,
-          child: TextField(
-            keyboardType: TextInputType.emailAddress,
-            controller: emailController,
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(bottom: 5),
-              label: isEmail
-                  ? Container(
-                      padding: EdgeInsets.only(left: height * 0.06),
-                      child: Center(child: Text(fieldText)))
-                  : Center(
-                      child: Text(fieldText),
-                    ),
-              labelStyle: TextStyle(
-                color: appTheme,
-                fontSize: 23,
-                fontWeight: FontWeight.bold,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-            ),
-          ),
+          child: field,
         ),
       ],
     );
@@ -191,8 +169,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _validateSignUp() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    var email = emailController.text;
-    emailController.clear();
+    var email = emailField.controller.text;
+    emailField.controller.clear();
     var password = passwordController.text;
     passwordController.clear();
     var confirm = confirmController.text;
@@ -277,7 +255,7 @@ class _SignupScreenState extends State<SignupScreen> {
             Container(
               padding: EdgeInsets.symmetric(
                   vertical: height * 0.012, horizontal: width * 0.1),
-              child: _buildTextField(height, true),
+              child: _buildEmail(height, emailField),
             ),
             Container(
               padding: EdgeInsets.symmetric(
