@@ -92,9 +92,10 @@ class AuthRepository with ChangeNotifier {
         'following': 0,
         'followers': 0
       });
-
+      _userData = UserModel(name: 'Undefined Name', pictureUrl: url, iWeight: 0, cWeight: 0, gWeight: 0, goal: 0, rating: 0, saved: 0,followers: 0,following: 0);
       return res;
     } on FirebaseAuthException catch (error) {
+      _userData = null;
       print(error);
       _status = Status.Unauthenticated;
       notifyListeners();
@@ -125,6 +126,7 @@ class AuthRepository with ChangeNotifier {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       return true;
     } catch (e) {
+      _userData = null;
       _status = Status.Unauthenticated;
       notifyListeners();
       return false;
@@ -143,6 +145,7 @@ class AuthRepository with ChangeNotifier {
       }
       return 1;
     } catch (e) {
+      _userData = null;
       _status = Status.Unauthenticated;
       notifyListeners();
       return 0;
@@ -159,11 +162,11 @@ class AuthRepository with ChangeNotifier {
         await _auth.signInWithCredential(cred);
       }
 
-      final _userData = await FacebookAuth.i.getUserData();
+      final data = await FacebookAuth.i.getUserData();
 
       await _db.collection('users').doc(user!.uid).set({
-        'name': _userData['name'],
-        'picture': _userData['picture']['data']['url'],
+        'name': data['name'],
+        'picture': data['picture']['data']['url'],
         'initial_weight': 0,
         'current_weight': 0,
         'goal_weight': 0,
@@ -173,11 +176,15 @@ class AuthRepository with ChangeNotifier {
         'following': 0,
         'followers': 0
       });
+
+      _userData = UserModel(name: data['name'], pictureUrl: data['picture']['data']['url'], iWeight: 0, cWeight: 0, gWeight: 0, goal: 0, rating: 0, saved: 0,followers: 0,following: 0);
+
       if (redirected) {
         return 2;
       }
       return 1;
     } catch (e) {
+      _userData = null;
       _status = Status.Unauthenticated;
       notifyListeners();
       return 0;
@@ -199,6 +206,7 @@ class AuthRepository with ChangeNotifier {
 
       return 1;
     } catch (e) {
+      _userData = null;
       _status = Status.Unauthenticated;
       notifyListeners();
       return 0;
@@ -232,10 +240,12 @@ class AuthRepository with ChangeNotifier {
         'following': 0,
         'followers': 0
       });
+      _userData = UserModel(name: name, pictureUrl: picture, iWeight: 0, cWeight: 0, gWeight: 0, goal: 0, rating: 0, saved: 0,followers: 0,following: 0);
 
       if (redirected) return 2;
       return 1;
     } catch (e) {
+      _userData = null;
       _status = Status.Unauthenticated;
       notifyListeners();
       return 0;
@@ -258,6 +268,10 @@ class AuthRepository with ChangeNotifier {
     return Future.delayed(Duration.zero);
   }
 
+  String? getCurrUid() {
+    return _auth.currentUser?.uid;
+  }
+
   Future deleteUser() async {
     var uid = _auth.currentUser?.uid;
     _auth.currentUser?.delete();
@@ -271,6 +285,8 @@ class AuthRepository with ChangeNotifier {
 
   Future<void> setUserData() async {
     try {
+      if(_userData != null)
+        return;
       var dataDocument = await _db.collection('users').doc(user!.uid).get();
       _userData = UserModel(
           name: dataDocument.get('name'),

@@ -16,7 +16,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   var user;
   bool _hiddenPassword = true;
-  textField emailField = textField(fieldName: 'Email Address', centered: true,);
+  textField emailField = textField(
+    fieldName: 'Email Address',
+    centered: true,
+  );
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -139,11 +142,24 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           Navigator.pushNamed(context, signupRoute);
         },
-        child: Text('Not an existing user? Click here to sign up!',
-            style: TextStyle(
-              color: appTheme,
-              fontSize: 16,
-            )),
+        child: RichText(
+            text: TextSpan(
+                children: <TextSpan>[
+              new TextSpan(
+                  text: 'Not an existing user?',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  )),
+              new TextSpan(
+                text: ' Click here to sign up!',
+                style: new TextStyle(color: appTheme, fontWeight: FontWeight.bold),
+              ),
+            ],
+                style: TextStyle(
+                  color: appTheme,
+                  fontSize: 16,
+                ))),
       )
     ]);
   }

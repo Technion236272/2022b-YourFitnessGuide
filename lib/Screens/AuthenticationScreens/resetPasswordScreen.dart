@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({Key? key}) : super(key: key);
@@ -54,31 +55,38 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     var email = emailController.text;
     emailController.clear();
     if (email != "") {
-      bool sent = await user.resetPassword(email);
+      try
+      {
+        bool sent = await user.resetPassword(email);
+        AlertDialog alert = AlertDialog(
+          title: const Text("Email sent"),
+          content: const Text("check your inbox!"),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                child: const Text("OK"))
+          ],
+        );
 
-      AlertDialog alert = AlertDialog(
-        title: const Text("Email sent"),
-        content: const Text("check your inbox!"),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              },
-              child: const Text("OK"))
-        ],
-      );
-
-      if (sent) {
-        showDialog(
-            context: context,
-            builder: (builder) {
-              return alert;
-            });
-      } else {
+        if (sent) {
+          showDialog(
+              context: context,
+              builder: (builder) {
+                return alert;
+              });
+        } else {
+          throw Exception;
+        }
+      }
+      catch(_){
         const snackBar =
-            SnackBar(content: Text('There was a problem sending the email'));
+        SnackBar(content: Text('There was a problem sending the email'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
+
+
     }
   }
 
@@ -104,6 +112,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    textField emailField = textField(fieldName: 'Email Address', centered: true,);
+
     user = Provider.of<AuthRepository>(context);
     final double resetHeight = MediaQuery.of(context).size.height;
     final double resetWidth = MediaQuery.of(context).size.width;

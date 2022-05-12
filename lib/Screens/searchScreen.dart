@@ -120,8 +120,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget buildUser(SearchModel model) => ListTile(
     onTap: () {
-      print('Navigate to profile');
-      print(model.uid);
+      SearchArguments arg = SearchArguments(uid: model.uid!, isUser: false);
+      Navigator.pushNamed(context, '/profile', arguments: arg);
     },
       title: Container(
           padding: EdgeInsets.symmetric(vertical: height * 0.01),
