@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'dart:io';
 import 'package:yourfitnessguide/utils/globals.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class EditProfileScreen extends StatefulWidget {
   late bool firstTime;
+
   EditProfileScreen({Key? key, required this.firstTime}) : super(key: key);
 
   @override
@@ -19,6 +21,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _initialController = TextEditingController();
   final TextEditingController _currentController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
+  late Widget _imageContainer;
+
+  late GoalChoices choices;
   Goal? userGoal;
   String? profileImage;
   XFile? selectedImage;
@@ -27,33 +32,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   var userData;
 
   get firstTime => widget.firstTime;
-
-
-  Widget _buildImageContainer(double height, double width) {
-    return Container(
-        width: height * 0.25,
-        height: height * 0.25,
-        decoration: BoxDecoration(
-            border: Border.all(width: 4, color: const Color(0xffD6D6D6)),
-            boxShadow: [
-              BoxShadow(
-                  spreadRadius: 3,
-                  blurRadius: 10,
-                  color: Colors.black.withOpacity(0.1))
-            ],
-            shape: BoxShape.circle,
-            image: newImage != null
-                ? DecorationImage(
-                    fit: BoxFit.cover, image: Image.file(newImage!).image)
-                : (profileImage == null
-                    ? DecorationImage(
-                        fit: BoxFit.cover,
-                        image:
-                            Image.asset('images/decorations/mclovin.png').image)
-                    : DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(profileImage!)))));
-  }
 
   Widget _buildEditImage(double height, double width) {
     return Positioned(
@@ -73,7 +51,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             size: height * 0.035,
             color: Colors.white,
           ),
-          onPressed: () => pickImage(),
+          onPressed: () {
+            pickImage();
+            if (newImage != null) {}
+          },
         ),
       ),
     );
@@ -99,163 +80,40 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ));
   }
 
+  Widget _buildWeightField(String label, TextEditingController ctrl) {
+    return Expanded(
+        child: TextField(
+      keyboardType: TextInputType.number,
+      controller: ctrl,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+        labelText: label,
+        labelStyle: TextStyle(color: appTheme, fontSize: 23),
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        hintText: "80",
+        hintStyle:
+            const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
+      ),
+    ));
+  }
+
   Widget _buildWeightProgress(double height, double width) {
     return Padding(
         padding: EdgeInsets.only(bottom: height * 0.03),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              controller: _initialController,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Initial\nweight",
-                labelStyle: TextStyle(color: appTheme, fontSize: 23),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                hintText: "80",
-                hintStyle: const TextStyle(
-                    height: 2.8, fontSize: 16, color: Colors.grey),
-              ),
-            )),
+            _buildWeightField("Initial\nweight", _initialController),
             SizedBox(
               width: 0.05 * width,
             ),
-            Expanded(
-              child: TextField(
-                keyboardType: TextInputType.number,
-                controller: _currentController,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                  labelText: "Current\nweight",
-                  labelStyle: TextStyle(color: appTheme, fontSize: 23),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  hintText: "80",
-                  hintStyle: const TextStyle(
-                      height: 2.8, fontSize: 16, color: Colors.grey),
-                ),
-              ),
-            ),
+            _buildWeightField("Current\nweight", _currentController),
             SizedBox(
               width: 0.05 * width,
             ),
-            Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Goal\nweight",
-                labelStyle: TextStyle(
-                  color: appTheme,
-                  fontSize: 23,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-                hintText: "80",
-                hintStyle: const TextStyle(
-                    height: 2.8, fontSize: 16, color: Colors.grey),
-              ),
-              controller: _goalController,
-            ))
+            _buildWeightField("Goal\nweight", _goalController),
           ],
         ));
-  }
-
-  Widget _buildGoalChoices(double height, double width) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RadioListTile<Goal>(
-            title: const Text('Lose Weight'),
-            value: Goal.loseWeight,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-        Divider(
-          color: Colors.grey,
-          height: 0,
-          thickness: 1,
-          indent: width * 0.05,
-          endIndent: width * 0.1,
-        ),
-        RadioListTile<Goal>(
-            title: const Text('Gain Muscle'),
-            value: Goal.gainMuscle,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-        Divider(
-          color: Colors.grey,
-          height: 0,
-          thickness: 1,
-          indent: width * 0.05,
-          endIndent: width * 0.1,
-        ),
-        RadioListTile<Goal>(
-            title: const Text('Gain Healthy Weight'),
-            value: Goal.gainWeight,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-        Divider(
-          color: Colors.grey,
-          height: 0,
-          thickness: 1,
-          indent: width * 0.05,
-          endIndent: width * 0.1,
-        ),
-        RadioListTile<Goal>(
-            title: const Text('Maintain Healthy Lifestyle'),
-            value: Goal.maintainHealth,
-            groupValue: userGoal,
-            activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  userGoal = value;
-                })),
-      ],
-    );
-  }
-
-  Widget _buildFinishButtons(double height, double width) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Flexible(
-          child: TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: Text('CANCEL',
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 14,
-                )),
-          ),
-        ),
-        Flexible(
-          child: TextButton(
-            onPressed: () {
-              user.updateUserData(
-                  _nameController.text,
-                  int.parse(_initialController.text),
-                  int.parse(_currentController.text),
-                  int.parse(_goalController.text),
-                  userGoal?.index,
-                  newImage);
-              Navigator.pop(context);
-            },
-            child: Text('CONFIRM',
-                style: TextStyle(color: appTheme, fontSize: 14)),
-          ),
-        ),
-      ],
-    );
   }
 
   Future pickImage() async {
@@ -281,27 +139,57 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AuthRepository>(context);
+
     if (user.isAuthenticated) {
       userData = user.userData;
-      if(userData == null){
-        print('okkkk');
-      }
+
       profileImage = userData?.pictureUrl;
-      _nameController.text =
-          _nameController.text.isEmpty ? (userData!= null ? userData.name : _nameController.text) : _nameController.text;
-      _initialController.text = (_initialController.text.isEmpty ? (userData !=null ? userData.iWeight.toString() : _initialController.text) : _initialController.text);
-      _currentController.text = (_currentController.text.isEmpty ? (userData !=null ? userData.cWeight.toString(): _currentController.text) : _currentController.text);
-      _goalController.text = (_goalController.text.isEmpty ? (userData !=null ? userData.gWeight.toString(): _goalController.text) : _goalController.text);
-      userGoal = userGoal ?? Goal.values[userData != null? userData.goal : 0];
+      _nameController.text = _nameController.text.isEmpty
+          ? (userData != null ? userData.name : _nameController.text)
+          : _nameController.text;
+      _initialController.text = (_initialController.text.isEmpty
+          ? (userData != null
+              ? userData.iWeight.toString()
+              : _initialController.text)
+          : _initialController.text);
+      _currentController.text = (_currentController.text.isEmpty
+          ? (userData != null
+              ? userData.cWeight.toString()
+              : _currentController.text)
+          : _currentController.text);
+      _goalController.text = (_goalController.text.isEmpty
+          ? (userData != null
+              ? userData.gWeight.toString()
+              : _goalController.text)
+          : _goalController.text);
+      userGoal = userGoal ?? Goal.values[userData != null ? userData.goal : 0];
     } else {
       userData = null;
     }
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
+    choices = GoalChoices(height: height, width: width, userGoal: userGoal);
+
+    if (newImage != null) {
+      _imageContainer = imageContainer(
+        height: height,
+        width: width,
+        imageFile: newImage,
+        percent: 0.25,
+      );
+    } else {
+      _imageContainer = imageContainer(
+        height: height,
+        width: width,
+        imageLink: profileImage,
+        percent: 0.25,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
-          title:  Text(firstTime? 'Set up your profile' : 'Edit your profile'),
+          title: Text(firstTime ? 'Set up your profile' : 'Edit your profile'),
           actions: [
             Padding(
                 padding: const EdgeInsets.only(right: 12.0),
@@ -314,9 +202,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               int.parse(_initialController.text),
                               int.parse(_currentController.text),
                               int.parse(_goalController.text),
-                              userGoal?.index,
+                              choices.userGoal?.index,
                               newImage);
-                          Navigator.pop(context);
+                          if (firstTime) {
+                            Navigator.pushReplacementNamed(context, homeRoute);
+                          } else {
+                            Navigator.pop(context);
+                          }
                         },
                         icon:
                             const Icon(Icons.check_sharp, color: Colors.white)),
@@ -337,7 +229,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: Center(
                   child: Stack(
                     children: [
-                      _buildImageContainer(height, width),
+                      _imageContainer,
                       _buildEditImage(height, width),
                     ],
                   ),
@@ -359,27 +251,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           )),
                     ],
                   )),
-              _buildGoalChoices(height, width),
-              firstTime? Container() :
-              ElevatedButton(
-                child: const Text("DELETE ACCOUNT"),
-                style: ElevatedButton.styleFrom(
-                    primary: const Color(0xff84C59E),
-                    shadowColor: appTheme,
-                    elevation: 17,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0)),
-                    fixedSize: Size(width * 0.9, height * 0.055),
-                    textStyle: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    )),
-                onPressed: () async {
-                  user.deleteUser();
-                  Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
-                  print('aaa');
-                },
-              ),
+              choices,
+              firstTime
+                  ? Container()
+                  : ElevatedButton(
+                      child: const Text("DELETE ACCOUNT"),
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.red,
+                          shadowColor: appTheme,
+                          elevation: 17,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          fixedSize: Size(width * 0.9, height * 0.055),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          )),
+                      onPressed: () async {
+                        Widget cancel = TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(color: appTheme),
+                            ));
+                        Widget confirm = TextButton(
+                            onPressed: () {
+                              user.deleteUser();
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, '/home', (_) => false);
+                            },
+                            child: Text('Confirm',
+                                style: TextStyle(color: appTheme)));
+                        AlertDialog alert = AlertDialog(
+                          title: Text('Are you sure?'),
+                          actions: [cancel, confirm],
+                        );
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext) {
+                              return alert;
+                            });
+                      },
+                    ),
             ],
           ),
         ),

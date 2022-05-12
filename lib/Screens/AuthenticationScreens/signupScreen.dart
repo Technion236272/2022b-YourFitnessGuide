@@ -155,12 +155,12 @@ class _SignupScreenState extends State<SignupScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-            () => _getFBcredintials(),
+            () => _getCredentials(false),
             'images/logos/facebook.png',
             height,
           ),
           _buildSocialBtn(
-            () => _getGooglecredintials(),
+            () => _getCredentials(true),
             'images/logos/google.png',
             height,
           ),
@@ -169,20 +169,16 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Future<void> _getFBcredintials() async {
-    if (await user.signUpWithFacebook(false) > 0) {
-      Navigator.pop(context);
-      Navigator.pushReplacementNamed(context, homeRoute);
-      Navigator.pushNamed(context, setupProfileRoute);
-    } else {
-      const snackBar =
-          SnackBar(content: Text('There was an error logging into the app'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
+  Future<void> _getCredentials(bool google) async {
+    int signinRes = 0;
 
-  Future<void> _getGooglecredintials() async {
-    if (await user.signUpWithGoogle(false) > 0) {
+    if (google) {
+      signinRes = await user.signUpWithGoogle(false);
+    } else {
+      signinRes = await user.signUpWithFacebook(false);
+    }
+
+    if (signinRes > 0) {
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, homeRoute);
       Navigator.pushNamed(context, setupProfileRoute);
@@ -212,7 +208,6 @@ class _SignupScreenState extends State<SignupScreen> {
         _strongPassword = true;
       });
     }
-
     if (password != confirm) {
       setState(() {
         _identicalPasswords = false;
@@ -225,36 +220,29 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     var res = await user.signUp(email, password);
+    print(res.runtimeType);
     if (res is UserCredential) {
       Navigator.pop(context);
-      Navigator.pushReplacementNamed(context, homeRoute);
-      Navigator.pushNamed(context, setupProfileRoute);
+      Navigator.pushReplacementNamed(context, setupProfileRoute);
     } else if (res is int) {
+      String errorMessage = 'Error';
       switch (res) {
         case 0:
-          const snackBar = SnackBar(
-              content: Text('An error occurred: Email already in use.'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          errorMessage = 'An error occurred: Email already in use.';
           break;
-
         case 1:
-          const snackBar =
-              SnackBar(content: Text('An error occurred: Weak password.'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          errorMessage = 'An error occurred: Weak password.';
           break;
-
         case 2:
-          const snackBar =
-              SnackBar(content: Text('An error occurred: Invalid email.'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          errorMessage = 'An error occurred: Invalid email.';
           break;
-
         default:
-          const snackBar = SnackBar(
-              content: Text(
-                  'An error occurred while trying to sign you in, please try again later.'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          errorMessage = 'An error occurred while trying to sign you in, please try again later.';
+          break;
       }
+      SnackBar snackBar = SnackBar(content: Text(errorMessage));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
     } else {
       const snackBar = SnackBar(
           content: Text(

@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,10 +16,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   var user;
   bool _hiddenPassword = true;
+  textField emailField = textField(fieldName: 'Email Address', centeredLabel: true,);
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  Widget _buildEmail(double height) {
+  Widget _buildEmail(double height, Widget field) {
     final iconSize = height * 0.065;
     return Row(
       children: [
@@ -30,23 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
         )),
         Expanded(
           flex: 5,
-          child: TextField(
-            keyboardType: TextInputType.emailAddress,
-            controller: emailController,
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(bottom: 5),
-              label: const Center(
-                child: Text('Email Address'),
-              ),
-              labelStyle: TextStyle(
-                color: appTheme,
-                fontSize: 23,
-                fontWeight: FontWeight.bold,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-            ),
-          ),
+          child: field,
         ),
       ],
     );
@@ -99,8 +85,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _validateLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    var email = emailController.text;
-    emailController.clear();
+    var email = emailField.controller.text;
+    emailField.controller.clear();
     var password = passwordController.text;
     passwordController.clear();
 
@@ -122,8 +108,8 @@ class _LoginScreenState extends State<LoginScreen> {
           primary: const Color(0xff84C59E),
           shadowColor: appTheme,
           elevation: 17,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
           fixedSize: Size(width * 0.9, height * 0.055),
           textStyle: const TextStyle(
             fontSize: 20,
@@ -198,12 +184,12 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-            () => _getFBcredintials(),
+            () => _getCredentials(false),
             'images/logos/facebook.png',
             height,
           ),
           _buildSocialBtn(
-            () => _getGooglecredintials(),
+            () => _getCredentials(false),
             'images/logos/google.png',
             height,
           ),
@@ -212,41 +198,27 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _getFBcredintials() async {
+  Future<void> _getCredentials(bool google) async {
     try {
-      var signinRes = await user.signInWithFacebook();
-      switch(signinRes){
+      int signinRes = 0;
+
+      if (google) {
+        signinRes = await user.signInWithGoogle();
+      } else {
+        signinRes = await user.signInWithFacebook();
+      }
+
+      switch (signinRes) {
         case 1:
           Navigator.pushReplacementNamed(context, homeRoute);
           return;
         case 2:
-          Navigator.pushReplacementNamed(context, homeRoute);
-          Navigator.pushNamed(context, setupProfileRoute);
+          Navigator.pushReplacementNamed(context, setupProfileRoute);
           return;
       }
     } catch (e) {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
-
-  Future<void> _getGooglecredintials() async {
-    try {
-      var signinRes = await user.signInWithGoogle();
-      print('nino' + signinRes.toString());
-      switch(signinRes){
-        case 1:
-          Navigator.pushReplacementNamed(context, homeRoute);
-          return;
-        case 2:
-          Navigator.pushReplacementNamed(context, homeRoute);
-          Navigator.pushNamed(context, setupProfileRoute);
-          return;
-      }
-    } catch (e) {
-      const snackBar =
-      SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -278,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: EdgeInsets.symmetric(
                     vertical: height * 0.012, horizontal: width * 0.1),
-                child: _buildEmail(height),
+                child: _buildEmail(height, emailField),
               ),
               Container(
                 padding: EdgeInsets.symmetric(
@@ -330,31 +302,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-/*
-class UserModel {
-  final String? email;
-  final String? id;
-  final String? name;
-  final PictureModel? pictureModel;
-
-  const UserModel({this.id, this.email, this.name, this.pictureModel});
-
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-      id: json['id'],
-      email: json['email'],
-      name: json['name'],
-      pictureModel: PictureModel.fromJson(json['picture']['data']));
-}
-
-class PictureModel {
-  final int? height;
-  final int? width;
-  final String? url;
-
-  const PictureModel({this.url, this.height, this.width});
-
-  factory PictureModel.fromJson(Map<String, dynamic> json) => PictureModel(
-      url: json['url'], height: json['height'], width: json['width']);
-}
-*/

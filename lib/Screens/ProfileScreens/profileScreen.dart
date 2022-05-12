@@ -7,6 +7,7 @@ import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
 import 'package:yourfitnessguide/utils/database.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   late String? uid;
@@ -21,27 +22,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? profileImage;
 
   get uid => widget.uid;
-
-  Widget _buildImageContainer(double height, double width) {
-    return Container(
-        width: height * 0.15,
-        height: height * 0.15,
-        decoration: BoxDecoration(
-            border: Border.all(width: 4, color: const Color(0xffD6D6D6)),
-            boxShadow: [
-              BoxShadow(
-                  spreadRadius: 3,
-                  blurRadius: 10,
-                  color: Colors.black.withOpacity(0.1))
-            ],
-            shape: BoxShape.circle,
-            image: profileImage == null
-                ? DecorationImage(
-                    fit: BoxFit.cover,
-                    image: Image.asset('images/decorations/mclovin.png').image)
-                : DecorationImage(
-                    fit: BoxFit.cover, image: NetworkImage(profileImage!))));
-  }
 
   Widget _buildStatline(String stat, int value) {
     return Center(
@@ -80,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _buildStatline('Saved', savedNum),
           ),
         ),
-        _buildImageContainer(height, width),
+        imageContainer(height: height,width: width, imageLink: profileImage, percent: 0.15,),
         Expanded(
           child: Container(
             child: _buildStatline('Following', followingNum),
@@ -95,37 +75,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildTab(String tabText){
+    return Tab(
+        child: Text(
+        tabText,
+        style: TextStyle(
+        fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
+    ));
+  }
+
   Widget _buildTabBar() {
     return TabBar(
-      tabs: [
-        Tab(
-          child: Text(
-            'All posts',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-          ),
-        ),
-        Tab(
-          child: Text(
-            'Meals',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-          ),
-        ),
-        Tab(
-          child: Text(
-            'Workouts',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-          ),
-        ),
-        Tab(
-          child: Text(
-            'Saved',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-          ),
-        )
+      tabs: [ _buildTab('All posts'),
+        _buildTab('Meals'),
+        _buildTab('Workouts'),
+        _buildTab('Saved'),
       ],
     );
   }
@@ -136,20 +100,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final double width = MediaQuery.of(context).size.width;
     var user = Provider.of<AuthRepository>(context);
     var userData;
+    int rating = 0;
+    int savedNum = 0;
+    int followingNum = 0;
+    int followersNum = 0;
 
     if (uid != null) {
       userData = FirebaseDB().getUserInfo(uid);
     } else if (user.isAuthenticated) {
       userData = user.userData;
       profileImage = userData?.pictureUrl;
+      rating = userData?.rating;
+      savedNum = userData?.saved;
+      followingNum = userData?.following;
+      followersNum = userData?.followers;
     } else {
       userData = null;
     }
     final String userName = userData?.name ?? 'McLovin';
-    const rating = 1;
-    const savedNum = 2;
-    const followingNum = 3;
-    const followersNum = 4;
+
     return DefaultTabController(
         length: 4,
         child: Scaffold(
