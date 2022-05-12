@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -13,12 +15,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   var user;
-  final appTheme = const Color(0xff4CC47C);
   bool _hiddenPassword = true;
-  TextEditingController emailController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  textField emailField = textField(
+    fieldName: 'Email Address',
+    centered: true,
+  );
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
-  Widget _buildEmail(double height) {
+  Widget _buildEmail(double height, Widget field) {
     final iconSize = height * 0.065;
     return Row(
       children: [
@@ -30,24 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         )),
         Expanded(
           flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Email address",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                controller: emailController,
-                textAlign: TextAlign.center,
-              )
-            ],
-          ),
+          child: field,
         ),
       ],
     );
@@ -64,46 +52,44 @@ class _LoginScreenState extends State<LoginScreen> {
           width: iconSize,
         )),
         Expanded(
-          flex: 5,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Password",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextField(
-                obscureText: _hiddenPassword,
-                textAlign: TextAlign.center,
-                controller: passwordController,
-                decoration: InputDecoration(
-                    suffixIcon: IconButton(
-                  icon: Icon(
-                    Icons.remove_red_eye,
+            flex: 5,
+            child: TextField(
+              obscureText: _hiddenPassword,
+              textAlign: TextAlign.center,
+              controller: passwordController,
+              decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(bottom: 5),
+                  label: Padding(
+                      padding: EdgeInsets.only(left: height * 0.025),
+                      child: const Center(
+                        child: Text('Password'),
+                      )),
+                  labelStyle: TextStyle(
                     color: appTheme,
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _hiddenPassword = !_hiddenPassword;
-                    });
-                  },
-                )),
-              )
-            ],
-          ),
-        ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      Icons.remove_red_eye,
+                      color: appTheme,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _hiddenPassword = !_hiddenPassword;
+                      });
+                    },
+                  )),
+            )),
       ],
     );
   }
 
   Future<void> _validateLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    var email = emailController.text;
-    emailController.clear();
+    var email = emailField.controller.text;
+    emailField.controller.clear();
     var password = passwordController.text;
     passwordController.clear();
 
@@ -120,15 +106,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignIn(double height, double width) {
     return ElevatedButton(
-      child: Text("SIGN IN"),
+      child: const Text("SIGN IN"),
       style: ElevatedButton.styleFrom(
-          primary: Color(0xff84C59E),
+          primary: const Color(0xff84C59E),
           shadowColor: appTheme,
           elevation: 17,
-          shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(20.0)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
           fixedSize: Size(width * 0.9, height * 0.055),
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 20,
             color: Colors.white,
           )),
@@ -142,6 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(children: [
       TextButton(
         onPressed: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          emailController.clear();
           Navigator.pushNamed(context, resetPasswordRoute);
         },
         child: Text('Forgot password?',
@@ -154,11 +142,24 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           Navigator.pushNamed(context, signupRoute);
         },
-        child: Text('Not an existing user? Click here to sign up!',
-            style: TextStyle(
-              color: appTheme,
-              fontSize: 16,
-            )),
+        child: RichText(
+            text: TextSpan(
+                children: <TextSpan>[
+              new TextSpan(
+                  text: 'Not an existing user?',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  )),
+              new TextSpan(
+                text: ' Click here to sign up!',
+                style: new TextStyle(color: appTheme, fontWeight: FontWeight.bold),
+              ),
+            ],
+                style: TextStyle(
+                  color: appTheme,
+                  fontSize: 16,
+                ))),
       )
     ]);
   }
@@ -176,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               offset: Offset(0, 2),
@@ -199,12 +200,12 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-            () => _getFBcredintials(),
+            () => _getCredentials(false),
             'images/logos/facebook.png',
             height,
           ),
           _buildSocialBtn(
-            () => _getGooglecredintials(),
+            () => _getCredentials(false),
             'images/logos/google.png',
             height,
           ),
@@ -213,22 +214,25 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _getFBcredintials() async {
-    if (await user.signInWithFacebook()) {
-      const snackBar = SnackBar(content: Text('Homepage still not created'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
-      const snackBar =
-          SnackBar(content: Text('There was an error logging into the app'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-  }
+  Future<void> _getCredentials(bool google) async {
+    try {
+      int signinRes = 0;
 
-  Future<void> _getGooglecredintials() async {
-    if (await user.signInWithGoogle()) {
-      const snackBar = SnackBar(content: Text('Homepage still not created'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
+      if (google) {
+        signinRes = await user.signInWithGoogle();
+      } else {
+        signinRes = await user.signInWithFacebook();
+      }
+
+      switch (signinRes) {
+        case 1:
+          Navigator.pushReplacementNamed(context, homeRoute);
+          return;
+        case 2:
+          Navigator.pushReplacementNamed(context, setupProfileRoute);
+          return;
+      }
+    } catch (e) {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -257,16 +261,16 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               SizedBox(
-                height: height * 0.009,
+                height: height * 0.025,
               ),
               Container(
                 padding: EdgeInsets.symmetric(
-                    vertical: height * 0.01, horizontal: width * 0.1),
-                child: _buildEmail(height),
+                    vertical: height * 0.012, horizontal: width * 0.1),
+                child: _buildEmail(height, emailField),
               ),
               Container(
                 padding: EdgeInsets.symmetric(
-                    vertical: height * 0.01, horizontal: width * 0.1),
+                    vertical: height * 0.012, horizontal: width * 0.1),
                 child: _buildPassword(height),
               ),
               user.status == Status.Authenticating
@@ -299,6 +303,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               _buildSocialBtnRow(height),
+              SizedBox(
+                height: height * 0.025,
+              ),
               Image.asset(
                 'images/decorations/LoginDecoration.png',
                 width: width,
@@ -311,31 +318,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-/*
-class UserModel {
-  final String? email;
-  final String? id;
-  final String? name;
-  final PictureModel? pictureModel;
-
-  const UserModel({this.id, this.email, this.name, this.pictureModel});
-
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-      id: json['id'],
-      email: json['email'],
-      name: json['name'],
-      pictureModel: PictureModel.fromJson(json['picture']['data']));
-}
-
-class PictureModel {
-  final int? height;
-  final int? width;
-  final String? url;
-
-  const PictureModel({this.url, this.height, this.width});
-
-  factory PictureModel.fromJson(Map<String, dynamic> json) => PictureModel(
-      url: json['url'], height: json['height'], width: json['width']);
-}
-*/

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:yourfitnessguide/utils/constants.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/router.dart' as router;
-import 'utils/constants.dart';
+import 'utils/globals.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +36,6 @@ class App extends StatelessWidget {
 
 
 class MyApp extends StatelessWidget {
-  final appTheme = const Color(0xff4CC47C);
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -45,18 +44,12 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'YourFitnessGuide',
           onGenerateRoute: router.generateRoute,
-          initialRoute: mealPlanRoute,
           theme: ThemeData(
-            /*colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: Colors.grey,
-              accentColor: Colors.lightGreen, //this is temporary!
-            ),*/
             iconTheme: IconThemeData(color: appTheme), ///might be better if 0xff84C59E
             appBarTheme: AppBarTheme(
               iconTheme: const IconThemeData(color: Colors.white),
               backgroundColor: appTheme,
             ),
-
           )
         ));
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
+
 
 class MealPlanScreen extends StatefulWidget {
   const MealPlanScreen({Key? key}) : super(key: key);
@@ -9,7 +11,6 @@ class MealPlanScreen extends StatefulWidget {
 }
 
 class _MealPlanScreenState extends State<MealPlanScreen> {
-  final appTheme = const Color(0xff4CC47C);
   TextEditingController mealPlanNameController = TextEditingController();
   TextEditingController DescriptionController = TextEditingController();
   TextEditingController mealNameController = TextEditingController();

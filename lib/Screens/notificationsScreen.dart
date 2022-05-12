@@ -16,7 +16,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         centerTitle: true,
         title: const Text('Notifications'),
       ),
-      body: const Center(child: Text('Notifications'))
+      body: const Center(child: Text('Notifications coming soon'))
     );
   }
 
