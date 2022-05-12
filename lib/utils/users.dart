@@ -22,6 +22,10 @@ class UserModel {
   int? iWeight;
   int? gWeight;
   int? cWeight;
+  int? rating;
+  int? following;
+  int? followers;
+  int? saved;
   String? pictureUrl;
 
   UserModel(
@@ -30,7 +34,11 @@ class UserModel {
       this.iWeight,
       this.cWeight,
       this.gWeight,
-      this.pictureUrl});
+      this.pictureUrl,
+      this.following,
+      this.followers,
+      this.rating,
+      this.saved});
 /*
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
 
@@ -38,8 +46,6 @@ class UserModel {
   pictureUrl: json['picture'],*/
 
 }
-
-
 
 class AuthRepository with ChangeNotifier {
   FirebaseAuth _auth;
@@ -67,20 +73,24 @@ class AuthRepository with ChangeNotifier {
     try {
       _status = Status.Authenticating;
       notifyListeners();
-      var res;
-      _auth.createUserWithEmailAndPassword(
-          email: email, password: password).then((value) => res = value);
+      var res = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+
+      print('noor');
+
+      var url = await _storage.ref('images').child('cj.jpg').getDownloadURL();
+
       await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
         'name': 'Undefined Name',
-        'picture': null,
+        'picture': url,
         'initial_weight': 0,
         'current_weight': 0,
         'goal_weight': 0,
         'goal': 0,
-        'rating': 4,
-        'saved': 3,
-        'following': 2,
-        'followers': 1
+        'rating': 0,
+        'saved': 0,
+        'following': 0,
+        'followers': 0
       });
 
       return res;
@@ -158,12 +168,12 @@ class AuthRepository with ChangeNotifier {
         'current_weight': 0,
         'goal_weight': 0,
         'goal': 0,
-        'rating': 4,
-        'saved': 3,
-        'following': 2,
-        'followers': 1
+        'rating': 0,
+        'saved': 0,
+        'following': 0,
+        'followers': 0
       });
-      if(redirected) {
+      if (redirected) {
         return 2;
       }
       return 1;
@@ -210,16 +220,20 @@ class AuthRepository with ChangeNotifier {
       final name = await _auth.currentUser?.displayName;
       final picture = await _auth.currentUser?.photoURL;
 
-      await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
+      await _db.collection('users').doc(user!.uid).set({
         'name': name,
         'picture': picture,
         'initial_weight': 0,
         'current_weight': 0,
         'goal_weight': 0,
         'goal': 0,
+        'rating': 0,
+        'saved': 0,
+        'following': 0,
+        'followers': 0
       });
-      if(redirected)
-        return 2;
+
+      if (redirected) return 2;
       return 1;
     } catch (e) {
       _status = Status.Unauthenticated;
@@ -244,7 +258,7 @@ class AuthRepository with ChangeNotifier {
     return Future.delayed(Duration.zero);
   }
 
-  Future deleteUser() async{
+  Future deleteUser() async {
     var uid = _auth.currentUser?.uid;
     _auth.currentUser?.delete();
     FirebaseDB().deleteUserData(uid!);
@@ -264,9 +278,13 @@ class AuthRepository with ChangeNotifier {
           iWeight: dataDocument.get('initial_weight'),
           cWeight: dataDocument.get('current_weight'),
           gWeight: dataDocument.get('goal_weight'),
-          pictureUrl: dataDocument.get('picture'));
+          pictureUrl: dataDocument.get('picture'),
+          following: dataDocument.get('following'),
+          followers: dataDocument.get('followers'),
+          rating: dataDocument.get('rating'),
+          saved: dataDocument.get('saved'));
     } catch (_) {
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(Duration(seconds: 1));
       var dataDocument = await _db.collection('users').doc(user!.uid).get();
       _userData = UserModel(
           name: dataDocument.get('name'),
@@ -274,7 +292,11 @@ class AuthRepository with ChangeNotifier {
           iWeight: dataDocument.get('initial_weight'),
           cWeight: dataDocument.get('current_weight'),
           gWeight: dataDocument.get('goal_weight'),
-          pictureUrl: dataDocument.get('picture'));
+          pictureUrl: dataDocument.get('picture'),
+          following: dataDocument.get('following'),
+          followers: dataDocument.get('followers'),
+          rating: dataDocument.get('rating'),
+          saved: dataDocument.get('saved'));
     }
   }
 

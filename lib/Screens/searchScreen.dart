@@ -121,6 +121,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget buildUser(SearchModel model) => ListTile(
     onTap: () {
       print('Navigate to profile');
+      print(model.uid);
     },
       title: Container(
           padding: EdgeInsets.symmetric(vertical: height * 0.01),
@@ -173,6 +174,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
+    FirebaseDB().getUsers().then((value) => allUsers = value);
 
     return DefaultTabController(
         length: 4,
