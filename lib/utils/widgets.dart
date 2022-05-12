@@ -8,7 +8,11 @@ class GoalChoices extends StatefulWidget {
   late double height, width;
   Goal? userGoal;
 
-  GoalChoices({Key? key, required this.height, required this.width, required this.userGoal})
+  GoalChoices(
+      {Key? key,
+      required this.height,
+      required this.width,
+      required this.userGoal})
       : super(key: key);
 
   @override
@@ -16,13 +20,15 @@ class GoalChoices extends StatefulWidget {
 }
 
 class _GoalChoicesState extends State<GoalChoices> {
-  set userGoal(Goal newGoal){
+  set userGoal(Goal newGoal) {
     widget.userGoal = newGoal;
   }
-  Goal get userGoal => widget.userGoal!;
-  get width => widget.width;
-  get height => widget.height;
 
+  Goal get userGoal => widget.userGoal!;
+
+  get width => widget.width;
+
+  get height => widget.height;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +43,7 @@ class _GoalChoicesState extends State<GoalChoices> {
             onChanged: (value) => setState(() {
                   userGoal = value!;
                   print(userGoal);
-
-            })),
+                })),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -54,9 +59,7 @@ class _GoalChoicesState extends State<GoalChoices> {
             onChanged: (value) => setState(() {
                   userGoal = value!;
                   print(userGoal);
-
-
-            })),
+                })),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -88,8 +91,7 @@ class _GoalChoicesState extends State<GoalChoices> {
             onChanged: (value) => setState(() {
                   userGoal = value!;
                   print(userGoal);
-
-            })),
+                })),
       ],
     );
   }
@@ -101,7 +103,15 @@ class imageContainer extends StatelessWidget {
   late String? imageLink;
   late File? imageFile;
   late double percent;
-  imageContainer({Key? key, required this.height, required this.width, required this.percent, this.imageLink, this.imageFile}) : super(key: key);
+
+  imageContainer(
+      {Key? key,
+      required this.height,
+      required this.width,
+      required this.percent,
+      this.imageLink,
+      this.imageFile})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -117,21 +127,27 @@ class imageContainer extends StatelessWidget {
                   color: Colors.black.withOpacity(0.1))
             ],
             shape: BoxShape.circle,
-            image: imageFile!= null? DecorationImage(fit: BoxFit.cover, image: Image.file(imageFile!).image) : (imageLink == null
+            image: imageFile != null
                 ? DecorationImage(
-                fit: BoxFit.cover,
-                image: Image.asset('images/decorations/mclovin.png').image)
-                : DecorationImage(
-                fit: BoxFit.cover, image: NetworkImage(imageLink!)))));
+                    fit: BoxFit.cover, image: Image.file(imageFile!).image)
+                : (imageLink == null
+                    ? DecorationImage(
+                        fit: BoxFit.cover,
+                        image:
+                            Image.asset('images/decorations/mclovin.png').image)
+                    : DecorationImage(
+                        fit: BoxFit.cover, image: NetworkImage(imageLink!)))));
   }
 }
 
 class textField extends StatefulWidget {
   TextEditingController controller = TextEditingController();
   late String fieldName;
-  bool? centeredLabel = false;
-  textField({Key? key, required this.fieldName, this.centeredLabel}) : super(key: key);
+  bool centered;
 
+  late String? hint;
+  textField({Key? key, required this.fieldName, this.centered= false,this.hint })
+      : super(key: key);
 
   @override
   State<textField> createState() => _textFieldState();
@@ -139,18 +155,26 @@ class textField extends StatefulWidget {
 
 class _textFieldState extends State<textField> {
   get controller => widget.controller;
-  get fieldName => widget.fieldName;
-  get centeredLabel => widget.centeredLabel;
+
+
+
 
   @override
   Widget build(BuildContext context) {
+    print(widget.centered);
     return TextField(
       keyboardType: TextInputType.emailAddress,
       controller: controller,
-      textAlign: TextAlign.center,
+      textAlign: widget.centered? TextAlign.center : TextAlign.left,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.only(bottom: 5),
-        label: centeredLabel? Center(child: Text(fieldName),) : Text(fieldName),
+        label: widget.centered
+            ? Center(
+                child: Text(widget.fieldName),
+              )
+            : Text(widget.fieldName),
+        hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+        hintText: widget.hint ?? '',
         labelStyle: TextStyle(
           color: appTheme,
           fontSize: 23,

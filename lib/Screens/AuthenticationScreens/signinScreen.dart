@@ -16,7 +16,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   var user;
   bool _hiddenPassword = true;
-  textField emailField = textField(fieldName: 'Email Address', centeredLabel: true,);
+  textField emailField = textField(fieldName: 'Email Address', centered: true,);
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
