@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_1.dart';
-import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_2.dart';
-import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_3.dart';
-import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
 import 'package:yourfitnessguide/utils/database.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
@@ -121,11 +118,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Image emptyNote(double height, double width) {
+  Widget emptyNote(double height, double width, String text) {
+    return Card(
+        color: const Color(0xffFAFAFA),
+        child: Container(
+            padding: EdgeInsets.symmetric(
+                vertical: height * 0.075, horizontal: width * 0.06),
+            child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Center(
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: height * 0.018,
+                    ),
+                    Text(text, style: TextStyle(
+
+                      fontSize: 20
+                    ),),
+                    Image.asset(
+                      'images/decorations/404.png',
+                      width: width * 0.25,
+                      height: height * 0.25,
+                    )
+                  ],
+                )))));
     return Image.asset(
       'images/decorations/LoginDecoration.png',
-      width: width,
-      height: height * 0.21,
+      width: width * 0.01,
+      height: height * 0.01,
     );
   }
 
@@ -210,15 +235,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(
                   height: height * 0.005,
                 ),
-                Expanded(
+                Flexible(
                   child: TabBarView(
                     children: !visiting
                         ? (noPosts
                             ? [
-                                emptyNote(height, width),
-                                emptyNote(height, width),
-                                emptyNote(height, width),
-                                emptyNote(height, width),
+                                emptyNote(height, width,
+                                    'You haven\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'You haven\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'You haven\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'You haven\'t saved a post yet'),
                               ]
                             : [
                                 postsCards ?? _buildTab(),
@@ -228,9 +257,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ])
                         : (noPosts
                             ? [
-                                emptyNote(height, width),
-                                emptyNote(height, width),
-                                emptyNote(height, width),
+                                emptyNote(height, width,
+                                    'User hasn\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'User hasn\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'User hasn\'t published a post yet'),
                               ]
                             : [
                                 postsCards ?? _buildTab(),
@@ -351,8 +383,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   centerTitle: true,
                   title: Text(username),
                 ),
-                body: const Center(
-                    child: CircularProgressIndicator.adaptive()),
+                body: const Center(child: CircularProgressIndicator.adaptive()),
               );
             }
             if (snapshot2.hasError) {

@@ -7,9 +7,12 @@ class SearchModel {
   String? name;
   String? uid;
   String? pictureUrl;
+  late Image picture;
 
   SearchModel(
-      {required this.name, required this.uid, required this.pictureUrl});
+      {required this.name, required this.uid, required this.pictureUrl}){
+    picture = Image.network(pictureUrl!);
+  }
 /*
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
 
