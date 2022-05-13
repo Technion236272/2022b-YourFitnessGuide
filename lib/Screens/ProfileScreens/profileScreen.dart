@@ -29,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String username = '';
   var posts;
   ListView? postsCards = null;
+  bool noPosts = false;
 
   get uid => widget.uid;
   int rating = 0, savedNum = 0, followingNum = 0, followersNum = 0;
@@ -120,6 +121,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Image emptyNote(double height, double width) {
+    return Image.asset(
+      'images/decorations/LoginDecoration.png',
+      width: width,
+      height: height * 0.21,
+    );
+  }
+
   Widget _buildView(double height, double width) {
     if (userData != null) {
       profileImage = userData?.pictureUrl;
@@ -204,24 +213,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Expanded(
                   child: TabBarView(
                     children: !visiting
-                        ? [
-                            postsCards ?? _buildTab(currUid!),
-                            postsCards ?? _buildTab(currUid!),
-                            postsCards ?? _buildTab(currUid!),
-                            postsCards ?? _buildTab(currUid!),
-                          ]
-                        : [
-                            postsCards ?? _buildTab(currUid!),
-                            postsCards ?? _buildTab(currUid!),
-                            postsCards ?? _buildTab(currUid!),
-                          ],
+                        ? (noPosts
+                            ? [
+                                emptyNote(height, width),
+                                emptyNote(height, width),
+                                emptyNote(height, width),
+                                emptyNote(height, width),
+                              ]
+                            : [
+                                postsCards ?? _buildTab(),
+                                postsCards ?? _buildTab(),
+                                postsCards ?? _buildTab(),
+                                postsCards ?? _buildTab(),
+                              ])
+                        : (noPosts
+                            ? [
+                                emptyNote(height, width),
+                                emptyNote(height, width),
+                                emptyNote(height, width),
+                              ]
+                            : [
+                                postsCards ?? _buildTab(),
+                                postsCards ?? _buildTab(),
+                                postsCards ?? _buildTab(),
+                              ]),
                   ),
                 ),
               ],
             )));
   }
 
-  Widget _buildTab(String currUid) {
+  Widget _buildTab() {
     postsCards = ListView.builder(
       //separatorBuilder: (context, index) => const Divider(),
       itemCount: posts.data == null ? 0 : posts.data!.docs.length,
@@ -287,8 +309,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 itemBuilder: (context, index) {
                   if (snapshot.connectionState == ConnectionState.waiting &&
                       snapshot.data == null) {
-                    return const Center(
-                        child: CircularProgressIndicator.adaptive());
+                    return Scaffold(
+                      appBar: AppBar(
+                        centerTitle: true,
+                        title: Text(username),
+                      ),
+                      body: const Center(
+                          child: CircularProgressIndicator.adaptive()),
+                    );
                   }
                   if (snapshot.connectionState == ConnectionState.done &&
                       snapshot.data == null) {
@@ -318,8 +346,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           stream: PostManager().getUserPosts(uid),
           builder: (context, snapshot2) {
             if (!snapshot2.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
+              return Scaffold(
+                appBar: AppBar(
+                  centerTitle: true,
+                  title: Text(username),
+                ),
+                body: const Center(
+                    child: CircularProgressIndicator.adaptive()),
               );
             }
             if (snapshot2.hasError) {
@@ -328,6 +361,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ScaffoldMessenger.of(context).showSnackBar(snackBar);
             }
             posts = snapshot2;
+            if (posts.data!.docs.length == 0) {
+              noPosts = true;
+            }
             return _buildView(height, width);
           },
         );
