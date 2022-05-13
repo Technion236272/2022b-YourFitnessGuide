@@ -68,6 +68,12 @@ class PostManager with ChangeNotifier {
     return _postCollection.orderBy('createdAt',descending: true).snapshots();
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
+    final Query<Map<String, dynamic>> _userPosts =
+    _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid);
+    return _userPosts.orderBy('createdAt',descending: true).snapshots();
+  }
+
   ///get user info from db
   Future<Map<String, dynamic>?> getUserInfo(String userUid) async {
     Map<String, dynamic>? userData;
