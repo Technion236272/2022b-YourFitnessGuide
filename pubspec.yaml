@@ -66,6 +66,7 @@ flutter:
   assets:
     - images/decorations/LoginDecoration.png
     - images/decorations/mclovin.png
+    - images/decorations/404.png
     - images/posts/harambe.jpg
     - images/icons/email.png
     - images/icons/padlock.png
