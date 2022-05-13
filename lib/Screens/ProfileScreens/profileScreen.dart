@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_1.dart';
@@ -5,6 +6,7 @@ import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_2.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_3.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/profiletab_4.dart';
 import 'package:yourfitnessguide/utils/database.dart';
+import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
@@ -20,15 +22,18 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? profileImage;
+  String? currUid;
   bool visiting = false;
   var user;
   var userData;
-  late String username;
+  String username = '';
+  var posts;
+  ListView? postsCards = null;
+
   get uid => widget.uid;
-  int rating = 0,
-      savedNum = 0,
-      followingNum = 0,
-      followersNum = 0;
+  int rating = 0, savedNum = 0, followingNum = 0, followersNum = 0;
+
+  //Card posts = [];
 
   Widget _buildStatline(String stat, int value) {
     return Center(
@@ -66,8 +71,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: visiting
               ? Container()
               : Container(
-            child: _buildStatline('Saved', savedNum),
-          ),
+                  child: _buildStatline('Saved', savedNum),
+                ),
         ),
         imageContainer(
           height: height,
@@ -89,29 +94,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTab(String tabText) {
+  Widget _buildTabHeader(String tabText) {
     return Tab(
         child: Text(
-          tabText,
-          style:
+      tabText,
+      style:
           TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-        ));
+    ));
   }
 
   Widget _buildTabBar() {
     return TabBar(
       tabs: !visiting
           ? [
-        _buildTab('All posts'),
-        _buildTab('Meals'),
-        _buildTab('Workouts'),
-        _buildTab('Saved'),
-      ]
+              _buildTabHeader('All posts'),
+              _buildTabHeader('Meals'),
+              _buildTabHeader('Workouts'),
+              _buildTabHeader('Saved'),
+            ]
           : [
-        _buildTab('All posts'),
-        _buildTab('Meals'),
-        _buildTab('Workouts'),
-      ],
+              _buildTabHeader('All posts'),
+              _buildTabHeader('Meals'),
+              _buildTabHeader('Workouts'),
+            ],
     );
   }
 
@@ -122,9 +127,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       savedNum = userData?.saved;
       followingNum = userData?.following;
       followersNum = userData?.followers;
-      username = userData?.name; 'McLovin';
+      username = userData?.name ?? 'McLovin';
     }
-
     return DefaultTabController(
         length: visiting ? 3 : 4,
         child: Scaffold(
@@ -134,31 +138,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               actions: visiting
                   ? []
                   : [
-                Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/edit');
-                            },
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              user.signOut();
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/home', (_) => false);
-                            },
-                            icon: const Icon(
-                              Icons.logout,
-                              color: Colors.white,
-                            ))
-                      ],
-                    )),
-              ],
+                      Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/edit');
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  )),
+                              IconButton(
+                                  onPressed: () {
+                                    user.signOut();
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context, '/home', (_) => false);
+                                  },
+                                  icon: const Icon(
+                                    Icons.logout,
+                                    color: Colors.white,
+                                  ))
+                            ],
+                          )),
+                    ],
             ),
             body: Column(
               children: [
@@ -169,49 +173,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         followingNum, followersNum)),
                 !visiting
                     ? Container(
-                  padding: EdgeInsets.only(bottom: height * 0.008),
-                )
+                        padding: EdgeInsets.only(bottom: height * 0.008),
+                      )
                     : ElevatedButton(
-                  child: const Text("Follow"),
-                  style: ElevatedButton.styleFrom(
-                      primary: const Color(0xff84C59E),
-                      shadowColor: appTheme,
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)),
-                      fixedSize: Size(width * 0.25, height * 0.03),
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      )),
-                  onPressed: () async {
-                    const snackBar =
-                    SnackBar(content: Text('Feature coming soon'));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
-                ),
+                        child: const Text("Follow"),
+                        style: ElevatedButton.styleFrom(
+                            primary: const Color(0xff84C59E),
+                            shadowColor: appTheme,
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                            fixedSize: Size(width * 0.25, height * 0.03),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            )),
+                        onPressed: () async {
+                          const snackBar =
+                              SnackBar(content: Text('Feature coming soon'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        },
+                      ),
                 SizedBox(
                   height: height * 0.05,
                 ),
                 _buildTabBar(),
+                SizedBox(
+                  height: height * 0.005,
+                ),
                 Expanded(
                   child: TabBarView(
                     children: !visiting
                         ? [
-                      FirstTab(),
-                      SecondTab(),
-                      ThirdTab(),
-                      FourthTab(),
-                    ]
+                            postsCards ?? _buildTab(currUid!),
+                            postsCards ?? _buildTab(currUid!),
+                            postsCards ?? _buildTab(currUid!),
+                            postsCards ?? _buildTab(currUid!),
+                          ]
                         : [
-                      FirstTab(),
-                      SecondTab(),
-                      ThirdTab(),
-                    ],
+                            postsCards ?? _buildTab(currUid!),
+                            postsCards ?? _buildTab(currUid!),
+                            postsCards ?? _buildTab(currUid!),
+                          ],
                   ),
                 ),
               ],
             )));
+  }
+
+  Widget _buildTab(String currUid) {
+    postsCards = ListView.builder(
+      //separatorBuilder: (context, index) => const Divider(),
+      itemCount: posts.data == null ? 0 : posts.data!.docs.length,
+      itemBuilder: (context, index) {
+        if (posts.connectionState == ConnectionState.waiting &&
+            posts.data == null) {
+          return const Center(child: CircularProgressIndicator.adaptive());
+        }
+        if (posts.connectionState == ConnectionState.done &&
+            posts.data == null) {
+          return const Center(child: Text('No data available'));
+        }
+        return post(snapshot: posts, index: index);
+      },
+    );
+
+    return postsCards!;
   }
 
   @override
@@ -224,11 +251,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (user.isAuthenticated && user.getCurrUid() == uid) {
         userData = user.userData;
         visiting = false;
+        currUid = uid;
       } else {
         visiting = true;
+        currUid = uid;
       }
     } else if (user.isAuthenticated) {
       userData = user.userData;
+      currUid = uid;
     } else {
       userData = null;
     }
@@ -239,26 +269,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
       savedNum = userData?.saved;
       followingNum = userData?.following;
       followersNum = userData?.followers;
+      currUid = uid ?? user.getCurrUid();
     }
 
-    if (visiting) {
-      return FutureBuilder(
-        future: FirebaseDB().getUserModel(uid),
+    var x = StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
+        stream: PostManager().getUserPosts(uid),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator(),);
-          }
-          if (snapshot.hasError) {
-            Navigator.pop(context);
-            const snackBar =
-            SnackBar(content: Text('Something went wrong'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
-          userData = snapshot.data;
-          return _buildView(height,width);
-        },);
-    }
+          return RefreshIndicator(
+              onRefresh: () async {
+                print('Refreshing');
+                return null;
+              },
+              child: ListView.builder(
+                //separatorBuilder: (context, index) => const Divider(),
+                itemCount:
+                    snapshot.data == null ? 0 : snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  if (snapshot.connectionState == ConnectionState.waiting &&
+                      snapshot.data == null) {
+                    return const Center(
+                        child: CircularProgressIndicator.adaptive());
+                  }
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.data == null) {
+                    return const Center(child: Text('No data available'));
+                  }
+                  return post(snapshot: snapshot, index: index);
+                },
+              ));
+        });
 
-    return _buildView(height,width);
+    return FutureBuilder(
+      future: FirebaseDB().getUserModel(currUid!),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (snapshot.hasError) {
+          Navigator.pop(context);
+          const snackBar = SnackBar(content: Text('Something went wrong'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        userData = snapshot.data;
+
+        return StreamBuilder(
+          stream: PostManager().getUserPosts(uid),
+          builder: (context, snapshot2) {
+            if (!snapshot2.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot2.hasError) {
+              Navigator.pop(context);
+              const snackBar = SnackBar(content: Text('Something went wrong'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+            posts = snapshot2;
+            return _buildView(height, width);
+          },
+        );
+      },
+    );
   }
 }

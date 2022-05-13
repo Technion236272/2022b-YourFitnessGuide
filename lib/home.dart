@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if(user.isAuthenticated){
       _views.removeAt(3);
-      _views.add(ProfileScreen());
+      _views.add(ProfileScreen(uid: user.getCurrUid(),));
     }
     else{
       _views.removeAt(3);

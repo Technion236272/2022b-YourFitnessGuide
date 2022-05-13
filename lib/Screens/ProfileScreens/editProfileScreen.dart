@@ -76,7 +76,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 5),
         labelText: label,
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: appTheme,
           fontSize: 23,
           fontWeight: FontWeight.bold,
@@ -236,7 +236,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       _buildNameField(height),
                       _buildWeightProgress(height, width),
-                      Text('Goal',
+                      const Text('Goal',
                           style: TextStyle(
                             color: appTheme,
                             fontSize: 23,
@@ -251,7 +251,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: const Text("DELETE ACCOUNT"),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red,
-                          shadowColor: appTheme,
+                          shadowColor: Colors.red,
                           elevation: 17,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0)),
@@ -265,7 +265,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text(
+                            child: const Text(
                               'Cancel',
                               style: TextStyle(color: appTheme),
                             ));
@@ -275,10 +275,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Navigator.pushNamedAndRemoveUntil(
                                   context, '/home', (_) => false);
                             },
-                            child: Text('Confirm',
+                            child: const Text('Confirm',
                                 style: TextStyle(color: appTheme)));
                         AlertDialog alert = AlertDialog(
-                          title: Text('Are you sure?'),
+                          title: const Text('Are you sure?'),
+                          content: const Text('Deleting your account is permanent and cannot be reversed.'),
                           actions: [cancel, confirm],
                         );
                         showDialog(

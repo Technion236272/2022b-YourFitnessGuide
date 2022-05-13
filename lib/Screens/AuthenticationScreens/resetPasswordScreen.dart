@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
@@ -32,9 +31,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             textAlign: TextAlign.center,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(bottom: 5),
-              label: const Center(
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 5),
+              label: Center(
                 child: Text('Email Address'),
               ),
               labelStyle: TextStyle(
@@ -131,7 +130,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               SizedBox(
                 height: resetHeight * 0.04,
               ),
-              Text('Enter the email you use to sign in below',
+              const Text('Enter the email you use to sign in below',
                   style: TextStyle(
                       color: appTheme,
                       fontSize: 20,

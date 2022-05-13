@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
@@ -64,14 +62,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Center(
                         child: Text('Password'),
                       )),
-                  labelStyle: TextStyle(
+                  labelStyle: const TextStyle(
                     color: appTheme,
                     fontSize: 23,
                     fontWeight: FontWeight.bold,
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   suffixIcon: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.remove_red_eye,
                       color: appTheme,
                     ),
@@ -132,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
           emailController.clear();
           Navigator.pushNamed(context, resetPasswordRoute);
         },
-        child: Text('Forgot password?',
+        child: const Text('Forgot password?',
             style: TextStyle(
               color: appTheme,
               fontSize: 16,
@@ -143,17 +141,17 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushNamed(context, signupRoute);
         },
         child: RichText(
-            text: TextSpan(
+            text: const TextSpan(
                 children: <TextSpan>[
-              new TextSpan(
+              TextSpan(
                   text: 'Not an existing user?',
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 16,
                   )),
-              new TextSpan(
+              TextSpan(
                 text: ' Click here to sign up!',
-                style: new TextStyle(color: appTheme, fontWeight: FontWeight.bold),
+                style: TextStyle(color: appTheme, fontWeight: FontWeight.bold),
               ),
             ],
                 style: TextStyle(
@@ -223,14 +221,15 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         signinRes = await user.signInWithFacebook();
       }
+      Navigator.pushReplacementNamed(context, setupProfileRoute);
 
       switch (signinRes) {
         case 1:
           Navigator.pushReplacementNamed(context, homeRoute);
-          return;
+          break;
         case 2:
           Navigator.pushReplacementNamed(context, setupProfileRoute);
-          return;
+          break;
       }
     } catch (e) {
       const snackBar =
@@ -287,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: EdgeInsets.only(top: height * 0.02),
                     child: _buildAlternativeActions(),
                   ),
-                  Text(
+                  const Text(
                     '- OR -',
                     style: TextStyle(
                       color: appTheme,
@@ -295,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text('Sign in with',
+                  const Text('Sign in with',
                       style: TextStyle(
                         color: appTheme,
                         fontSize: 16,
