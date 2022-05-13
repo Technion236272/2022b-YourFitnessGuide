@@ -183,24 +183,63 @@ class _textFieldState extends State<textField> {
 
 class post extends StatefulWidget {
   AsyncSnapshot? snapshot;
-  late int? index;
+  late int? index = null;
+  bool completed = true;
+  late Image? userPicture = null;
+  late Image? postImage = null;
+  late String? category = null;
+  late String? username = null;
+  late DateTime? date = null;
 
-  post({Key? key, this.index, required this.snapshot}) : super(key: key);
+  post({Key? key, this.index, required this.snapshot}) : super(key: key) {
+    StreamBuilder<Map<String, dynamic>?>(
+        stream: PostManager()
+            .getUserInfo(snapshot?.data!.docs[index].data()!['user_uid'])
+            .asStream(),
+        builder: (context, userSnapshot) {
+          if (userSnapshot.connectionState == ConnectionState.waiting &&
+              userSnapshot.data == null) {
+            return const Center(child: LinearProgressIndicator());
+          }
+          if (userSnapshot.connectionState == ConnectionState.done &&
+              userSnapshot.data == null) {
+            completed = false;
+            return const ListTile();
+          }
+          userPicture = Image.network(userSnapshot.data!['picture']!);
+          category = snapshot?.data!.docs[index].data()!['category'];
+          username = userSnapshot.data!['name'];
+          date = snapshot?.data!.docs[index].data()!['createdAt'] != null
+              ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
+              : DateTime.now();
 
-  @override
+          return const ListTile();
+        });
+  }
   State<post> createState() => _postState();
+
 }
 
 class _postState extends State<post> {
   final _postManager = PostManager();
 
+  Widget _buildPostIcon(IconData ic) {
+    return IconButton(
+        onPressed: () {
+          const _snackBar = SnackBar(content: Text('Not implemented yet'));
+          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+        },
+        icon: Icon(ic, color: Colors.grey));
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         //TODO: Saleh/ Mohamed: Navigate to viewing post, for Mohamad: Saleh saved post_uid, utilize it
-        print('Navigate to post');},
-      child:Card(
+        print('Navigate to post');
+      },
+      child: Card(
           elevation: 8,
           color: Theme.of(context).cardColor,
           child: Padding(
@@ -212,15 +251,16 @@ class _postState extends State<post> {
                 StreamBuilder<Map<String, dynamic>?>(
                     stream: _postManager
                         .getUserInfo(widget.snapshot?.data!.docs[widget.index]
-                        .data()!['user_uid'])
+                            .data()!['user_uid'])
                         .asStream(),
                     builder: (context, userSnapshot) {
                       if (userSnapshot.connectionState ==
-                          ConnectionState.waiting &&
+                              ConnectionState.waiting &&
                           userSnapshot.data == null) {
                         return const Center(child: LinearProgressIndicator());
                       }
-                      if (userSnapshot.connectionState == ConnectionState.done &&
+                      if (userSnapshot.connectionState ==
+                              ConnectionState.done &&
                           userSnapshot.data == null) {
                         return const ListTile();
                       }
@@ -228,8 +268,8 @@ class _postState extends State<post> {
                         contentPadding: const EdgeInsets.all(0),
                         leading: CircleAvatar(
                           radius: 30,
-                          backgroundImage:
-                          NetworkImage(userSnapshot.data!['picture']!),
+                          backgroundImage: widget.userPicture != null? widget.userPicture?.image :
+                              NetworkImage(userSnapshot.data!['picture']!),
                         ),
                         title: RichText(
                           text: TextSpan(
@@ -239,10 +279,11 @@ class _postState extends State<post> {
                                 .copyWith(fontSize: 16),
                             children: <TextSpan>[
                               TextSpan(
-                                  text: widget.snapshot?.data!.docs[widget.index]
+                                  text: widget.category != null? widget.category : widget
+                                      .snapshot?.data!.docs[widget.index]
                                       .data()!['category'],
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
+                                      //fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .appBarTheme
                                           .backgroundColor)),
@@ -251,17 +292,23 @@ class _postState extends State<post> {
                             ],
                           ),
                         ),
-                        subtitle: Text(
-                            timeago.format( widget.snapshot?.data!.docs[widget.index].data()!['createdAt'] != null ?widget.snapshot?.data!.docs[widget.index].data()!['createdAt']
-                                .toDate(): DateTime.now(),
+                        subtitle: Text( widget.date != null? timeago.format(widget.date!, allowFromNow: true):
+                            timeago.format(
+                                widget.snapshot?.data!.docs[widget.index]
+                                            .data()!['createdAt'] !=
+                                        null
+                                    ? widget.snapshot?.data!.docs[widget.index]
+                                        .data()!['createdAt']
+                                        .toDate()
+                                    : DateTime.now(),
                                 allowFromNow: true),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText2!
                                 .copyWith(
-                                fontSize: 13,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey)),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey)),
                         trailing: IconButton(
                             onPressed: null,
                             icon: Icon(
@@ -275,63 +322,32 @@ class _postState extends State<post> {
                   textAlign: TextAlign.left,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text(
-                  widget.snapshot?.data!.docs[widget.index]
-                      .data()!['description']!,
-                  textAlign: TextAlign.left,
-                ),
-                (widget.snapshot?.data!.docs[widget.index].data()!['image_url'] !=
-                    null
+                SizedBox(height: 5),
+                (widget.snapshot?.data!.docs[widget.index]
+                            .data()!['image_url'] !=
+                        null
                     ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    widget.snapshot?.data!.docs[widget.index]
-                        .data()!['image_url']!,
-                    height: 200,
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
-                  ),
-                )
-                    : const Padding(padding: EdgeInsets.all(0))),
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          widget.snapshot?.data!.docs[widget.index]
+                              .data()!['image_url']!,
+                          height: 200,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Container()),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        IconButton(
-                            onPressed: () {
-                              const _snackBar =
-                              SnackBar(content: Text('Not implemented yet'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(_snackBar);
-                            },
-                            icon: const Icon(Icons.arrow_upward,
-                                color: Colors.grey)),
-                        IconButton(
-                            onPressed: () {
-                              const _snackBar =
-                              SnackBar(content: Text('Not implemented yet'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(_snackBar);
-                            },
-                            icon: const Icon(Icons.arrow_downward,
-                                color: Colors.grey))
+                        _buildPostIcon(Icons.arrow_upward),
+                        _buildPostIcon(Icons.arrow_downward),
                       ],
                     ),
-                    IconButton(
-                        onPressed: () {
-                          const _snackBar =
-                          SnackBar(content: Text('Not implemented yet'));
-                          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-                        },
-                        icon: const Icon(Icons.chat_bubble, color: Colors.grey)),
-                    IconButton(
-                        onPressed: () {
-                          const _snackBar =
-                          SnackBar(content: Text('Not implemented yet'));
-                          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
-                        },
-                        icon: const Icon(Icons.bookmark, color: Colors.grey))
+                    _buildPostIcon(Icons.chat_bubble),
+                    _buildPostIcon(Icons.bookmark),
                   ],
                 )
               ],
@@ -345,6 +361,7 @@ class wideButton extends StatefulWidget {
   late double height, width;
   late Future<void> onPressed;
   late Color? color;
+
   wideButton(
       {Key? key,
       required this.height,
