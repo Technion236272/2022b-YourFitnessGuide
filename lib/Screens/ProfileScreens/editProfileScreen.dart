@@ -197,9 +197,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               choices.userGoal?.index,
                               newImage);
                           if (firstTime) {
-                            Navigator.pushReplacementNamed(context, homeRoute);
+                            if (int.parse(_initialController.text) == 0 ||
+                                int.parse(_goalController.text) == 0 ||
+                                int.parse(_goalController.text) == 0) {
+                              const snackBar = SnackBar(
+                                  content:
+                                      Text('You need to fill all the fields'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            } else {
+                              Navigator.pushReplacementNamed(
+                                  context, homeRoute);
+                            }
                           } else {
-                            Navigator.pop(context);
+                            if (int.parse(_initialController.text) == 0 ||
+                                int.parse(_goalController.text) == 0 ||
+                                int.parse(_goalController.text) == 0) {
+                              const snackBar = SnackBar(
+                                  content:
+                                      Text('You need to fill all the fields'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            } else {
+                              Navigator.pop(context);
+                            }
                           }
                         },
                         icon:
@@ -238,10 +259,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       _buildWeightProgress(height, width),
                       const Text('Goal',
                           style: TextStyle(
-                            color: appTheme,
-                            fontSize: 23,
-                            fontWeight: FontWeight.bold
-                          )),
+                              color: appTheme,
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold)),
                     ],
                   )),
               choices,
@@ -279,7 +299,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: TextStyle(color: appTheme)));
                         AlertDialog alert = AlertDialog(
                           title: const Text('Are you sure?'),
-                          content: const Text('Deleting your account is permanent and cannot be reversed.'),
+                          content: const Text(
+                              'Deleting your account is permanent and cannot be reversed.'),
                           actions: [cancel, confirm],
                         );
                         showDialog(
