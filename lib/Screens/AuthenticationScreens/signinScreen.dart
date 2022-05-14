@@ -203,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
             height,
           ),
           _buildSocialBtn(
-            () => _getCredentials(false),
+            () => _getCredentials(true),
             'images/logos/google.png',
             height,
           ),
@@ -221,7 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         signinRes = await user.signInWithFacebook();
       }
-      Navigator.pushReplacementNamed(context, setupProfileRoute);
 
       switch (signinRes) {
         case 1:
