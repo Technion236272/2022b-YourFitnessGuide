@@ -121,32 +121,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget emptyNote(double height, double width, String text) {
     return Card(
         color: const Color(0xffFAFAFA),
-        child: Container(
-            padding: EdgeInsets.symmetric(
-                vertical: height * 0.075, horizontal: width * 0.06),
-            child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                child: Center(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: height * 0.018,
-                    ),
-                    Text(text, style: TextStyle(
-
-                      fontSize: 20
-                    ),),
-                    Image.asset(
-                      'images/decorations/404.png',
-                      width: width * 0.25,
-                      height: height * 0.25,
-                    )
-                  ],
-                )))));
+        child: Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            SizedBox(
+              height: height * 0.01,
+            ),
+            Flexible(child: Text(text, style: TextStyle(
+                fontSize: 20
+            ),)),
+            Flexible(child: Image.asset(
+              'images/decorations/404.png',
+              width: width * 0.3,
+              height: height * 0.3,
+            ))
+          ],
+        )));
     return Image.asset(
       'images/decorations/LoginDecoration.png',
       width: width * 0.01,
