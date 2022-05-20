@@ -78,6 +78,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
         stream: _postManager.getAllPosts(),
         builder: (context, snapshot) { return RefreshIndicator( onRefresh: () async{
+          setState(() {
+
+          });
           //TODO: Saleh\Mahmoud complete refresh functionality
           print('Refreshing');
           return null; },

@@ -99,7 +99,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             SizedBox(
               width: 0.05 * width,
             ),
-            _buildWeightField("Current\nweight", _currentController),
+            _buildWeightField("Current\nweight",
+                firstTime ? _initialController : _currentController),
             SizedBox(
               width: 0.05 * width,
             ),
@@ -189,16 +190,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     IconButton(
                         onPressed: () {
-                          user.updateUserData(
-                              nameField.controller.text,
-                              int.parse(_initialController.text),
-                              int.parse(_currentController.text),
-                              int.parse(_goalController.text),
-                              choices.userGoal?.index,
-                              newImage);
+                          int init = int.parse(_initialController.text);
+                          int curr = int.parse(_currentController.text);
+                          int goal = int.parse(_goalController.text);
+                          if(firstTime){
+                            curr = init;
+                          }
+
+                          if (choices.userGoal == Goal.loseWeight &&
+                              (init < goal || curr < goal)) {
+                            const snackBar = SnackBar(
+                                content: Text(
+                                    'Invalid data inserted: User goal set to losing weight but initial\\current weight is lower that goal weight.'));
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                            return;
+                          }
+
+                          if (choices.userGoal == Goal.gainWeight &&
+                              (init > goal || curr > goal)) {
+                            const snackBar = SnackBar(
+                                content: Text(
+                                    'Invalid data inserted: User goal set to gaining weight but initial\\current weight is higher that goal weight.'));
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                            return;
+                          }
+
                           if (firstTime) {
                             if (int.parse(_initialController.text) == 0 ||
-                                int.parse(_goalController.text) == 0 ||
                                 int.parse(_goalController.text) == 0) {
                               const snackBar = SnackBar(
                                   content:
@@ -206,6 +228,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             } else {
+                              user.updateUserData(nameField.controller.text, init,
+                                  curr, goal, choices.userGoal?.index, newImage);
                               Navigator.pushReplacementNamed(
                                   context, homeRoute);
                             }
@@ -219,6 +243,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             } else {
+                              user.updateUserData(nameField.controller.text, init,
+                                  curr, goal, choices.userGoal?.index, newImage);
                               Navigator.pop(context);
                             }
                           }
