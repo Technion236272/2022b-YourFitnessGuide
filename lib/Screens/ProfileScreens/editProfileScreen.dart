@@ -188,12 +188,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Row(
                   children: [
+                    IconButton(onPressed: () {
+                      showAboutDialog(context: context, applicationVersion: '1.0');
+                    }, icon: Icon(Icons.info_outline, color: Colors.white,)),
                     IconButton(
                         onPressed: () {
                           int init = int.parse(_initialController.text);
                           int curr = int.parse(_currentController.text);
                           int goal = int.parse(_goalController.text);
-                          if(firstTime){
+                          if (firstTime) {
                             curr = init;
                           }
 
@@ -228,8 +231,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             } else {
-                              user.updateUserData(nameField.controller.text, init,
-                                  curr, goal, choices.userGoal?.index, newImage);
+                              user.updateUserData(
+                                  nameField.controller.text,
+                                  init,
+                                  curr,
+                                  goal,
+                                  choices.userGoal?.index,
+                                  newImage);
                               Navigator.pushReplacementNamed(
                                   context, homeRoute);
                             }
@@ -243,8 +251,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             } else {
-                              user.updateUserData(nameField.controller.text, init,
-                                  curr, goal, choices.userGoal?.index, newImage);
+                              user.updateUserData(
+                                  nameField.controller.text,
+                                  init,
+                                  curr,
+                                  goal,
+                                  choices.userGoal?.index,
+                                  newImage);
                               Navigator.pop(context);
                             }
                           }
