@@ -43,8 +43,10 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(create: (_) => AuthRepository.instance(),
         child: MaterialApp(
           title: 'YourFitnessGuide',
+          //initialRoute: viewMealPlanRoute,
           onGenerateRoute: router.generateRoute,
           theme: ThemeData(
+              bottomSheetTheme:BottomSheetThemeData(backgroundColor: Colors.transparent),
             iconTheme: IconThemeData(color: appTheme), ///might be better if 0xff84C59E
             appBarTheme: AppBarTheme(
               iconTheme: const IconThemeData(color: Colors.white),

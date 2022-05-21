@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 const String loginRoute = '/login';
 const String signupRoute = '/signup';
 const String resetPasswordRoute = '/reset';
@@ -13,6 +12,10 @@ const String mealAddRoute = '/meal';
 const String workoutPostRoute = '/workoutpost';
 const String searchRoute = '/search';
 const String viewProfileRoute = '/view';
+const String viewBlogRoute='/viewblog';
+const String viewWorkoutRoute='/viewworkout';
+const String viewMealPlanRoute='/viewmealplan';
+
 const Color appTheme = const Color(0xff4CC47C);
 enum Goal { loseWeight, gainMuscle, gainWeight, maintainHealth }
 class SearchArguments {

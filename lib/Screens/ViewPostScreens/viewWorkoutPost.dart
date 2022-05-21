@@ -1,25 +1,33 @@
-
 import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-
 import 'package:yourfitnessguide/utils/globals.dart';
+import 'package:flutter/services.dart';
+import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
-class WorkoutScreen extends StatefulWidget {
-  const WorkoutScreen({Key? key}) : super(key: key);
+class ViewWorkoutScreen extends StatefulWidget {
+  late var post_data;
+  ViewWorkoutScreen({Key? key, this.post_data}) : super(key: key);
 
   @override
-  State<WorkoutScreen> createState() => _WorkoutScreenState();
+  State<ViewWorkoutScreen> createState() => _ViewWorkoutScreenState();
 }
 
-class _WorkoutScreenState extends State<WorkoutScreen> {
+class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
+  get post_data => widget.post_data;
   TextEditingController workoutNameController = TextEditingController();
-  TextEditingController DescriptionController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   bool? loseWeight = false;
   bool? gainMuscle = false;
   bool? gainWeight = false;
   bool? maintainHealth = false;
+  bool selectedGoal = false;
   final List<TextEditingController> _controllerInput = [];
   final List<TextField> _textFieldInput = [];
+  final PostManager _postManager = PostManager();
+  late var user_data;
+
   Widget _buildWorkoutName(double height) {
     final iconSize = height * 0.050;
     return Row(
@@ -51,6 +59,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 keyboardType: TextInputType.name,
                 controller: workoutNameController,
                 textAlign: TextAlign.left,
+                readOnly: true,
+                decoration: InputDecoration(border: InputBorder.none),
               )
             ],
           ),
@@ -78,7 +88,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+            /*  Text(
                 "Description",
                 style: TextStyle(
                   color: appTheme,
@@ -86,12 +96,31 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   //fontWeight: FontWeight.bold,
                 ),
               ),
+
+             */
               TextField(
                 minLines: 1,
                 maxLines: 8,
                 keyboardType: TextInputType.multiline,
-                controller: DescriptionController,
+                controller: descriptionController,
                 textAlign: TextAlign.left,
+                readOnly: true,
+                decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(bottom: 5),
+                    label: false
+                        ? Center(
+                      child: Text("Description"),
+                    )
+                        : Text("Description"),
+                    hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                    labelStyle: TextStyle(
+                      color: appTheme,
+                      fontSize: 27,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: InputBorder.none
+                ),
               )
             ],
           ),
@@ -141,12 +170,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       children: [
         CheckboxListTile(
             title: Text('Lose Weight'),
-            value: loseWeight,
+            value: post_data["goals"][0] as bool,
             //groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  loseWeight = value;
-                })),
+            onChanged: null),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -156,11 +183,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         ),
         CheckboxListTile(
             title: Text('Gain Muscle'),
-            value: gainMuscle,
+            value: post_data["goals"][1] as bool,
             activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  gainMuscle = value;
-                })),
+            onChanged: null),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -170,11 +195,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         ),
         CheckboxListTile(
             title: Text('Gain Healthy Weight'),
-            value: gainWeight,
+            value: post_data["goals"][2] as bool,
             activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  gainWeight = value;
-                })),
+            onChanged: null),
         Divider(
           color: Colors.grey,
           height: 0,
@@ -184,17 +207,20 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         ),
         CheckboxListTile(
             title: Text('Maintain Healthy Lifestyle'),
-            value: maintainHealth,
+            value: post_data["goals"][3] as bool,
             activeColor: appTheme,
-            onChanged: (value) => setState(() {
-                  maintainHealth = value;
-                })),
+            onChanged: null),
       ],
     );
   }
 
   Widget _buildExercises(double height, double width) {
     final iconSize = height * 0.050;
+    if (_textFieldInput.isEmpty) {
+      for (int i = 0; i < post_data["exercises"].length; i++) {
+        _addInputField(context, post_data["exercises"][i]);
+      }
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,25 +256,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   );
                 },
               ),
-              Container(
-                  padding: const EdgeInsets.fromLTRB(3, 8, 40, 10),
-                  child: ElevatedButton(
-                    child: const Text("Add Exercise"),
-                    style: ElevatedButton.styleFrom(
-                        primary: Color(0xff84C59E),
-                        shadowColor: appTheme,
-                        elevation: 1,
-                        shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(20.0)),
-                        fixedSize: Size(width * 0.3, height * 0.040),
-                        textStyle: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                        )),
-                    onPressed: () {
-                      _addInputField(context);
-                    },
-                  )),
             ],
           ),
         ),
@@ -261,29 +268,118 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     final screenSize = MediaQuery.of(context).size;
     final height = screenSize.height;
     final width = screenSize.width;
+    workoutNameController.text = post_data["title"];
+    descriptionController.text = post_data["description"];
+    user_data=_postManager.getUserInfo(post_data["user_uid"]).asStream();
+    //print(post_data);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Create a workout',
+        title:  Text(
+          '${post_data["title"]}',
         ),
         backgroundColor: appTheme,
-        centerTitle: true,
+        centerTitle: false,
       ),
-      body:
-      SingleChildScrollView(
+      body: SingleChildScrollView(
+          child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(
                 height: height * 0.012,
               ),
+              /*
               Container(
                 padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
                 child: _buildWorkoutName(height),
               ),
+
+               */
               Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                padding: const EdgeInsets.fromLTRB(8, 1, 40, 0),
+                child: StreamBuilder<Map<String, dynamic>?>(
+                    stream: user_data,
+                    builder: (context, userSnapshot) {
+                      if (userSnapshot.connectionState ==
+                          ConnectionState.waiting &&
+                          userSnapshot.data == null) {
+                        return const Center(
+                            child: LinearProgressIndicator());
+                      }
+                      if (userSnapshot.connectionState ==
+                          ConnectionState.done &&
+                          userSnapshot.data == null) {
+                        return const ListTile();
+                      }
+                      return ListTile(
+                        contentPadding: const EdgeInsets.all(0),
+                        leading: CircleAvatar(
+                          radius: 30,
+                          backgroundImage: NetworkImage(
+                              userSnapshot.data!['picture']!),
+                        ),
+                        title: RichText(
+                          text: TextSpan(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(fontSize: 16),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: post_data['category'],
+                                  style: TextStyle(
+                                      fontWeight:
+                                      FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .appBarTheme
+                                          .backgroundColor)),
+                              const TextSpan(text: ' by '),
+                              TextSpan(
+                                  text: userSnapshot
+                                      .data!['name']),
+                            ],
+                          ),
+                        ),
+                        subtitle: Text(
+                            timeago.format(
+                                post_data['createdAt']
+                                    .toDate(),
+                                allowFromNow: true),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText2!
+                                .copyWith(
+                                fontSize: 13,
+                                fontWeight:
+                                FontWeight.normal,
+                                color: Colors.grey)),
+                      );
+                    }),
+              ),
+              Container(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 22, 10),
+                  child: Divider(height:10 ,thickness: 1,color: Colors.black45,)),
+              (post_data!['image_url'] !=
+                  null
+                  ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  post_data!['image_url']!,
+                  height: 300,
+                  width:
+                  MediaQuery.of(context).size.width*0.9,
+                  fit: BoxFit.cover,
+                ),
+              )
+                  : const Padding(
+                  padding: EdgeInsets.all(0))),
+              //SizedBox(height: height * 0.04),
+              Container(
+                padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
                 child: _buildDescription(height),
               ),
               Container(
@@ -294,52 +390,21 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
                 child: _buildExercises(height, width),
               ),
-              Container(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('ATTACH PHOTO',
-                            style: TextStyle(
-                              color: appTheme,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('CANCEL',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: appTheme,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('OK',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: appTheme,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      )
-                    ]),
+              SizedBox(
+                height: height * 0.015,
               ),
             ]),
-      ),
-
+      )),
       resizeToAvoidBottomInset: true,
     );
   }
 
-  _addInputField(context) {
+  // adding string
+  _addInputField(context, String input) {
     final inputController = TextEditingController();
+    inputController.text = input;
     final inputField = _generateInputField(inputController);
+    //inputController.text=
     setState(() {
       _controllerInput.add(inputController);
       _textFieldInput.add(inputField);
@@ -349,6 +414,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   _generateInputField(inputController) {
     return TextField(
       controller: inputController,
+      readOnly: true,
+     // decoration: InputDecoration(border: InputBorder.none),
     );
   }
 }
