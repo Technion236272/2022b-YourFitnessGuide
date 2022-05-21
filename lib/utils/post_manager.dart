@@ -1,11 +1,8 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:yourfitnessguide/services/file_upload_service.dart';
-
 
 class PostManager with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -19,19 +16,20 @@ class PostManager with ChangeNotifier {
 
   final FileUploadService _fileUploadService = FileUploadService();
 
-  Future<bool> submitBlog({required String title, required description, File? postImage}) async {
+  Future<bool> submitBlog(
+      {required String title, required description, File? postImage}) async {
     bool isSubmitted = false;
 
     String userUid = _firebaseAuth.currentUser!.uid;
     FieldValue timeStamp = FieldValue.serverTimestamp();
 
-    if(postImage != null) {
+    if (postImage != null) {
       String? pictureUrl =
-      await _fileUploadService.uploadPostFile(file: postImage);
+          await _fileUploadService.uploadPostFile(file: postImage);
 
       //todo: check if user is signed in? i think its better if we just prevent them from getting here.
       await _postCollection.doc().set({
-        "category": 'blog',
+        "category": 'Blog',
         "title": title,
         "description": description,
         "image_url": pictureUrl,
@@ -44,10 +42,9 @@ class PostManager with ChangeNotifier {
       }).timeout(const Duration(seconds: 20), onTimeout: () {
         isSubmitted = false;
       });
-    }
-    else{
+    } else {
       await _postCollection.doc().set({
-        "category": 'blog',
+        "category": 'Blog',
         "title": title,
         "description": description,
         "createdAt": timeStamp,
@@ -60,12 +57,122 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     }
-      return isSubmitted;
+    return isSubmitted;
+  }
+
+  Future<bool> submitWorkout(
+      {required String title,
+      required description,
+      File? postImage,
+      required goals,
+      required exercises}) async {
+    bool isSubmitted = false;
+
+    String userUid = _firebaseAuth.currentUser!.uid;
+    FieldValue timeStamp = FieldValue.serverTimestamp();
+
+    if (postImage != null) {
+      String? pictureUrl =
+          await _fileUploadService.uploadPostFile(file: postImage);
+
+      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
+      await _postCollection.doc().set({
+        "category": 'Workout',
+        "title": title,
+        "description": description,
+        "image_url": pictureUrl,
+        "goals": goals,
+        "exercises": exercises,
+        "createdAt": timeStamp,
+        "user_uid": userUid
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    } else {
+      await _postCollection.doc().set({
+        "category": 'Workout',
+        "title": title,
+        "description": description,
+        "goals": goals,
+        "exercises": exercises,
+        "createdAt": timeStamp,
+        "user_uid": userUid
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
     }
+    return isSubmitted;
+  }
+
+  Future<bool> submitMealPlan(
+      {required String title,
+      required description,
+      File? postImage,
+      required goals,
+       required mealsContents ,
+      required mealsName,
+      required mealsIngredients}) async {
+    bool isSubmitted = false;
+
+    String userUid = _firebaseAuth.currentUser!.uid;
+    FieldValue timeStamp = FieldValue.serverTimestamp();
+
+    if (postImage != null) {
+      String? pictureUrl =
+          await _fileUploadService.uploadPostFile(file: postImage);
+
+      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
+      await _postCollection.doc().set({
+        "category": 'Meal Plan',
+        "title": title,
+        "description": description,
+        "image_url": pictureUrl,
+        "goals": goals,
+        "meals_contents": mealsContents,
+        "meals_name": mealsName,
+        "meals_ingredients": mealsIngredients,
+        "createdAt": timeStamp,
+        "user_uid": userUid
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    } else {
+      await _postCollection.doc().set({
+        "category": 'Meal Plan',
+        "title": title,
+        "description": description,
+        "goals": goals,
+        "meals_contents": mealsContents,
+        "meals_name": mealsName,
+        "meals_ingredients": mealsIngredients,
+        "createdAt": timeStamp,
+        "user_uid": userUid
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    }
+    return isSubmitted;
+  }
 
   /// get all post from the db
   Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts() {
-    return _postCollection.orderBy('createdAt',descending: true).snapshots();
+    return _postCollection.orderBy('createdAt', descending: true).snapshots();
   }
 
   ///get user info from db
@@ -84,4 +191,3 @@ class PostManager with ChangeNotifier {
     return userData;
   }
 }
-

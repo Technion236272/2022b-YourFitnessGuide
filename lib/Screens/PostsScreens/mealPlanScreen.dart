@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
-
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'dart:io';
 
 class MealPlanScreen extends StatefulWidget {
   const MealPlanScreen({Key? key}) : super(key: key);
@@ -12,7 +15,7 @@ class MealPlanScreen extends StatefulWidget {
 
 class _MealPlanScreenState extends State<MealPlanScreen> {
   TextEditingController mealPlanNameController = TextEditingController();
-  TextEditingController DescriptionController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   TextEditingController mealNameController = TextEditingController();
   TextEditingController mealIngredientsController = TextEditingController();
   TextEditingController KcalController = TextEditingController();
@@ -23,15 +26,37 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   bool? gainMuscle = false;
   bool? gainWeight = false;
   bool? maintainHealth = false;
+  final List<bool?> _goals = [false, false, false, false];
+  bool selectedGoal = false;
   final List<String?> _mealNames = [];
   final List<String?> _mealIngredients = [];
   final List<Widget> _list = [];
-  BoxDecoration myBoxDecoration() {
-    return BoxDecoration(
-      border: Border.all(
-        width: 0.1, //                   <--- border width here
-      ),
-    );
+  final List<int> _mealsContents = [0, 0, 0, 0];
+  var color = appTheme;
+  String photo = "attach a photo";
+  final PostManager _postManager = PostManager();
+  bool _isLoading = false;
+  File? _postImageFile;
+
+  Future pickImage() async {
+    try {
+      final selectedImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (selectedImage == null) {
+        const snackBar = SnackBar(content: Text('No image was selected'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        _postImageFile = null;
+        return;
+      }
+      setState(() {
+        _postImageFile = File(selectedImage.path);
+      });
+    } on PlatformException catch (_) {
+      const snackBar = SnackBar(
+          content: Text(
+              'You need to grant permission if you want to select a photo'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
   }
 
   Widget _buildButton(String Name, double height, double width) {
@@ -51,9 +76,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     primary: appTheme,
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(0)),
-                    fixedSize: Size(width * 0.3, height * 0.010),
+                    fixedSize: Size(width * 0.25, height * 0.010),
                     textStyle: TextStyle(
-                      fontSize: 18,
+                      fontSize: 14,
                       color: Colors.white,
                     )),
                 onPressed: () {},
@@ -74,7 +99,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           elevation: 0,
                           shape: new RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(0.0)),
-                          fixedSize: Size(width * 0.2, height * 0.010),
+                          fixedSize: Size(width * 0.17, height * 0.010),
                           textStyle: TextStyle(
                             fontSize: 14,
                             color: appTheme,
@@ -91,6 +116,40 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 ),
               ],
             ),
+            Container(
+              child: ElevatedButton(
+                child: Icon(
+                  Icons.delete_rounded,
+                  color: Colors.white,
+                  size: 24.0,
+                ),
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.red,
+                    shadowColor: appTheme,
+                    elevation: 0,
+                    shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(0.0)),
+                    fixedSize: Size(width * 0.05, height * 0.010),
+                    textStyle: TextStyle(
+                      fontSize: 14,
+                      color: appTheme,
+                    )),
+                onPressed: () {
+                  setState(() {
+                    index = _mealNames.indexOf(Name);
+                    // print(index);
+                    //print(_mealNames);
+                    if (index != -1) {
+                      _deleteButtonWidget(index);
+                      // print(_mealNames);
+                    }
+                  });
+                },
+              ),
+            ),
+
+            /*
+
             Container(
               alignment: Alignment.center,
               child: IconButton(
@@ -113,6 +172,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 },
               ),
             ),
+            */
           ],
         ),
         SizedBox(height: height * 0.01),
@@ -127,15 +187,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   void _updateButtonWidget(
-      String name,String Ingredients, double height, double width, int index) {
+      String name, String Ingredients, double height, double width, int index) {
     setState(() {
       if (name != "") {
-        _mealNames[index]=name;
-        _mealIngredients[index]=Ingredients;
+        _mealNames[index] = name;
+        _mealIngredients[index] = Ingredients;
         _list[index] = _buildButton(name, height, width);
-      }
-      else {
-
+      } else {
         _deleteButtonWidget(index);
       }
     });
@@ -168,7 +226,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+             /* Text(
                 "Plan name",
                 style: TextStyle(
                   color: appTheme,
@@ -176,10 +234,27 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   // fontWeight: FontWeight.bold,
                 ),
               ),
+
+              */
               TextField(
                 keyboardType: TextInputType.name,
                 controller: mealPlanNameController,
                 textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(bottom: 5),
+                  label: false
+                      ? Center(
+                    child: Text("Plan name"),
+                  )
+                      : Text("Plan name"),
+                  hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  labelStyle: TextStyle(
+                    color: appTheme,
+                    fontSize: 27,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
               )
             ],
           ),
@@ -207,7 +282,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+             /* Text(
                 "Description",
                 style: TextStyle(
                   color: appTheme,
@@ -215,12 +290,29 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   //fontWeight: FontWeight.bold,
                 ),
               ),
+
+              */
               TextField(
                 minLines: 1,
                 maxLines: 8,
                 keyboardType: TextInputType.multiline,
-                controller: DescriptionController,
+                controller: descriptionController,
                 textAlign: TextAlign.left,
+                decoration: InputDecoration(
+                  contentPadding: const EdgeInsets.only(bottom: 5),
+                  label: false
+                      ? Center(
+                    child: Text("Description"),
+                  )
+                      : Text("Description"),
+                  hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  labelStyle: TextStyle(
+                    color: appTheme,
+                    fontSize: 27,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
               )
             ],
           ),
@@ -371,6 +463,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   loseWeight = value;
+                  _goals[0] = value;
                 })),
         Divider(
           color: Colors.grey,
@@ -385,6 +478,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   gainMuscle = value;
+                  _goals[1] = value;
                 })),
         Divider(
           color: Colors.grey,
@@ -399,6 +493,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   gainWeight = value;
+                  _goals[2] = value;
                 })),
         Divider(
           color: Colors.grey,
@@ -413,6 +508,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   maintainHealth = value;
+                  _goals[3] = value;
                 })),
       ],
     );
@@ -503,7 +599,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         Container(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
-              'images/icons/exercises.png',
+              'images/icons/food.png',
               height: iconSize,
               width: iconSize,
             )),
@@ -532,9 +628,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   child: ElevatedButton(
                     child: const Text("Add Meal"),
                     style: ElevatedButton.styleFrom(
-                        primary: Color(0xff84C59E),
-                        shadowColor: appTheme,
-                        elevation: 17,
+                        primary: appTheme,
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(20.0)),
                         fixedSize: Size(width * 0.25, height * 0.010),
@@ -606,7 +700,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                           /* TextButton(
+                            /* TextButton(
                               onPressed: () {},
                               child: Text('ATTACH PHOTO',
                                   style: TextStyle(
@@ -633,14 +727,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                               onPressed: () {
                                 // todo if we dont add anything
                                 if (index == -1) {
-
-                                  if(mealNameController.text.toString()!="") {
-                                    _mealNames
-                                        .add(
+                                  if (mealNameController.text.toString() !=
+                                      "") {
+                                    _mealNames.add(
                                         mealNameController.text.toString());
                                     _mealIngredients.add(
-                                        mealIngredientsController
-                                            .text
+                                        mealIngredientsController.text
                                             .toString());
                                   }
                                 } else if (index != -1) {
@@ -675,6 +767,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       },
     );
   }
+
 // todo to check what happens when we dont add anything
   @override
   Widget build(BuildContext context) {
@@ -683,12 +776,87 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
     final width = screenSize.width;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Create a meal plan',
-        ),
-        backgroundColor: appTheme,
-        centerTitle: true,
-      ),
+          title: const Text(
+            'Create a meal plan',
+          ),
+          backgroundColor: appTheme,
+          centerTitle: false,
+          actions: [
+            Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Row(
+                  children: [
+                    _isLoading
+                        ? const Center(child: CircularProgressIndicator.adaptive())
+                        :
+                    IconButton(
+                        onPressed: () async {
+                          final String title = mealPlanNameController.text;
+                          final String description = descriptionController.text;
+                          final String kcal = KcalController.text;
+                          final String protiens = ProtiensController.text;
+                          final String carbs = CarbsController.text;
+                          final String fats = FatsController.text;
+                          _mealsContents[0] = int.parse(kcal);
+                          _mealsContents[1] = int.parse(protiens);
+                          _mealsContents[2] = int.parse(carbs);
+                          _mealsContents[3] = int.parse(fats);
+
+                          if (loseWeight! ||
+                              gainMuscle! ||
+                              gainWeight! ||
+                              maintainHealth!) {
+                            selectedGoal = true;
+                          }
+                          if (title == "" ||
+                              description == "" ||
+                              kcal == "" ||
+                              protiens == "" ||
+                              carbs == "" ||
+                              fats == "" ||
+                              selectedGoal == false ||
+                              _mealNames.isEmpty) {
+                            const snackBar = SnackBar(
+                                content: Text(
+                                    'You must fill all the fields and add meals'));
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          } else {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            bool isSubmitted = await _postManager.submitMealPlan(
+                                title: title,
+                                description: description,
+                                postImage: _postImageFile,
+                                goals: _goals,
+                                mealsContents: _mealsContents,
+                                mealsName: _mealNames,
+                                mealsIngredients: _mealIngredients);
+                            setState(() {
+                              _isLoading = false;
+                            });
+
+                            if (isSubmitted) {
+                              const snackBar = SnackBar(
+                                  content: Text('MealPlan posted successfully'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+
+                              Navigator.pop(context);
+                            } else {
+                              const snackBar = SnackBar(
+                                  content:
+                                  Text('There was a problem logging you in'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            }
+                          }
+                        },
+                        icon:
+                            const Icon(Icons.check_sharp, color: Colors.white)),
+                  ],
+                )),
+          ]),
       body: SingleChildScrollView(
           child: GestureDetector(
         onTap: () {
@@ -696,7 +864,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         },
         child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(
                 height: height * 0.012,
@@ -721,42 +889,66 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                 child: _buildMealContents(height, width),
               ),
+              (_postImageFile!=
+                  null
+                  ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.file(
+                  _postImageFile!,
+                  height: 300,
+                  width:
+                  MediaQuery.of(context).size.width*0.9,
+                  fit: BoxFit.cover,
+                ),
+              )  : const Padding(
+                  padding: EdgeInsets.all(0))),
+              SizedBox(
+                height: 4,
+              ),
               Container(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('ATTACH PHOTO',
-                            style: TextStyle(
-                              color: appTheme,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            )),
+                padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
+                width: 205,
+                height: 80.0,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: color, // background
+                    onPrimary: Colors.white, // foreground
+                  ),
+                  onPressed: () async {
+                    if (_postImageFile == null) {
+                      await pickImage();
+                      if(_postImageFile!=null) {
+                        color = Colors.red;
+                        photo = "detach the photo";
+                      }
+                    }
+                    else {
+                      _postImageFile = null;
+                      color = appTheme;
+                      photo = "attach a photo";
+                    }
+                    setState(() {
+                      build(context);
+                    });
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+
+
+                      Icon(Icons.add_photo_alternate, color: Colors.white),
+                      SizedBox(
+                        height: 4,
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('CANCEL',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: appTheme,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text('OK',
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: appTheme,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      )
-                    ]),
-              )
+                      Text(photo, style: TextStyle(color: Colors.white),),
+
+
+
+
+                    ],
+                  ),
+                ),
+              ),
             ]),
       )),
       resizeToAvoidBottomInset: true,
