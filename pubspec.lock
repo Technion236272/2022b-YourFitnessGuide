@@ -463,9 +463,6 @@ packages:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
     source: hosted
-
-    version: "2.0.5"
-
     version: "2.0.6"
   petitparser:
     dependency: transitive
@@ -474,7 +471,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.4.0"
-
   platform:
     dependency: transitive
     description:

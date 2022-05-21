@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
           //initialRoute: viewMealPlanRoute,
           onGenerateRoute: router.generateRoute,
           theme: ThemeData(
+            scaffoldBackgroundColor: Colors.grey[200],
               bottomSheetTheme:BottomSheetThemeData(backgroundColor: Colors.transparent),
             iconTheme: IconThemeData(color: appTheme), ///might be better if 0xff84C59E
             appBarTheme: AppBarTheme(

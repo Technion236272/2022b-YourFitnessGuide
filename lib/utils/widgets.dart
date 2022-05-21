@@ -118,7 +118,7 @@ class imageContainer extends StatelessWidget {
         width: height * percent,
         height: height * percent,
         decoration: BoxDecoration(
-            border: Border.all(width: 4, color: const Color(0xffD6D6D6)),
+            border: Border.all(width: 4, color: Colors.grey[500]!),
             boxShadow: [
               BoxShadow(
                   spreadRadius: 3,
@@ -260,7 +260,6 @@ class _postState extends State<post> {
         }
       },
       child: Card(
-          elevation: 8,
           color: Theme
               .of(context)
               .cardColor,

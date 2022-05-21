@@ -72,9 +72,8 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                     child: ElevatedButton(
                       child: Text("More"),
                       style: ElevatedButton.styleFrom(
+                          side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                           primary: Color(0xff84C59E),
-                          shadowColor: appTheme,
-                          elevation: 0,
                           shape: new RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(0.0)),
                           fixedSize: Size(width * 0.2, height * 0.010),

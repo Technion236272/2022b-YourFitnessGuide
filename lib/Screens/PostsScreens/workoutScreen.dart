@@ -306,6 +306,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     child: const Text("Add Exercise"),
                     style: ElevatedButton.styleFrom(
                         primary: appTheme,
+                        side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                         shadowColor: appTheme,
                         elevation: 1,
                         shape: new RoundedRectangleBorder(
@@ -455,6 +456,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 height: 80.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                     primary: color, // background
                     onPrimary: Colors.white, // foreground
                   ),

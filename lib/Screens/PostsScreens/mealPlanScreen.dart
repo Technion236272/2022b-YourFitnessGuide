@@ -95,8 +95,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                       child: Text("More"),
                       style: ElevatedButton.styleFrom(
                           primary: Color(0xff84C59E),
-                          shadowColor: appTheme,
-                          elevation: 0,
+                          side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                           shape: new RoundedRectangleBorder(
                               borderRadius: new BorderRadius.circular(0.0)),
                           fixedSize: Size(width * 0.17, height * 0.010),
@@ -125,8 +124,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 ),
                 style: ElevatedButton.styleFrom(
                     primary: Colors.red,
-                    shadowColor: appTheme,
-                    elevation: 0,
+                    side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(0.0)),
                     fixedSize: Size(width * 0.05, height * 0.010),
@@ -629,6 +627,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     child: const Text("Add Meal"),
                     style: ElevatedButton.styleFrom(
                         primary: appTheme,
+                        side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(20.0)),
                         fixedSize: Size(width * 0.25, height * 0.010),
@@ -911,6 +910,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 height: 80.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                     primary: color, // background
                     onPrimary: Colors.white, // foreground
                   ),

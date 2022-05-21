@@ -239,6 +239,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
               height: 80.0,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                  side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                   primary: color, // background
                   onPrimary: Colors.white, // foreground
                 ),
