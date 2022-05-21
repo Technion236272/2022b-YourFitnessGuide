@@ -147,7 +147,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     .image)
                             : DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(model.pictureUrl!)))),
+                                image: model.picture.image))),
                 SizedBox(
                   width: width * 0.02,
                 ),

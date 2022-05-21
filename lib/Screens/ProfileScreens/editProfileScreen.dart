@@ -76,7 +76,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 5),
         labelText: label,
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: appTheme,
           fontSize: 23,
           fontWeight: FontWeight.bold,
@@ -99,7 +99,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             SizedBox(
               width: 0.05 * width,
             ),
-            _buildWeightField("Current\nweight", _currentController),
+            _buildWeightField("Current\nweight",
+                firstTime ? _initialController : _currentController),
             SizedBox(
               width: 0.05 * width,
             ),
@@ -187,19 +188,78 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Row(
                   children: [
+                    IconButton(onPressed: () {
+                      showAboutDialog(context: context, applicationVersion: '1.0');
+                    }, icon: Icon(Icons.info_outline, color: Colors.white,)),
                     IconButton(
                         onPressed: () {
-                          user.updateUserData(
-                              nameField.controller.text,
-                              int.parse(_initialController.text),
-                              int.parse(_currentController.text),
-                              int.parse(_goalController.text),
-                              choices.userGoal?.index,
-                              newImage);
+                          int init = int.parse(_initialController.text);
+                          int curr = int.parse(_currentController.text);
+                          int goal = int.parse(_goalController.text);
                           if (firstTime) {
-                            Navigator.pushReplacementNamed(context, homeRoute);
+                            curr = init;
+                          }
+
+                          if (choices.userGoal == Goal.loseWeight &&
+                              (init < goal || curr < goal)) {
+                            const snackBar = SnackBar(
+                                content: Text(
+                                    'Invalid data inserted: User goal set to losing weight but initial\\current weight is lower that goal weight.'));
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                            return;
+                          }
+
+                          if (choices.userGoal == Goal.gainWeight &&
+                              (init > goal || curr > goal)) {
+                            const snackBar = SnackBar(
+                                content: Text(
+                                    'Invalid data inserted: User goal set to gaining weight but initial\\current weight is higher that goal weight.'));
+
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                            return;
+                          }
+
+                          if (firstTime) {
+                            if (int.parse(_initialController.text) == 0 ||
+                                int.parse(_goalController.text) == 0) {
+                              const snackBar = SnackBar(
+                                  content:
+                                      Text('You need to fill all the fields'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            } else {
+                              user.updateUserData(
+                                  nameField.controller.text,
+                                  init,
+                                  curr,
+                                  goal,
+                                  choices.userGoal?.index,
+                                  newImage);
+                              Navigator.pushReplacementNamed(
+                                  context, homeRoute);
+                            }
                           } else {
-                            Navigator.pop(context);
+                            if (int.parse(_initialController.text) == 0 ||
+                                int.parse(_goalController.text) == 0 ||
+                                int.parse(_goalController.text) == 0) {
+                              const snackBar = SnackBar(
+                                  content:
+                                      Text('You need to fill all the fields'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            } else {
+                              user.updateUserData(
+                                  nameField.controller.text,
+                                  init,
+                                  curr,
+                                  goal,
+                                  choices.userGoal?.index,
+                                  newImage);
+                              Navigator.pop(context);
+                            }
                           }
                         },
                         icon:
@@ -236,12 +296,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     children: [
                       _buildNameField(height),
                       _buildWeightProgress(height, width),
-                      Text('Goal',
+                      const Text('Goal',
                           style: TextStyle(
-                            color: appTheme,
-                            fontSize: 23,
-                            fontWeight: FontWeight.bold
-                          )),
+                              color: appTheme,
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold)),
                     ],
                   )),
               choices,
@@ -251,7 +310,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: const Text("DELETE ACCOUNT"),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red,
-                          shadowColor: appTheme,
+                          shadowColor: Colors.red,
                           elevation: 17,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0)),
@@ -265,7 +324,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text(
+                            child: const Text(
                               'Cancel',
                               style: TextStyle(color: appTheme),
                             ));
@@ -275,10 +334,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Navigator.pushNamedAndRemoveUntil(
                                   context, '/home', (_) => false);
                             },
-                            child: Text('Confirm',
+                            child: const Text('Confirm',
                                 style: TextStyle(color: appTheme)));
                         AlertDialog alert = AlertDialog(
-                          title: Text('Are you sure?'),
+                          title: const Text('Are you sure?'),
+                          content: const Text(
+                              'Deleting your account is permanent and cannot be reversed.'),
                           actions: [cancel, confirm],
                         );
                         showDialog(

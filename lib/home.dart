@@ -39,9 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     var user = Provider.of<AuthRepository>(context);
 
-    if(user.isAuthenticated){
+    if(user.isAuthenticated && (user.userData?.iWeight != 0)){
       _views.removeAt(3);
-      _views.add(ProfileScreen());
+      _views.add(ProfileScreen(uid: user.getCurrUid(),));
     }
     else{
       _views.removeAt(3);
