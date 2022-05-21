@@ -39,28 +39,14 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-            /*  Text(
-                "Title",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 20,
-                  // fontWeight: FontWeight.bold,
-                ),
-              ),
-
-             */
               TextField(
                 keyboardType: TextInputType.name,
                 controller: postNameController,
                 textAlign: TextAlign.left,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.only(bottom: 5),
-                  label: false
-                      ? Center(
-                    child: Text("Title"),
-                  )
-                      : Text("Title"),
-                  hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom: 5),
+                  label: Text("Title"),
+                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -111,14 +97,10 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 keyboardType: TextInputType.multiline,
                 controller: descriptionController,
                 textAlign: TextAlign.left,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.only(bottom: 5),
-                  label: false
-                      ? Center(
-                    child: Text("Description"),
-                  )
-                      : Text("Description"),
-                  hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom: 5),
+                  label: Text("Description"),
+                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -248,7 +230,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                   ),
                 )  : const Padding(
                     padding: EdgeInsets.all(0))),
-                SizedBox(
+                const SizedBox(
                   height: 4,
                 ),
             Container(
@@ -281,13 +263,13 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
 
-                    Icon(Icons.add_photo_alternate, color: Colors.white),
-                    SizedBox(
+                    const Icon(Icons.add_photo_alternate, color: Colors.white),
+                    const SizedBox(
                       height: 4,
                     ),
                     Text(
                       photo,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
