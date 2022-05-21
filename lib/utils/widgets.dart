@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/utils/users.dart';
 import 'globals.dart';
 
 class GoalChoices extends StatefulWidget {
@@ -185,14 +187,17 @@ class post extends StatefulWidget {
   AsyncSnapshot? snapshot;
   late int? index = null;
   bool completed = true;
+  bool owner = false;
   late Image? userPicture = null;
   late Image? postImage = null;
   late String? category = null;
   late String? username = null;
   late DateTime? date = null;
   late int? rating = null;
+  late String? screen = null;
+  var user;
 
-  post({Key? key, this.index, required this.snapshot}) : super(key: key) {
+  post({Key? key, this.index, required this.snapshot, required this.screen}) : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
             .getUserInfo(snapshot?.data!.docs[index].data()!['user_uid'])
@@ -236,6 +241,8 @@ class _postState extends State<post> {
 
   @override
   Widget build(BuildContext context) {
+    widget.user = Provider.of<AuthRepository>(context);
+
     return InkWell(
       onTap: () {
         //TODO: Saleh/ Mohamed: Navigate to viewing post, for Mohamad: Saleh saved post_uid, utilize it
@@ -328,18 +335,22 @@ class _postState extends State<post> {
                                     fontSize: 13,
                                     fontWeight: FontWeight.normal,
                                     color: Colors.grey)),
-                        trailing: IconButton(
-                            onPressed: null,
-                            icon: Icon(
-                              Icons.more_horiz,
-                              color: Theme.of(context).iconTheme.color,
-                            )),
+                        trailing: widget.screen == 'timeline'? null: PopupMenuButton(
+                          icon: const Icon(Icons.more_horiz),
+                          onSelected: (value) {
+                            print('Deleting post');
+                          },
+                          itemBuilder: (BuildContext context) => [
+                            PopupMenuItem(value: 1, child: Text('Delete post'))
+                          ],
+                        ),
                       );
                     }),
                 Text(
                   widget.snapshot?.data!.docs[widget.index].data()!['title']!,
                   textAlign: TextAlign.left,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(height: 5),
                 (widget.snapshot?.data!.docs[widget.index]
