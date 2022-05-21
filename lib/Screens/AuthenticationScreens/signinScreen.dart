@@ -107,10 +107,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: const Text("SIGN IN"),
       style: ElevatedButton.styleFrom(
           primary: const Color(0xff84C59E),
-          shadowColor: appTheme,
-          elevation: 17,
+          side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(90.0)),
           fixedSize: Size(width * 0.9, height * 0.055),
           textStyle: const TextStyle(
             fontSize: 20,

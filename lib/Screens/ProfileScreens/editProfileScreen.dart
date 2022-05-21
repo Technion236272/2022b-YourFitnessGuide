@@ -310,8 +310,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: const Text("DELETE ACCOUNT"),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red,
-                          shadowColor: Colors.red,
-                          elevation: 17,
+                          side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
+
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0)),
                           fixedSize: Size(width * 0.9, height * 0.055),
