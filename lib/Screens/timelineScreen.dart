@@ -21,8 +21,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   SpeedDialChild _buildDialOption(String name, String Route) {
     return SpeedDialChild(
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white,),
         label: name,
+        labelBackgroundColor: appTheme,
+        backgroundColor: appTheme,
+        labelStyle: TextStyle(color: Colors.white),
         onTap: () {
           isDialOpen.value = false;
           Navigator.pushNamed(context, Route);
