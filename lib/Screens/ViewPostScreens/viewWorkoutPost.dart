@@ -8,6 +8,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class ViewWorkoutScreen extends StatefulWidget {
   late var post_data;
+
   ViewWorkoutScreen({Key? key, this.post_data}) : super(key: key);
 
   @override
@@ -88,7 +89,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-            /*  Text(
+              /*  Text(
                 "Description",
                 style: TextStyle(
                   color: appTheme,
@@ -109,18 +110,18 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                     contentPadding: const EdgeInsets.only(bottom: 5),
                     label: false
                         ? Center(
-                      child: Text("Description"),
-                    )
+                            child: Text("Description"),
+                          )
                         : Text("Description"),
-                    hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                    hintStyle: const TextStyle(
+                        height: 1, fontSize: 16, color: Colors.grey),
                     labelStyle: TextStyle(
                       color: appTheme,
                       fontSize: 27,
                       fontWeight: FontWeight.normal,
                     ),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    border: InputBorder.none
-                ),
+                    border: InputBorder.none),
               )
             ],
           ),
@@ -270,12 +271,12 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
     final width = screenSize.width;
     workoutNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
-    user_data=_postManager.getUserInfo(post_data["user_uid"]).asStream();
+    user_data = _postManager.getUserInfo(post_data["user_uid"]).asStream();
     //print(post_data);
 
     return Scaffold(
       appBar: AppBar(
-        title:  Text(
+        title: Text(
           '${post_data["title"]}',
         ),
         backgroundColor: appTheme,
@@ -286,112 +287,103 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                height: height * 0.012,
-              ),
-              /*
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: <
+            Widget>[
+          SizedBox(
+            height: height * 0.012,
+          ),
+          /*
               Container(
                 padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
                 child: _buildWorkoutName(height),
               ),
 
                */
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 1, 0, 0),
-                child: StreamBuilder<Map<String, dynamic>?>(
-                    stream: user_data,
-                    builder: (context, userSnapshot) {
-                      if (userSnapshot.connectionState ==
-                          ConnectionState.waiting &&
-                          userSnapshot.data == null) {
-                        return const Center(
-                            child: LinearProgressIndicator());
-                      }
-                      if (userSnapshot.connectionState ==
-                          ConnectionState.done &&
-                          userSnapshot.data == null) {
-                        return const ListTile();
-                      }
-                      return ListTile(
-                        contentPadding: const EdgeInsets.all(0),
-                        leading: CircleAvatar(
-                          radius: 25,
-                          backgroundImage: NetworkImage(
-                              userSnapshot.data!['picture']!),
-                        ),
-                        title: RichText(
-                          text: TextSpan(
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(fontSize: 12),
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: post_data['category'],
-                                  style: TextStyle(
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .appBarTheme
-                                          .backgroundColor)),
-                              const TextSpan(text: ' by '),
-                              TextSpan(
-                                  text: userSnapshot
-                                      .data!['name']),
-                            ],
-                          ),
-                        ),
-                        subtitle: Text(
-                            timeago.format(
-                                post_data['createdAt']
-                                    .toDate(),
-                                allowFromNow: true),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2!
-                                .copyWith(
-                                fontSize: 12,
-                                fontWeight:
-                                FontWeight.normal,
-                                color: Colors.grey)),
-                      );
-                    }),
-              ),
-              Divider(height:height * 0.00001 ,thickness: 1,color: Colors.black45,),
-              (post_data!['image_url'] !=
-                  null
-                  ? ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  post_data!['image_url']!,
-                  height: 300,
-                  width:
-                  MediaQuery.of(context).size.width*0.9,
-                  fit: BoxFit.cover,
-                ),
-              )
-                  : const Padding(
-                  padding: EdgeInsets.all(0))),
-              //SizedBox(height: height * 0.04),
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
-                child: _buildDescription(height),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildGoal(height, width),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildExercises(height, width),
-              ),
-              SizedBox(
-                height: height * 0.015,
-              ),
-            ]),
+          Container(
+            padding: const EdgeInsets.fromLTRB(8, 1, 0, 0),
+            child: StreamBuilder<Map<String, dynamic>?>(
+                stream: user_data,
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting &&
+                      userSnapshot.data == null) {
+                    return const Center(child: LinearProgressIndicator());
+                  }
+                  if (userSnapshot.connectionState == ConnectionState.done &&
+                      userSnapshot.data == null) {
+                    return const ListTile();
+                  }
+                  return ListTile(
+                    contentPadding: const EdgeInsets.all(0),
+                    leading: CircleAvatar(
+                      radius: 25,
+                      backgroundImage:
+                          NetworkImage(userSnapshot.data!['picture']!),
+                    ),
+                    title: RichText(
+                      text: TextSpan(
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyText1!
+                            .copyWith(fontSize: 12),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: post_data['category'],
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .appBarTheme
+                                      .backgroundColor)),
+                          const TextSpan(text: ' by '),
+                          TextSpan(text: userSnapshot.data!['name']),
+                        ],
+                      ),
+                    ),
+                    subtitle: Text(
+                        timeago.format(post_data['createdAt'].toDate(),
+                            allowFromNow: true),
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                            fontSize: 12,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.grey)),
+                  );
+                }),
+          ),
+          Divider(
+            height: height * 0.00001,
+            thickness: 1,
+            color: Colors.black45,
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          (post_data!['image_url'] != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    post_data!['image_url']!,
+                    height: 300,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : const Padding(padding: EdgeInsets.all(0))),
+          //SizedBox(height: height * 0.04),
+          Container(
+            padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
+            child: _buildDescription(height),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+            child: _buildGoal(height, width),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+            child: _buildExercises(height, width),
+          ),
+          SizedBox(
+            height: height * 0.015,
+          ),
+        ]),
       )),
       resizeToAvoidBottomInset: true,
     );
@@ -413,7 +405,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
     return TextField(
       controller: inputController,
       readOnly: true,
-     // decoration: InputDecoration(border: InputBorder.none),
+      // decoration: InputDecoration(border: InputBorder.none),
     );
   }
 }
