@@ -34,7 +34,8 @@ class PostManager with ChangeNotifier {
         "description": description,
         "image_url": pictureUrl,
         "createdAt": timeStamp,
-        "user_uid": userUid
+        "user_uid": userUid,
+        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -48,7 +49,8 @@ class PostManager with ChangeNotifier {
         "title": title,
         "description": description,
         "createdAt": timeStamp,
-        "user_uid": userUid
+        "user_uid": userUid,
+        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -84,7 +86,8 @@ class PostManager with ChangeNotifier {
         "goals": goals,
         "exercises": exercises,
         "createdAt": timeStamp,
-        "user_uid": userUid
+        "user_uid": userUid,
+        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -100,7 +103,8 @@ class PostManager with ChangeNotifier {
         "goals": goals,
         "exercises": exercises,
         "createdAt": timeStamp,
-        "user_uid": userUid
+        "user_uid": userUid,
+        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -140,7 +144,8 @@ class PostManager with ChangeNotifier {
         "meals_name": mealsName,
         "meals_ingredients": mealsIngredients,
         "createdAt": timeStamp,
-        "user_uid": userUid
+        "user_uid": userUid,
+        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -158,7 +163,8 @@ class PostManager with ChangeNotifier {
         "meals_name": mealsName,
         "meals_ingredients": mealsIngredients,
         "createdAt": timeStamp,
-        "user_uid": userUid
+        "user_uid": userUid,
+        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {

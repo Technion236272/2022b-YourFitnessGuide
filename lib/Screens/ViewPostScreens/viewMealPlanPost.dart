@@ -635,6 +635,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                 thickness: 1,
                 color: Colors.black45,
               ),
+              SizedBox(height: 5,),
               (post_data!['image_url'] != null
                   ? ClipRRect(
                 borderRadius: BorderRadius.circular(10),

@@ -9,10 +9,11 @@ class GoalChoices extends StatefulWidget {
   late double height, width;
   Goal? userGoal;
 
-  GoalChoices({Key? key,
-    required this.height,
-    required this.width,
-    required this.userGoal})
+  GoalChoices(
+      {Key? key,
+      required this.height,
+      required this.width,
+      required this.userGoal})
       : super(key: key);
 
   @override
@@ -40,8 +41,7 @@ class _GoalChoicesState extends State<GoalChoices> {
             value: Goal.loseWeight,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value!;
                 })),
         Divider(
@@ -56,8 +56,7 @@ class _GoalChoicesState extends State<GoalChoices> {
             value: Goal.gainMuscle,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value!;
                 })),
         Divider(
@@ -72,8 +71,7 @@ class _GoalChoicesState extends State<GoalChoices> {
             value: Goal.gainWeight,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value!;
                 })),
         Divider(
@@ -88,8 +86,7 @@ class _GoalChoicesState extends State<GoalChoices> {
             value: Goal.maintainHealth,
             groupValue: userGoal,
             activeColor: appTheme,
-            onChanged: (value) =>
-                setState(() {
+            onChanged: (value) => setState(() {
                   userGoal = value!;
                 })),
       ],
@@ -104,12 +101,13 @@ class imageContainer extends StatelessWidget {
   late File? imageFile;
   late double percent;
 
-  imageContainer({Key? key,
-    required this.height,
-    required this.width,
-    required this.percent,
-    this.imageLink,
-    this.imageFile})
+  imageContainer(
+      {Key? key,
+      required this.height,
+      required this.width,
+      required this.percent,
+      this.imageLink,
+      this.imageFile})
       : super(key: key);
 
   @override
@@ -128,18 +126,14 @@ class imageContainer extends StatelessWidget {
             shape: BoxShape.circle,
             image: imageFile != null
                 ? DecorationImage(
-                fit: BoxFit.cover, image: Image
-                .file(imageFile!)
-                .image)
+                    fit: BoxFit.cover, image: Image.file(imageFile!).image)
                 : (imageLink == null
-                ? DecorationImage(
-                fit: BoxFit.cover,
-                image:
-                Image
-                    .asset('images/decorations/mclovin.png')
-                    .image)
-                : DecorationImage(
-                fit: BoxFit.cover, image: NetworkImage(imageLink!)))));
+                    ? DecorationImage(
+                        fit: BoxFit.cover,
+                        image:
+                            Image.asset('images/decorations/mclovin.png').image)
+                    : DecorationImage(
+                        fit: BoxFit.cover, image: NetworkImage(imageLink!)))));
   }
 }
 
@@ -171,8 +165,8 @@ class _textFieldState extends State<textField> {
         contentPadding: const EdgeInsets.only(bottom: 5),
         label: widget.centered
             ? Center(
-          child: Text(widget.fieldName),
-        )
+                child: Text(widget.fieldName),
+              )
             : Text(widget.fieldName),
         hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
         hintText: widget.hint ?? '',
@@ -196,6 +190,7 @@ class post extends StatefulWidget {
   late String? category = null;
   late String? username = null;
   late DateTime? date = null;
+  late int? rating = null;
 
   post({Key? key, this.index, required this.snapshot}) : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
@@ -215,6 +210,7 @@ class post extends StatefulWidget {
           userPicture = Image.network(userSnapshot.data!['picture']!);
           category = snapshot?.data!.docs[index].data()!['category'];
           username = userSnapshot.data!['name'];
+          rating = userSnapshot.data!['rating'];
           date = snapshot?.data!.docs[index].data()!['createdAt'] != null
               ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
               : DateTime.now();
@@ -224,7 +220,6 @@ class post extends StatefulWidget {
   }
 
   State<post> createState() => _postState();
-
 }
 
 class _postState extends State<post> {
@@ -249,40 +244,35 @@ class _postState extends State<post> {
         if (cat == 'Blog') {
           Navigator.pushNamed(context, viewBlogRoute,
               arguments: widget.snapshot?.data!.docs[widget.index].data()!);
-        }
-        else if (cat == 'Workout') {
+        } else if (cat == 'Workout') {
           Navigator.pushNamed(context, viewWorkoutRoute,
               arguments: widget.snapshot?.data!.docs[widget.index].data()!);
-        }
-        else {
+        } else {
           Navigator.pushNamed(context, viewMealPlanRoute,
               arguments: widget.snapshot?.data!.docs[widget.index].data()!);
         }
       },
       child: Card(
-          color: Theme
-              .of(context)
-              .cardColor,
+          color: Theme.of(context).cardColor,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 /// user pic + name + 3 dots
                 StreamBuilder<Map<String, dynamic>?>(
                     stream: _postManager
                         .getUserInfo(widget.snapshot?.data!.docs[widget.index]
-                        .data()!['user_uid'])
+                            .data()!['user_uid'])
                         .asStream(),
                     builder: (context, userSnapshot) {
                       if (userSnapshot.connectionState ==
-                          ConnectionState.waiting &&
+                              ConnectionState.waiting &&
                           userSnapshot.data == null) {
                         return const Center(child: LinearProgressIndicator());
                       }
                       if (userSnapshot.connectionState ==
-                          ConnectionState.done &&
+                              ConnectionState.done &&
                           userSnapshot.data == null) {
                         return const ListTile();
                       }
@@ -290,27 +280,26 @@ class _postState extends State<post> {
                         contentPadding: const EdgeInsets.all(0),
                         leading: CircleAvatar(
                           radius: 30,
-                          backgroundImage: widget.userPicture != null ? widget
-                              .userPicture?.image :
-                          NetworkImage(userSnapshot.data!['picture']!),
+                          backgroundImage: widget.userPicture != null
+                              ? widget.userPicture?.image
+                              : NetworkImage(userSnapshot.data!['picture']!),
                         ),
                         title: RichText(
                           text: TextSpan(
-                            style: Theme
-                                .of(context)
+                            style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!
                                 .copyWith(fontSize: 16),
                             children: <TextSpan>[
                               TextSpan(
-                                  text: widget.category != null ? widget
-                                      .category : widget
-                                      .snapshot?.data!.docs[widget.index]
-                                      .data()!['category'],
+                                  text: widget.category != null
+                                      ? widget.category
+                                      : widget
+                                          .snapshot?.data!.docs[widget.index]
+                                          .data()!['category'],
                                   style: TextStyle(
-                                    //fontWeight: FontWeight.bold,
-                                      color: Theme
-                                          .of(context)
+                                      //fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
                                           .appBarTheme
                                           .backgroundColor)),
                               const TextSpan(text: ' by '),
@@ -318,58 +307,54 @@ class _postState extends State<post> {
                             ],
                           ),
                         ),
-                        subtitle: Text(widget.date != null ? timeago.format(
-                            widget.date!, allowFromNow: true) :
-                        timeago.format(
-                            widget.snapshot?.data!.docs[widget.index]
-                                .data()!['createdAt'] !=
-                                null
-                                ? widget.snapshot?.data!.docs[widget.index]
-                                .data()!['createdAt']
-                                .toDate()
-                                : DateTime.now(),
-                            allowFromNow: true),
-                            style: Theme
-                                .of(context)
+                        subtitle: Text(
+                            widget.date != null
+                                ? timeago.format(widget.date!,
+                                    allowFromNow: true)
+                                : timeago.format(
+                                    widget.snapshot?.data!.docs[widget.index]
+                                                .data()!['createdAt'] !=
+                                            null
+                                        ? widget
+                                            .snapshot?.data!.docs[widget.index]
+                                            .data()!['createdAt']
+                                            .toDate()
+                                        : DateTime.now(),
+                                    allowFromNow: true),
+                            style: Theme.of(context)
                                 .textTheme
                                 .bodyText2!
                                 .copyWith(
-                                fontSize: 13,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.grey)),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey)),
                         trailing: IconButton(
                             onPressed: null,
                             icon: Icon(
                               Icons.more_horiz,
-                              color: Theme
-                                  .of(context)
-                                  .iconTheme
-                                  .color,
+                              color: Theme.of(context).iconTheme.color,
                             )),
                       );
                     }),
                 Text(
                   widget.snapshot?.data!.docs[widget.index].data()!['title']!,
                   textAlign: TextAlign.left,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(height: 5),
                 (widget.snapshot?.data!.docs[widget.index]
-                    .data()!['image_url'] !=
-                    null
+                            .data()!['image_url'] !=
+                        null
                     ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    widget.snapshot?.data!.docs[widget.index]
-                        .data()!['image_url']!,
-                    height: 200,
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                    fit: BoxFit.cover,
-                  ),
-                )
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          widget.snapshot?.data!.docs[widget.index]
+                              .data()!['image_url']!,
+                          height: 200,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                        ),
+                      )
                     : Container()),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -377,6 +362,15 @@ class _postState extends State<post> {
                     Row(
                       children: [
                         _buildPostIcon(Icons.arrow_upward),
+                        Text(
+                          (widget.snapshot?.data.docs[widget.index]
+                                  .data()['rating'])!
+                              .toString(),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black.withOpacity(0.9),
+                              fontWeight: FontWeight.bold),
+                        ),
                         _buildPostIcon(Icons.arrow_downward),
                       ],
                     ),
@@ -396,11 +390,12 @@ class wideButton extends StatefulWidget {
   late Future<void> onPressed;
   late Color? color;
 
-  wideButton({Key? key,
-    required this.height,
-    required this.width,
-    required this.onPressed,
-    this.color})
+  wideButton(
+      {Key? key,
+      required this.height,
+      required this.width,
+      required this.onPressed,
+      this.color})
       : super(key: key);
 
   @override
@@ -417,7 +412,7 @@ class _wideButtonState extends State<wideButton> {
           shadowColor: appTheme,
           elevation: 17,
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
           fixedSize: Size(widget.width * 0.9, widget.height * 0.055),
           textStyle: const TextStyle(
             fontSize: 20,
