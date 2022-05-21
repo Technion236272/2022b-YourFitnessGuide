@@ -26,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String username = '';
   var posts;
   ListView? postsCards = null;
+  ListView? meals = null;
+  ListView? workouts = null;
   bool noPosts = false;
 
   get uid => widget.uid;
@@ -129,10 +131,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               height: height * 0.01,
             ),
-            Flexible(child: Text(text, style: TextStyle(
-                fontSize: 20
-            ),)),
-            Flexible(child: Image.asset(
+            Flexible(
+                child: Text(
+              text,
+              style: TextStyle(fontSize: 20),
+            )),
+            Flexible(
+                child: Image.asset(
               'images/decorations/404.png',
               width: width * 0.3,
               height: height * 0.3,
@@ -243,8 +248,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ]
                             : [
                                 postsCards ?? _buildTab(),
-                                postsCards ?? _buildTab(),
-                                postsCards ?? _buildTab(),
+                                meals ?? _buildTab(category: "Meal Plan"),
+                                workouts ?? _buildTab(category: "Workout"),
                                 postsCards ?? _buildTab(),
                               ])
                         : (noPosts
@@ -258,8 +263,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ]
                             : [
                                 postsCards ?? _buildTab(),
-                                postsCards ?? _buildTab(),
-                                postsCards ?? _buildTab(),
+                                meals ?? _buildTab(category: "Meal Plan"),
+                                workouts ?? _buildTab(category: "Workout"),
                               ]),
                   ),
                 ),
@@ -267,8 +272,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             )));
   }
 
-  Widget _buildTab() {
-    postsCards = ListView.builder(
+  ListView _buildTab({String? category}) {
+    var tmp = ListView.builder(
       //separatorBuilder: (context, index) => const Divider(),
       itemCount: posts.data == null ? 0 : posts.data!.docs.length,
       itemBuilder: (context, index) {
@@ -280,11 +285,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
             posts.data == null) {
           return const Center(child: Text('No data available'));
         }
+        if (category != null) {
+          var currCat = posts?.data!.docs[index].data()!['category'];
+          if (currCat != category) {
+            return Container();
+          }
+          return post(snapshot: posts, index: index);
+        }
         return post(snapshot: posts, index: index);
       },
     );
 
-    return postsCards!;
+    if (category == null) {
+      postsCards = tmp;
+      return postsCards!;
+    }
+    if (category == "Meal Plan") {
+      meals = tmp;
+      return meals!;
+    } else {
+      workouts = tmp;
+      return workouts!;
+    }
   }
 
   @override

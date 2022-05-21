@@ -37,7 +37,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 "Title",
                 style: TextStyle(
                   color: appTheme,
@@ -95,14 +95,14 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
                 controller: descriptionController,
                 textAlign: TextAlign.left,
                 readOnly: true,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.only(bottom: 5),
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom: 5),
                   label: false
                       ? Center(
                     child: Text("Description"),
                   )
                       : Text("Description"),
-                  hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -145,7 +145,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
 
             */
                 Container(
-                  padding: const EdgeInsets.fromLTRB(8, 10, 40, 0),
+                  padding: const EdgeInsets.fromLTRB(8, 0, 40, 0),
                   child: StreamBuilder<Map<String, dynamic>?>(
                       stream: user_data,
                       builder: (context, userSnapshot) {
@@ -163,7 +163,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
                         return ListTile(
                           contentPadding: const EdgeInsets.all(0),
                           leading: CircleAvatar(
-                            radius: 30,
+                            radius: 25,
                             backgroundImage: NetworkImage(
                                 userSnapshot.data!['picture']!),
                           ),
@@ -172,7 +172,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyText1!
-                                  .copyWith(fontSize: 16),
+                                  .copyWith(fontSize: 12),
                               children: <TextSpan>[
                                 TextSpan(
                                     text: post_data['category'],
@@ -198,16 +198,14 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
                                   .textTheme
                                   .bodyText2!
                                   .copyWith(
-                                  fontSize: 13,
+                                  fontSize: 12,
                                   fontWeight:
                                   FontWeight.normal,
                                   color: Colors.grey)),
                         );
                       }),
                 ),
-                Container(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 22, 10),
-                    child: Divider(height:10 ,thickness: 1,color: Colors.black45,)),
+                Divider(height:height * 0.00001 ,thickness: 1,color: Colors.black45,),
                 (post_data!['image_url'] !=
                     null
                     ? ClipRRect(
