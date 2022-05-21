@@ -1,7 +1,8 @@
 import 'dart:io';
-
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'globals.dart';
 
 class GoalChoices extends StatefulWidget {
@@ -42,7 +43,6 @@ class _GoalChoicesState extends State<GoalChoices> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value!;
-                  print(userGoal);
                 })),
         Divider(
           color: Colors.grey,
@@ -58,7 +58,6 @@ class _GoalChoicesState extends State<GoalChoices> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value!;
-                  print(userGoal);
                 })),
         Divider(
           color: Colors.grey,
@@ -74,7 +73,6 @@ class _GoalChoicesState extends State<GoalChoices> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value!;
-                  print(userGoal);
                 })),
         Divider(
           color: Colors.grey,
@@ -90,7 +88,6 @@ class _GoalChoicesState extends State<GoalChoices> {
             activeColor: appTheme,
             onChanged: (value) => setState(() {
                   userGoal = value!;
-                  print(userGoal);
                 })),
       ],
     );
@@ -146,7 +143,9 @@ class textField extends StatefulWidget {
   bool centered;
 
   late String? hint;
-  textField({Key? key, required this.fieldName, this.centered= false,this.hint })
+
+  textField(
+      {Key? key, required this.fieldName, this.centered = false, this.hint})
       : super(key: key);
 
   @override
@@ -156,16 +155,12 @@ class textField extends StatefulWidget {
 class _textFieldState extends State<textField> {
   get controller => widget.controller;
 
-
-
-
   @override
   Widget build(BuildContext context) {
-    print(widget.centered);
     return TextField(
       keyboardType: TextInputType.emailAddress,
       controller: controller,
-      textAlign: widget.centered? TextAlign.center : TextAlign.left,
+      textAlign: widget.centered ? TextAlign.center : TextAlign.left,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.only(bottom: 5),
         label: widget.centered
@@ -175,7 +170,7 @@ class _textFieldState extends State<textField> {
             : Text(widget.fieldName),
         hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
         hintText: widget.hint ?? '',
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           color: appTheme,
           fontSize: 23,
           fontWeight: FontWeight.bold,
@@ -185,3 +180,264 @@ class _textFieldState extends State<textField> {
     );
   }
 }
+
+class post extends StatefulWidget {
+  AsyncSnapshot? snapshot;
+  late int? index = null;
+  bool completed = true;
+  late Image? userPicture = null;
+  late Image? postImage = null;
+  late String? category = null;
+  late String? username = null;
+  late DateTime? date = null;
+
+  post({Key? key, this.index, required this.snapshot}) : super(key: key) {
+    StreamBuilder<Map<String, dynamic>?>(
+        stream: PostManager()
+            .getUserInfo(snapshot?.data!.docs[index].data()!['user_uid'])
+            .asStream(),
+        builder: (context, userSnapshot) {
+          if (userSnapshot.connectionState == ConnectionState.waiting &&
+              userSnapshot.data == null) {
+            return const Center(child: LinearProgressIndicator());
+          }
+          if (userSnapshot.connectionState == ConnectionState.done &&
+              userSnapshot.data == null) {
+            completed = false;
+            return const ListTile();
+          }
+          userPicture = Image.network(userSnapshot.data!['picture']!);
+          category = snapshot?.data!.docs[index].data()!['category'];
+          username = userSnapshot.data!['name'];
+          date = snapshot?.data!.docs[index].data()!['createdAt'] != null
+              ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
+              : DateTime.now();
+
+          return const ListTile();
+        });
+  }
+  State<post> createState() => _postState();
+
+}
+
+class _postState extends State<post> {
+  final _postManager = PostManager();
+
+  Widget _buildPostIcon(IconData ic) {
+    return IconButton(
+        onPressed: () {
+          const _snackBar = SnackBar(content: Text('Not implemented yet'));
+          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+        },
+        icon: Icon(ic, color: Colors.grey));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        //TODO: Saleh/ Mohamed: Navigate to viewing post, for Mohamad: Saleh saved post_uid, utilize it
+        print('Navigate to post');
+      },
+      child: Card(
+          elevation: 8,
+          color: Theme.of(context).cardColor,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// user pic + name + 3 dots
+                StreamBuilder<Map<String, dynamic>?>(
+                    stream: _postManager
+                        .getUserInfo(widget.snapshot?.data!.docs[widget.index]
+                            .data()!['user_uid'])
+                        .asStream(),
+                    builder: (context, userSnapshot) {
+                      if (userSnapshot.connectionState ==
+                              ConnectionState.waiting &&
+                          userSnapshot.data == null) {
+                        return const Center(child: LinearProgressIndicator());
+                      }
+                      if (userSnapshot.connectionState ==
+                              ConnectionState.done &&
+                          userSnapshot.data == null) {
+                        return const ListTile();
+                      }
+                      return ListTile(
+                        contentPadding: const EdgeInsets.all(0),
+                        leading: CircleAvatar(
+                          radius: 30,
+                          backgroundImage: widget.userPicture != null? widget.userPicture?.image :
+                              NetworkImage(userSnapshot.data!['picture']!),
+                        ),
+                        title: RichText(
+                          text: TextSpan(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(fontSize: 16),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: widget.category != null? widget.category : widget
+                                      .snapshot?.data!.docs[widget.index]
+                                      .data()!['category'],
+                                  style: TextStyle(
+                                      //fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .appBarTheme
+                                          .backgroundColor)),
+                              const TextSpan(text: ' by '),
+                              TextSpan(text: userSnapshot.data!['name']),
+                            ],
+                          ),
+                        ),
+                        subtitle: Text( widget.date != null? timeago.format(widget.date!, allowFromNow: true):
+                            timeago.format(
+                                widget.snapshot?.data!.docs[widget.index]
+                                            .data()!['createdAt'] !=
+                                        null
+                                    ? widget.snapshot?.data!.docs[widget.index]
+                                        .data()!['createdAt']
+                                        .toDate()
+                                    : DateTime.now(),
+                                allowFromNow: true),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText2!
+                                .copyWith(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.normal,
+                                    color: Colors.grey)),
+                        trailing: IconButton(
+                            onPressed: null,
+                            icon: Icon(
+                              Icons.more_horiz,
+                              color: Theme.of(context).iconTheme.color,
+                            )),
+                      );
+                    }),
+                Text(
+                  widget.snapshot?.data!.docs[widget.index].data()!['title']!,
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 5),
+                (widget.snapshot?.data!.docs[widget.index]
+                            .data()!['image_url'] !=
+                        null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          widget.snapshot?.data!.docs[widget.index]
+                              .data()!['image_url']!,
+                          height: 200,
+                          width: MediaQuery.of(context).size.width,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Container()),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        _buildPostIcon(Icons.arrow_upward),
+                        _buildPostIcon(Icons.arrow_downward),
+                      ],
+                    ),
+                    _buildPostIcon(Icons.chat_bubble),
+                    _buildPostIcon(Icons.bookmark),
+                  ],
+                )
+              ],
+            ),
+          )),
+    );
+  }
+}
+
+class wideButton extends StatefulWidget {
+  late double height, width;
+  late Future<void> onPressed;
+  late Color? color;
+
+  wideButton(
+      {Key? key,
+      required this.height,
+      required this.width,
+      required this.onPressed,
+      this.color})
+      : super(key: key);
+
+  @override
+  State<wideButton> createState() => _wideButtonState();
+}
+
+class _wideButtonState extends State<wideButton> {
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      child: const Text("SIGN UP"),
+      style: ElevatedButton.styleFrom(
+          primary: widget.color ?? const Color(0xff84C59E),
+          shadowColor: appTheme,
+          elevation: 17,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          fixedSize: Size(widget.width * 0.9, widget.height * 0.055),
+          textStyle: const TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+          )),
+      onPressed: () {
+        widget.onPressed;
+      },
+    );
+  }
+}
+
+/*
+return ElevatedButton(
+      child: const Text("SIGN IN"),
+      style: ElevatedButton.styleFrom(
+          primary: const Color(0xff84C59E),
+          shadowColor: appTheme,
+          elevation: 17,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          fixedSize: Size(width * 0.9, height * 0.055),
+          textStyle: const TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+          )),
+      onPressed: () async {
+        _validateLogin();
+      },
+    );
+
+
+    ElevatedButton(
+                      child: const Text("SIGN UP"),
+                      style: ElevatedButton.styleFrom(
+                          primary: const Color(0xff84C59E),
+                          shadowColor: appTheme,
+                          elevation: 17,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          fixedSize: Size(width * 0.9, height * 0.055),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          )),
+                      onPressed: () {
+                        _validateSignUp();
+                      },
+                    ),
+
+
+
+
+
+
+ */

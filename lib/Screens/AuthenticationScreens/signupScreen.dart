@@ -71,14 +71,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       child: Center(
                         child: Text(fieldText),
                       )),
-                  labelStyle: TextStyle(
+                  labelStyle: const TextStyle(
                     color: appTheme,
                     fontSize: 23,
                     fontWeight: FontWeight.bold,
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                   suffixIcon: IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.remove_red_eye,
                       color: appTheme,
                     ),
@@ -157,9 +157,8 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     if (signinRes > 0) {
-      Navigator.pop(context);
-      Navigator.pushReplacementNamed(context, homeRoute);
-      Navigator.pushNamed(context, setupProfileRoute);
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/setup', (_) => false);
     } else {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
@@ -198,7 +197,6 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     var res = await user.signUp(email, password);
-    print(res.runtimeType);
     if (res is UserCredential) {
       Navigator.pop(context);
       Navigator.pushReplacementNamed(context, setupProfileRoute);
@@ -294,7 +292,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 padding: EdgeInsets.only(top: height * 0.03),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Text(
                       '- OR -',
                       style: TextStyle(
