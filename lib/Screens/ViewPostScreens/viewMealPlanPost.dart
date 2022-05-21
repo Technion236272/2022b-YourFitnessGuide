@@ -248,7 +248,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     Widget content = Column(
       children: [
         SizedBox(height: height * 0.02,),
-        Text(stat, style: TextStyle(color: appTheme, fontSize: 17, fontWeight: FontWeight.bold),),
+        Text(stat, style: TextStyle(color: appTheme, fontSize: 16, fontWeight: FontWeight.bold),),
         Text(val, style: TextStyle(color: appTheme, fontSize: 19)),
       ],
     );
@@ -269,6 +269,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         child: content);
   }
 
+  /*
   Widget _buildMealName(double height) {
     final iconSize = height * 0.050;
     return Row(
@@ -308,7 +309,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         ),
       ],
     );
-  }
+  }*/
 
   Widget _buildContents(double height) {
     final iconSize = height * 0.050;
@@ -490,7 +491,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
       context: context,
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(10, 50, 10, 200),
+          padding: const EdgeInsets.fromLTRB(10, 150, 10, 200),
           child: Dialog(
               insetPadding: const EdgeInsets.all(5),
               shape: RoundedRectangleBorder(
@@ -502,11 +503,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(
-                      height: height * 0.012,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                      child: _buildMealName(height),
+                      height: height * 0.01,
                     ),
                     Container(
                       padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),

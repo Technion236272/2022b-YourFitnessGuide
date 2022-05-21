@@ -7,6 +7,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class ViewBlogPostScreen extends StatefulWidget {
   late var post_data;
+
   ViewBlogPostScreen({Key? key, this.post_data}) : super(key: key);
 
   @override
@@ -16,6 +17,7 @@ class ViewBlogPostScreen extends StatefulWidget {
 class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
   TextEditingController postNameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
   get post_data => widget.post_data;
   final PostManager _postManager = PostManager();
   late var user_data;
@@ -78,7 +80,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-             /* Text(
+              /* Text(
                 "Description",
                 style: TextStyle(
                   color: appTheme,
@@ -96,21 +98,21 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
                 textAlign: TextAlign.left,
                 readOnly: true,
                 decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.only(bottom: 5),
-                  label: false
-                      ? Center(
-                    child: Text("Description"),
-                  )
-                      : Text("Description"),
-                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
-                  labelStyle: TextStyle(
-                    color: appTheme,
-                    fontSize: 27,
-                    fontWeight: FontWeight.normal,
-                  ),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  border: InputBorder.none
-                ),
+                    contentPadding: EdgeInsets.only(bottom: 5),
+                    label: false
+                        ? Center(
+                            child: Text("Description"),
+                          )
+                        : Text("Description"),
+                    hintStyle:
+                        TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                    labelStyle: TextStyle(
+                      color: appTheme,
+                      fontSize: 27,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    border: InputBorder.none),
               )
             ],
           ),
@@ -126,105 +128,85 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
     final width = screenSize.width;
     postNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
-    user_data=_postManager.getUserInfo(post_data["user_uid"]).asStream();
+    user_data = _postManager.getUserInfo(post_data["user_uid"]).asStream();
 
     return Scaffold(
       appBar: AppBar(
-          title:  Text('${post_data["title"]}'),
+          title: Text('${post_data["title"]}'),
           backgroundColor: appTheme,
           centerTitle: false),
-      body: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-
-            SizedBox(height: height * 0.012),
-           /* Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildPostName(height)),
-
-            */
-                Container(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 40, 0),
-                  child: StreamBuilder<Map<String, dynamic>?>(
-                      stream: user_data,
-                      builder: (context, userSnapshot) {
-                        if (userSnapshot.connectionState ==
-                            ConnectionState.waiting &&
-                            userSnapshot.data == null) {
-                          return const Center(
-                              child: LinearProgressIndicator());
-                        }
-                        if (userSnapshot.connectionState ==
-                            ConnectionState.done &&
-                            userSnapshot.data == null) {
-                          return const ListTile();
-                        }
-                        return ListTile(
-                          contentPadding: const EdgeInsets.all(0),
-                          leading: CircleAvatar(
-                            radius: 25,
-                            backgroundImage: NetworkImage(
-                                userSnapshot.data!['picture']!),
-                          ),
-                          title: RichText(
-                            text: TextSpan(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(fontSize: 12),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: post_data['category'],
-                                    style: TextStyle(
-                                        fontWeight:
-                                        FontWeight.bold,
-                                        color: Theme.of(context)
-                                            .appBarTheme
-                                            .backgroundColor)),
-                                const TextSpan(text: ' by '),
-                                TextSpan(
-                                    text: userSnapshot
-                                        .data!['name']),
-                              ],
-                            ),
-                          ),
-                          subtitle: Text(
-                              timeago.format(
-                                  post_data['createdAt']
-                                      .toDate(),
-                                  allowFromNow: true),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2!
-                                  .copyWith(
-                                  fontSize: 12,
-                                  fontWeight:
-                                  FontWeight.normal,
-                                  color: Colors.grey)),
-                        );
-                      }),
-                ),
-                Divider(height:height * 0.00001 ,thickness: 1,color: Colors.black45,),
-                (post_data!['image_url'] !=
-                    null
-                    ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    post_data!['image_url']!,
-                    height: 300,
-                    width:
-                    MediaQuery.of(context).size.width*0.9,
-                    fit: BoxFit.cover,
+      body:
+          Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+        SizedBox(height: height * 0.012),
+        Container(
+          padding: const EdgeInsets.fromLTRB(8, 0, 40, 0),
+          child: StreamBuilder<Map<String, dynamic>?>(
+              stream: user_data,
+              builder: (context, userSnapshot) {
+                if (userSnapshot.connectionState == ConnectionState.waiting &&
+                    userSnapshot.data == null) {
+                  return const Center(child: LinearProgressIndicator());
+                }
+                if (userSnapshot.connectionState == ConnectionState.done &&
+                    userSnapshot.data == null) {
+                  return const ListTile();
+                }
+                return ListTile(
+                  contentPadding: const EdgeInsets.all(0),
+                  leading: CircleAvatar(
+                    radius: 25,
+                    backgroundImage:
+                        NetworkImage(userSnapshot.data!['picture']!),
                   ),
-                )
-                    : const Padding(
-                    padding: EdgeInsets.all(0))),
-
-            Container(
-                padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
-                child: _buildDescription(height)),
-          ])),
+                  title: RichText(
+                    text: TextSpan(
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1!
+                          .copyWith(fontSize: 12),
+                      children: <TextSpan>[
+                        TextSpan(
+                            text: post_data['category'],
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context)
+                                    .appBarTheme
+                                    .backgroundColor)),
+                        const TextSpan(text: ' by '),
+                        TextSpan(text: userSnapshot.data!['name']),
+                      ],
+                    ),
+                  ),
+                  subtitle: Text(
+                      timeago.format(post_data['createdAt'].toDate(),
+                          allowFromNow: true),
+                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.grey)),
+                );
+              }),
+        ),
+        Divider(
+          height: height * 0.00001,
+          thickness: 1,
+          color: Colors.black45,
+        ),
+        (post_data!['image_url'] != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  post_data!['image_url']!,
+                  height: 300,
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  fit: BoxFit.cover,
+                ),
+              )
+            : const Padding(padding: EdgeInsets.all(0))),
+        Container(
+            padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
+            child: _buildDescription(height)),
+      ]),
       resizeToAvoidBottomInset: false,
     );
   }
