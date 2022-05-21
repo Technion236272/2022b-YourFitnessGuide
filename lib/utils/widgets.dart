@@ -338,7 +338,7 @@ class _postState extends State<post> {
                         trailing: widget.screen == 'timeline'? null: PopupMenuButton(
                           icon: const Icon(Icons.more_horiz),
                           onSelected: (value) {
-                            print('Deleting post');
+                            PostManager().deletePost(widget.snapshot?.data!.docs[widget.index].id);
                           },
                           itemBuilder: (BuildContext context) => [
                             PopupMenuItem(value: 1, child: Text('Delete post'))

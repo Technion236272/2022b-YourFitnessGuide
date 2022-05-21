@@ -173,6 +173,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     }
+    notifyListeners();
     return isSubmitted;
   }
 
@@ -184,7 +185,13 @@ class PostManager with ChangeNotifier {
   Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
     final Query<Map<String, dynamic>> _userPosts =
     _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid);
+    notifyListeners();
     return _userPosts.orderBy('createdAt',descending: true).snapshots();
+  }
+
+  Future<void> deletePost(String postUid) async {
+    _postCollection.doc(postUid).delete();
+    notifyListeners();
   }
 
   ///get user info from db
@@ -200,6 +207,7 @@ class PostManager with ChangeNotifier {
         userData = null;
       }
     });
+    notifyListeners();
     return userData;
   }
 }
