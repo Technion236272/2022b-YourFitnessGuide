@@ -100,7 +100,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       }
                       return post(
                         index: index,
-                        snapshot: snapshot,
+                        snapshot: snapshot,screen: "timeline",
                       );
                     },
                   ));

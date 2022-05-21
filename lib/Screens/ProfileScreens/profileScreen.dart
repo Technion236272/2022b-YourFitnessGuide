@@ -290,9 +290,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (currCat != category) {
             return Container();
           }
-          return post(snapshot: posts, index: index);
+          return post(snapshot: posts, index: index,screen: 'profile',);
         }
-        return post(snapshot: posts, index: index);
+        return post(snapshot: posts, index: index, screen: 'profile',);
       },
     );
 
@@ -368,7 +368,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       snapshot.data == null) {
                     return const Center(child: Text('No data available'));
                   }
-                  return post(snapshot: snapshot, index: index);
+                  return post(snapshot: snapshot, index: index, screen: 'profile',);
                 },
               ));
         });
