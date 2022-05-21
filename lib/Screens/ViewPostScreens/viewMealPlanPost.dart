@@ -7,6 +7,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class ViewMealPlanScreen extends StatefulWidget {
   late var post_data;
+
   ViewMealPlanScreen({Key? key, this.post_data}) : super(key: key);
 
   @override
@@ -28,6 +29,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
   bool? gainWeight = false;
   bool? maintainHealth = false;
   bool selectedGoal = false;
+  late double height, width;
   final List<String?> _mealNames = [];
   final List<String?> _mealIngredients = [];
   final List<Widget> _list = [];
@@ -84,7 +86,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                         index = _mealNames.indexOf("$Name");
                         String? meal_name = _mealNames.elementAt(index);
                         String? meal_ingredient =
-                            _mealIngredients.elementAt(index);
+                        _mealIngredients.elementAt(index);
                         createMealDialog(context, meal_name, meal_ingredient);
                       },
                     ),
@@ -104,7 +106,6 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
       if (name != "") _list.add(_buildButton(name, height, width));
     });
   }
-
 
   Widget _buildmealPlanName(double height) {
     final iconSize = height * 0.050;
@@ -166,7 +167,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-             /* Text(
+              /* Text(
                 "Description",
                 style: TextStyle(
                   color: appTheme,
@@ -190,15 +191,15 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                       child: Text("Description"),
                     )
                         : Text("Description"),
-                    hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                    hintStyle: const TextStyle(
+                        height: 1, fontSize: 16, color: Colors.grey),
                     labelStyle: TextStyle(
                       color: appTheme,
                       fontSize: 27,
                       fontWeight: FontWeight.normal,
                     ),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    border: InputBorder.none
-                ),
+                    border: InputBorder.none),
               )
             ],
           ),
@@ -240,6 +241,32 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         ),
       ],
     );
+  }
+
+  Widget _buildStat(String stat, TextEditingController ctrl) {
+    var val = ctrl.text;
+    Widget content = Column(
+      children: [
+        SizedBox(height: height * 0.02,),
+        Text(stat, style: TextStyle(color: appTheme, fontSize: 17, fontWeight: FontWeight.bold),),
+        Text(val, style: TextStyle(color: appTheme, fontSize: 19)),
+      ],
+    );
+    return Container(
+        height: height * 0.1,
+        width: height * 0.1,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              offset: Offset(0, 2),
+              blurRadius: 6.0,
+            ),
+          ],
+        ),
+        child: content);
   }
 
   Widget _buildMealName(double height) {
@@ -382,81 +409,25 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              readOnly: true,
-
-              decoration: InputDecoration(
-                border:InputBorder.none ,
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Kcal",
-                labelStyle: TextStyle(
-                  color: appTheme,
-                  fontSize: 21,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              controller: KcalController,
-            )),
+            Expanded(child: _buildStat('Kcal', KcalController)),
             SizedBox(
               width: 0.05 * width,
             ),
             Expanded(
-              child: TextField(
-                keyboardType: TextInputType.number,
-                readOnly: true,
-                decoration: InputDecoration(
-                  border:InputBorder.none ,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  labelText: "Proteins",
-                  labelStyle: TextStyle(
-                    color: appTheme,
-                    fontSize: 21,
-                  ),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                ),
-                controller: ProtiensController,
-              ),
+              child: _buildStat('Proteins', ProtiensController),
             ),
             SizedBox(
               width: 0.05 * width,
             ),
             Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              readOnly: true,
-              decoration: InputDecoration(
-                border:InputBorder.none ,
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Carbs",
-                labelStyle: TextStyle(
-                  color: appTheme,
-                  fontSize: 21,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              controller: CarbsController,
-            )),
+              child: _buildStat('Carbs', CarbsController),
+            ),
             SizedBox(
               width: 0.05 * width,
             ),
             Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              readOnly: true,
-              decoration: InputDecoration(
-                border:InputBorder.none ,
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Fats",
-                labelStyle: TextStyle(
-                  color: appTheme,
-                  fontSize: 21,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              controller: FatsController,
-            ))
+              child: _buildStat('Fats', FatsController),
+            )
           ],
         ));
   }
@@ -571,8 +542,8 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final height = screenSize.height;
-    final width = screenSize.width;
+    height = screenSize.height;
+    width = screenSize.width;
     mealPlanNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
     KcalController.text = post_data["meals_contents"][0].toString();
@@ -580,19 +551,19 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     CarbsController.text = post_data["meals_contents"][2].toString();
     FatsController.text = post_data["meals_contents"][3].toString();
     //print(post_data);
-    if(_mealNames.isEmpty) {
+    if (_mealNames.isEmpty) {
       for (int i = 0; i < post_data["meals_name"].length; i++) {
         _mealNames.add(post_data["meals_name"][i] as String);
         _mealIngredients.add(post_data["meals_ingredients"][i] as String);
         _addButtonWidget(post_data["meals_name"][i], height, width);
       }
     }
-    user_data=_postManager.getUserInfo(post_data["user_uid"]).asStream();
+    user_data = _postManager.getUserInfo(post_data["user_uid"]).asStream();
     // for
 
     return Scaffold(
       appBar: AppBar(
-        title:  Text(
+        title: Text(
           '${post_data["title"]}',
         ),
         backgroundColor: appTheme,
@@ -600,12 +571,11 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
       ),
       body: SingleChildScrollView(
           child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Column(mainAxisAlignment: MainAxisAlignment.start, children: <
+                Widget>[
               SizedBox(
                 height: height * 0.012,
               ),
@@ -616,83 +586,70 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
               ),
                */
               Container(
-                padding: const EdgeInsets.fromLTRB(8, 10, 40, 0),
+                padding: const EdgeInsets.fromLTRB(8, 0, 40, 0),
                 child: StreamBuilder<Map<String, dynamic>?>(
                     stream: user_data,
                     builder: (context, userSnapshot) {
-                      if (userSnapshot.connectionState ==
-                          ConnectionState.waiting &&
+                      if (userSnapshot.connectionState == ConnectionState.waiting &&
                           userSnapshot.data == null) {
-                        return const Center(
-                            child: LinearProgressIndicator());
+                        return const Center(child: LinearProgressIndicator());
                       }
-                      if (userSnapshot.connectionState ==
-                          ConnectionState.done &&
+                      if (userSnapshot.connectionState == ConnectionState.done &&
                           userSnapshot.data == null) {
                         return const ListTile();
                       }
                       return ListTile(
                         contentPadding: const EdgeInsets.all(0),
                         leading: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: NetworkImage(
-                              userSnapshot.data!['picture']!),
+                          radius: 25,
+                          backgroundImage:
+                          NetworkImage(userSnapshot.data!['picture']!),
                         ),
                         title: RichText(
                           text: TextSpan(
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!
-                                .copyWith(fontSize: 16),
+                                .copyWith(fontSize: 12),
                             children: <TextSpan>[
                               TextSpan(
                                   text: post_data['category'],
                                   style: TextStyle(
-                                      fontWeight:
-                                      FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .appBarTheme
                                           .backgroundColor)),
                               const TextSpan(text: ' by '),
-                              TextSpan(
-                                  text: userSnapshot
-                                      .data!['name']),
+                              TextSpan(text: userSnapshot.data!['name']),
                             ],
                           ),
                         ),
                         subtitle: Text(
-                            timeago.format(
-                                post_data['createdAt']
-                                    .toDate(),
+                            timeago.format(post_data['createdAt'].toDate(),
                                 allowFromNow: true),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2!
-                                .copyWith(
-                                fontSize: 13,
-                                fontWeight:
-                                FontWeight.normal,
+                            style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.normal,
                                 color: Colors.grey)),
                       );
                     }),
               ),
-              Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 22, 10),
-                  child: Divider(height:10 ,thickness: 1,color: Colors.black45,)),
-              (post_data!['image_url'] !=
-                  null
+              Divider(
+                height: height * 0.00001,
+                thickness: 1,
+                color: Colors.black45,
+              ),
+              (post_data!['image_url'] != null
                   ? ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
                   post_data!['image_url']!,
                   height: 300,
-                  width:
-                  MediaQuery.of(context).size.width*0.9,
+                  width: MediaQuery.of(context).size.width * 0.9,
                   fit: BoxFit.cover,
                 ),
               )
-                  : const Padding(
-                  padding: EdgeInsets.all(0))),
+                  : const Padding(padding: EdgeInsets.all(0))),
               Container(
                 padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
                 child: _buildDescription(height),
@@ -710,7 +667,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                 child: _buildMealContents(height, width),
               ),
             ]),
-      )),
+          )),
       resizeToAvoidBottomInset: true,
     );
   }

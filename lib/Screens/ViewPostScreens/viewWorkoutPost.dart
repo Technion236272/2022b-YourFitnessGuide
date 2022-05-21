@@ -300,7 +300,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
 
                */
               Container(
-                padding: const EdgeInsets.fromLTRB(8, 1, 40, 0),
+                padding: const EdgeInsets.fromLTRB(8, 1, 0, 0),
                 child: StreamBuilder<Map<String, dynamic>?>(
                     stream: user_data,
                     builder: (context, userSnapshot) {
@@ -318,7 +318,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                       return ListTile(
                         contentPadding: const EdgeInsets.all(0),
                         leading: CircleAvatar(
-                          radius: 30,
+                          radius: 25,
                           backgroundImage: NetworkImage(
                               userSnapshot.data!['picture']!),
                         ),
@@ -327,7 +327,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!
-                                .copyWith(fontSize: 16),
+                                .copyWith(fontSize: 12),
                             children: <TextSpan>[
                               TextSpan(
                                   text: post_data['category'],
@@ -353,16 +353,14 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                                 .textTheme
                                 .bodyText2!
                                 .copyWith(
-                                fontSize: 13,
+                                fontSize: 12,
                                 fontWeight:
                                 FontWeight.normal,
                                 color: Colors.grey)),
                       );
                     }),
               ),
-              Container(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 22, 10),
-                  child: Divider(height:10 ,thickness: 1,color: Colors.black45,)),
+              Divider(height:height * 0.00001 ,thickness: 1,color: Colors.black45,),
               (post_data!['image_url'] !=
                   null
                   ? ClipRRect(
