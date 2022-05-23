@@ -59,6 +59,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     }
+    notifyListeners();
     return isSubmitted;
   }
 
@@ -113,6 +114,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     }
+    notifyListeners();
     return isSubmitted;
   }
 
@@ -121,7 +123,7 @@ class PostManager with ChangeNotifier {
       required description,
       File? postImage,
       required goals,
-       required mealsContents ,
+      required mealsContents,
       required mealsName,
       required mealsIngredients}) async {
     bool isSubmitted = false;
@@ -183,15 +185,21 @@ class PostManager with ChangeNotifier {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
-    final Query<Map<String, dynamic>> _userPosts =
-    _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid);
+    final Query<Map<String, dynamic>> _userPosts = _firebaseFirestore
+        .collection("posts")
+        .where('user_uid', isEqualTo: uid);
     notifyListeners();
-    return _userPosts.orderBy('createdAt',descending: true).snapshots();
+    return _userPosts.orderBy('createdAt', descending: true).snapshots();
   }
 
   Future<void> deletePost(String postUid) async {
     _postCollection.doc(postUid).delete();
     notifyListeners();
+  }
+
+  Future<bool> checkPostsExists(String postUid) async {
+    var tmp = await _postCollection.doc(postUid).get();
+    return tmp.exists;
   }
 
   ///get user info from db

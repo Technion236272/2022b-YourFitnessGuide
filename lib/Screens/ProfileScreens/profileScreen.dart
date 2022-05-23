@@ -29,9 +29,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ListView? meals = null;
   ListView? workouts = null;
   bool noPosts = false;
-
+  List<String>? savedPosts = null;
   get uid => widget.uid;
-  int rating = 0, savedNum = 0, followingNum = 0, followersNum = 0;
+  int rating = 0,
+      savedNum = 0,
+      followingNum = 0,
+      followersNum = 0;
 
   //Card posts = [];
 
@@ -71,8 +74,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: visiting
               ? Container()
               : Container(
-                  child: _buildStatline('Saved', savedNum),
-                ),
+            child: _buildStatline('Saved', savedNum),
+          ),
         ),
         imageContainer(
           height: height,
@@ -97,26 +100,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildTabHeader(String tabText) {
     return Tab(
         child: Text(
-      tabText,
-      style:
+          tabText,
+          style:
           TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-    ));
+        ));
   }
 
   Widget _buildTabBar() {
     return TabBar(
       tabs: !visiting
           ? [
-              _buildTabHeader('All posts'),
-              _buildTabHeader('Meals'),
-              _buildTabHeader('Workouts'),
-              _buildTabHeader('Saved'),
-            ]
+        _buildTabHeader('All posts'),
+        _buildTabHeader('Meals'),
+        _buildTabHeader('Workouts'),
+        _buildTabHeader('Saved'),
+      ]
           : [
-              _buildTabHeader('All posts'),
-              _buildTabHeader('Meals'),
-              _buildTabHeader('Workouts'),
-            ],
+        _buildTabHeader('All posts'),
+        _buildTabHeader('Meals'),
+        _buildTabHeader('Workouts'),
+      ],
     );
   }
 
@@ -125,25 +128,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: Colors.grey[200],
         child: Center(
             child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            SizedBox(
-              height: height * 0.01,
-            ),
-            Flexible(
-                child: Text(
-              text,
-              style: TextStyle(fontSize: 20),
-            )),
-            Flexible(
-                child: Image.asset(
-              'images/decorations/404.png',
-              width: width * 0.3,
-              height: height * 0.3,
-            ))
-          ],
-        )));
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  height: height * 0.01,
+                ),
+                Flexible(
+                    child: Text(
+                      text,
+                      style: TextStyle(fontSize: 20),
+                    )),
+                Flexible(
+                    child: Image.asset(
+                      'images/decorations/404.png',
+                      width: width * 0.3,
+                      height: height * 0.3,
+                    ))
+              ],
+            )));
     return Image.asset(
       'images/decorations/LoginDecoration.png',
       width: width * 0.01,
@@ -154,11 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildView(double height, double width) {
     if (userData != null) {
       profileImage = userData?.pictureUrl;
-      rating = userData?.rating;
-      savedNum = userData?.saved;
-      followingNum = userData?.following;
-      followersNum = userData?.followers;
-      username = userData?.name ?? 'McLovin';
+      rating = 0;
+      followingNum = 0;
+      followersNum = 0;
+      username = userData?.name ?? 'Mclovin';
     }
     return DefaultTabController(
         length: visiting ? 3 : 4,
@@ -169,31 +171,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               actions: visiting
                   ? []
                   : [
-                      Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/edit');
-                                  },
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                  )),
-                              IconButton(
-                                  onPressed: () {
-                                    user.signOut();
-                                    Navigator.pushNamedAndRemoveUntil(
-                                        context, '/home', (_) => false);
-                                  },
-                                  icon: const Icon(
-                                    Icons.logout,
-                                    color: Colors.white,
-                                  ))
-                            ],
-                          )),
-                    ],
+                Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/edit');
+                            },
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                            )),
+                        IconButton(
+                            onPressed: () {
+                              user.signOut();
+                              Navigator.pushNamedAndRemoveUntil(
+                                  context, '/home', (_) => false);
+                            },
+                            icon: const Icon(
+                              Icons.logout,
+                              color: Colors.white,
+                            ))
+                      ],
+                    )),
+              ],
             ),
             body: Column(
               children: [
@@ -204,27 +206,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         followingNum, followersNum)),
                 !visiting
                     ? Container(
-                        padding: EdgeInsets.only(bottom: height * 0.008),
-                      )
+                  padding: EdgeInsets.only(bottom: height * 0.008),
+                )
                     : ElevatedButton(
-                        child: const Text("Follow"),
-                        style: ElevatedButton.styleFrom(
-                            primary: const Color(0xff84C59E),
-                            shadowColor: appTheme,
-                            side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0)),
-                            fixedSize: Size(width * 0.25, height * 0.03),
-                            textStyle: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            )),
-                        onPressed: () async {
-                          const snackBar =
-                              SnackBar(content: Text('Feature coming soon'));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        },
-                      ),
+                  child: const Text("Follow"),
+                  style: ElevatedButton.styleFrom(
+                      primary: const Color(0xff84C59E),
+                      shadowColor: appTheme,
+                      side: BorderSide(
+                          width: 2.0, color: Colors.black.withOpacity(0.5)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)),
+                      fixedSize: Size(width * 0.25, height * 0.03),
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        color: Colors.white,
+                      )),
+                  onPressed: () async {
+                    const snackBar =
+                    SnackBar(content: Text('Feature coming soon'));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  },
+                ),
                 SizedBox(
                   height: height * 0.05,
                 ),
@@ -236,36 +239,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: TabBarView(
                     children: !visiting
                         ? (noPosts
-                            ? [
-                                emptyNote(height, width,
-                                    'You haven\'t published a post yet'),
-                                emptyNote(height, width,
-                                    'You haven\'t published a post yet'),
-                                emptyNote(height, width,
-                                    'You haven\'t published a post yet'),
-                                emptyNote(height, width,
-                                    'You haven\'t saved a post yet'),
-                              ]
-                            : [
-                                postsCards ?? _buildTab(),
-                                meals ?? _buildTab(category: "Meal Plan"),
-                                workouts ?? _buildTab(category: "Workout"),
-                                postsCards ?? _buildTab(),
-                              ])
+                        ? [
+                      emptyNote(height, width,
+                          'You haven\'t published a post yet'),
+                      emptyNote(height, width,
+                          'You haven\'t published a post yet'),
+                      emptyNote(height, width,
+                          'You haven\'t published a post yet'),
+                      savedNum == 0 ? emptyNote(height, width,
+                          'You haven\'t saved a post yet') : (_buildSaved()),
+                    ]
+                        : [
+                      _buildTab(),
+                      _buildTab(category: "Meal Plan"),
+                      _buildTab(category: "Workout"),
+                      savedNum == 0 ? emptyNote(height, width,
+                          'You haven\'t saved a post yet') : (_buildSaved()),
+                    ])
                         : (noPosts
-                            ? [
-                                emptyNote(height, width,
-                                    'User hasn\'t published a post yet'),
-                                emptyNote(height, width,
-                                    'User hasn\'t published a post yet'),
-                                emptyNote(height, width,
-                                    'User hasn\'t published a post yet'),
-                              ]
-                            : [
-                                postsCards ?? _buildTab(),
-                                meals ?? _buildTab(category: "Meal Plan"),
-                                workouts ?? _buildTab(category: "Workout"),
-                              ]),
+                        ? [
+                      emptyNote(height, width,
+                          'User hasn\'t published a post yet'),
+                      emptyNote(height, width,
+                          'User hasn\'t published a post yet'),
+                      emptyNote(height, width,
+                          'User hasn\'t published a post yet'),
+                    ]
+                        : [
+                      _buildTab(),
+                      _buildTab(category: "Meal Plan"),
+                      _buildTab(category: "Workout"),
+                    ]),
                   ),
                 ),
               ],
@@ -290,9 +294,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (currCat != category) {
             return Container();
           }
-          return post(snapshot: posts, index: index,screen: 'profile',);
+          return post(snapshot: posts,
+            index: index,
+            screen: visiting ? 'timeline' : 'profile',);
         }
-        return post(snapshot: posts, index: index, screen: 'profile',);
+        return post(snapshot: posts,
+          index: index,
+          screen: visiting ? 'timeline' : 'profile',);
       },
     );
 
@@ -309,10 +317,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved(
+      {String? category}) {
+    int counter = 0;
+    return StreamBuilder(
+      stream: PostManager().getAllPosts(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text(username),
+            ),
+            body: const Center(child: CircularProgressIndicator.adaptive()),
+          );
+        }
+        if (snapshot.hasError) {
+          Navigator.pop(context);
+          const snackBar = SnackBar(content: Text('Something went wrong'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        posts = snapshot;
+
+        return ListView.builder(
+            itemCount: posts.data == null ? 0 : posts.data!.docs.length,
+            itemBuilder: (context, index) {
+              var currPost = posts?.data!.docs[index].id;
+              if(savedPosts!.contains(currPost))
+                {
+                  return post(snapshot: posts,
+                    index: index,
+                    screen: visiting ? 'timeline' : 'profile',);
+                }
+              else{
+                return Container();
+              }
+            });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final double width = MediaQuery
+        .of(context)
+        .size
+        .width;
     user = Provider.of<AuthRepository>(context);
 
     if (uid != null) {
@@ -332,46 +386,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (userData != null) {
+      user.updateSaved();
       profileImage = userData?.pictureUrl;
       rating = userData?.rating;
       savedNum = userData?.saved;
       followingNum = userData?.following;
       followersNum = userData?.followers;
       currUid = uid ?? user.getCurrUid();
+      username = userData?.name ?? 'Mclovin';
+      savedPosts = userData?.savedPosts;
     }
-
-    var x = StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
-        stream: PostManager().getUserPosts(uid),
-        builder: (context, snapshot) {
-          return RefreshIndicator(
-              onRefresh: () async {
-                print('Refreshing');
-                return null;
-              },
-              child: ListView.builder(
-                //separatorBuilder: (context, index) => const Divider(),
-                itemCount:
-                    snapshot.data == null ? 0 : snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  if (snapshot.connectionState == ConnectionState.waiting &&
-                      snapshot.data == null) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        centerTitle: true,
-                        title: Text(username),
-                      ),
-                      body: const Center(
-                          child: CircularProgressIndicator.adaptive()),
-                    );
-                  }
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.data == null) {
-                    return const Center(child: Text('No data available'));
-                  }
-                  return post(snapshot: snapshot, index: index, screen: 'profile',);
-                },
-              ));
-        });
 
     return FutureBuilder(
       future: FirebaseDB().getUserModel(currUid!),
