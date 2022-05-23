@@ -188,7 +188,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Row(
                   children: [
-                    IconButton(onPressed: () {
+                    firstTime? Container(): IconButton(onPressed: () {
                       showAboutDialog(context: context, applicationVersion: '1.0');
                     }, icon: Icon(Icons.info_outline, color: Colors.white,)),
                     IconButton(
