@@ -342,8 +342,13 @@ class AuthRepository with ChangeNotifier {
 
   Future deleteUser() async {
     var uid = _auth.currentUser?.uid;
+    var ids = await PostManager().getUserPostsIDs(uid!);
+    for(int i = 0; i < ids.length; i++){
+      PostManager().deletePost(ids[i]);
+    }
+
     _auth.currentUser?.delete();
-    FirebaseDB().deleteUserData(uid!);
+    FirebaseDB().deleteUserData(uid);
     _user = null;
     _status = Status.Unauthenticated;
     await unsetUserData();

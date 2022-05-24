@@ -287,14 +287,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const Text(
                     '- OR -',
                     style: TextStyle(
-                      color: appTheme,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Text('Sign in with',
                       style: TextStyle(
-                        color: appTheme,
                         fontSize: 16,
                       )),
                 ],

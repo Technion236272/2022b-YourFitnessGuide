@@ -36,8 +36,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       followingNum = 0,
       followersNum = 0;
 
-  //Card posts = [];
-
   Widget _buildStatline(String stat, int value) {
     return Center(
       child: Column(
@@ -186,8 +184,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         IconButton(
                             onPressed: () {
                               user.signOut();
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/home', (_) => false);
+                              setState(() {
+
+                              });
                             },
                             icon: const Icon(
                               Icons.logout,
@@ -317,44 +316,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved(
-      {String? category}) {
-    int counter = 0;
-    return StreamBuilder(
-      stream: PostManager().getAllPosts(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(username),
-            ),
-            body: const Center(child: CircularProgressIndicator.adaptive()),
-          );
-        }
-        if (snapshot.hasError) {
-          Navigator.pop(context);
-          const snackBar = SnackBar(content: Text('Something went wrong'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
-        posts = snapshot;
-
-        return ListView.builder(
-            itemCount: posts.data == null ? 0 : posts.data!.docs.length,
-            itemBuilder: (context, index) {
-              var currPost = posts?.data!.docs[index].id;
-              if(savedPosts!.contains(currPost))
-                {
-                  return post(snapshot: posts,
-                    index: index,
-                    screen: visiting ? 'timeline' : 'profile',);
-                }
-              else{
-                return Container();
-              }
-            });
-      },
-    );
+  ListView _buildSaved() {
+    return ListView.builder(
+        itemCount: savedPosts == null ? 0 : savedPosts!.length,
+        itemBuilder: (context, index) {
+          var currPost = posts?.data!.docs[index].id;
+          if(savedPosts!.contains(currPost))
+          {
+            return post(snapshot: posts,
+              index: index,
+              screen: visiting ? 'timeline' : 'profile',);
+          }
+          else{
+            return Container();
+          }
+        });
   }
 
   @override

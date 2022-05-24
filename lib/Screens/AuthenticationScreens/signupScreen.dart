@@ -295,14 +295,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     Text(
                       '- OR -',
                       style: TextStyle(
-                        color: appTheme,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text('Sign up with',
                         style: TextStyle(
-                          color: appTheme,
                           fontSize: 16,
                         )),
                   ],

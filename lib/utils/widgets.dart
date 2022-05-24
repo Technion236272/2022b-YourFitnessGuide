@@ -195,9 +195,9 @@ class post extends StatefulWidget {
   late DateTime? date = null;
   late int? rating = null;
   late String? screen = null;
+  bool hide = true;
   var user;
   bool isSaved = false;
-
   post({Key? key, this.index, required this.snapshot, required this.screen})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
@@ -241,6 +241,42 @@ class _postState extends State<post> {
         icon: Icon(ic, color: Colors.grey));
   }
 
+  Widget _buildSaveButton(){
+    return
+      IconButton(
+          onPressed: () {
+            if (widget.user.isAuthenticated) {
+              widget.isSaved = !widget.isSaved;
+              setState(() {});
+              if (!widget.isSaved) {
+                const _snackBar = SnackBar(
+                    content: Text('Deleting post from saved'));
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(_snackBar);
+                widget.user.modifySaved(
+                    widget.snapshot?.data!.docs[widget.index].id,
+                    true);
+              } else {
+                const _snackBar =
+                SnackBar(content: Text('Saving post'));
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(_snackBar);
+                widget.user.modifySaved(
+                    widget.snapshot?.data!.docs[widget.index].id,
+                    false);
+              }
+            } else {
+              const _snackBar = SnackBar(
+                  content:
+                  Text('You need to sign in to save posts'));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(_snackBar);
+            }
+          },
+          icon: Icon(Icons.bookmark,
+              color: widget.isSaved ? appTheme : Colors.grey));
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
@@ -254,7 +290,6 @@ class _postState extends State<post> {
 
     return InkWell(
       onTap: () {
-        //TODO: Saleh/ Mohamed: Navigate to viewing post, for Mohamad: Saleh saved post_uid, utilize it
         var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
         print(cat);
         if (cat == 'Blog') {
@@ -412,10 +447,12 @@ class _postState extends State<post> {
                         ),
                       )
                     : Container()),
+                widget.hide? Center(child: _buildSaveButton(),) :
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
+
                       children: [
                         _buildPostIcon(Icons.arrow_upward),
                         Text(
@@ -431,38 +468,7 @@ class _postState extends State<post> {
                       ],
                     ),
                     _buildPostIcon(Icons.chat_bubble),
-                    IconButton(
-                        onPressed: () {
-                          if (widget.user.isAuthenticated) {
-                            widget.isSaved = !widget.isSaved;
-                            setState(() {});
-                            if (!widget.isSaved) {
-                              const _snackBar = SnackBar(
-                                  content: Text('Deleting post from saved'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(_snackBar);
-                              widget.user.modifySaved(
-                                  widget.snapshot?.data!.docs[widget.index].id,
-                                  true);
-                            } else {
-                              const _snackBar =
-                                  SnackBar(content: Text('Saving post'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(_snackBar);
-                              widget.user.modifySaved(
-                                  widget.snapshot?.data!.docs[widget.index].id,
-                                  false);
-                            }
-                          } else {
-                            const _snackBar = SnackBar(
-                                content:
-                                    Text('You need to sign in to save posts'));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(_snackBar);
-                          }
-                        },
-                        icon: Icon(Icons.bookmark,
-                            color: widget.isSaved ? appTheme : Colors.grey)),
+                    _buildSaveButton(),
                   ],
                 )
               ],

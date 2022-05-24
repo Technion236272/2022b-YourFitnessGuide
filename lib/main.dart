@@ -5,9 +5,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/router.dart' as router;
 import 'utils/globals.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(App());
 }
 
