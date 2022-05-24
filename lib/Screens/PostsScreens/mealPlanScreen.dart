@@ -238,6 +238,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 keyboardType: TextInputType.name,
                 controller: mealPlanNameController,
                 textAlign: TextAlign.left,
+                maxLength: 30,
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.only(bottom: 5),
                   label: false
