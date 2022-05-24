@@ -164,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         length: visiting ? 3 : 4,
         child: Scaffold(
             appBar: AppBar(
-              centerTitle: true,
+              centerTitle: false,
               title: Text(username),
               actions: visiting
                   ? []
@@ -357,7 +357,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       snapshot.data == null) {
                     return Scaffold(
                       appBar: AppBar(
-                        centerTitle: true,
+                        centerTitle: false,
                         title: Text(username),
                       ),
                       body: const Center(
@@ -394,7 +394,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (!snapshot2.hasData) {
               return Scaffold(
                 appBar: AppBar(
-                  centerTitle: true,
+                  centerTitle: false,
                   title: Text(username),
                 ),
                 body: const Center(child: CircularProgressIndicator.adaptive()),

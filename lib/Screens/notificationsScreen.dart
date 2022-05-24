@@ -13,7 +13,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
+        centerTitle: false,
         title: const Text('Notifications'),
       ),
       body: const Center(child: Text('Notifications coming soon'))

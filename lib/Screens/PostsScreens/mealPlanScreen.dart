@@ -67,29 +67,29 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              //margin: const EdgeInsets.all(5),
-              //padding: const EdgeInsets.all(5),
-              child: TextButton(
-                child: Text("$Name", textAlign: TextAlign.left),
-                style: TextButton.styleFrom(
-                    primary: appTheme,
+            Expanded(
+              flex: 1,
+              child: ElevatedButton(
+                child: Text("$Name", textAlign: TextAlign.left,style: TextStyle(color: appTheme)),
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    //side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(0)),
                     fixedSize: Size(width * 0.25, height * 0.010),
                     textStyle: TextStyle(
                       fontSize: 14,
-                      color: Colors.white,
+                      color: appTheme,
                     )),
                 onPressed: () {},
               ),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(45, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Container(
                     child: ElevatedButton(
                       child: Text("More"),
@@ -796,10 +796,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           final String protiens = ProtiensController.text;
                           final String carbs = CarbsController.text;
                           final String fats = FatsController.text;
-                          _mealsContents[0] = int.parse(kcal);
-                          _mealsContents[1] = int.parse(protiens);
-                          _mealsContents[2] = int.parse(carbs);
-                          _mealsContents[3] = int.parse(fats);
 
                           if (loseWeight! ||
                               gainMuscle! ||
@@ -823,6 +819,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             setState(() {
                               _isLoading = true;
                             });
+                            _mealsContents[0] = int.parse(kcal);
+                            _mealsContents[1] = int.parse(protiens);
+                            _mealsContents[2] = int.parse(carbs);
+                            _mealsContents[3] = int.parse(fats);
                             bool isSubmitted = await _postManager.submitMealPlan(
                                 title: title,
                                 description: description,
