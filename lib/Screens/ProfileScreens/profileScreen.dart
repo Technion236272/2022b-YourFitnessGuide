@@ -30,13 +30,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ListView? workouts = null;
   bool noPosts = false;
   List<String>? savedPosts = null;
-  get uid => widget.uid;
-  int rating = 0,
-      savedNum = 0,
-      followingNum = 0,
-      followersNum = 0;
 
-  //Card posts = [];
+  get uid => widget.uid;
+  int rating = 0, savedNum = 0, followingNum = 0, followersNum = 0;
 
   Widget _buildStatline(String stat, int value) {
     return Center(
@@ -74,8 +70,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: visiting
               ? Container()
               : Container(
-            child: _buildStatline('Saved', savedNum),
-          ),
+                  child: _buildStatline('Saved', savedNum),
+                ),
         ),
         imageContainer(
           height: height,
@@ -100,26 +96,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildTabHeader(String tabText) {
     return Tab(
         child: Text(
-          tabText,
-          style:
+      tabText,
+      style:
           TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-        ));
+    ));
   }
 
   Widget _buildTabBar() {
     return TabBar(
       tabs: !visiting
           ? [
-        _buildTabHeader('All posts'),
-        _buildTabHeader('Meals'),
-        _buildTabHeader('Workouts'),
-        _buildTabHeader('Saved'),
-      ]
+              _buildTabHeader('All posts'),
+              _buildTabHeader('Meals'),
+              _buildTabHeader('Workouts'),
+              _buildTabHeader('Saved'),
+            ]
           : [
-        _buildTabHeader('All posts'),
-        _buildTabHeader('Meals'),
-        _buildTabHeader('Workouts'),
-      ],
+              _buildTabHeader('All posts'),
+              _buildTabHeader('Meals'),
+              _buildTabHeader('Workouts'),
+            ],
     );
   }
 
@@ -128,25 +124,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: Colors.grey[200],
         child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  height: height * 0.01,
-                ),
-                Flexible(
-                    child: Text(
-                      text,
-                      style: TextStyle(fontSize: 20),
-                    )),
-                Flexible(
-                    child: Image.asset(
-                      'images/decorations/404.png',
-                      width: width * 0.3,
-                      height: height * 0.3,
-                    ))
-              ],
-            )));
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            SizedBox(
+              height: height * 0.01,
+            ),
+            Flexible(
+                child: Text(
+              text,
+              style: TextStyle(fontSize: 20),
+            )),
+            Flexible(
+                child: Image.asset(
+              'images/decorations/404.png',
+              width: width * 0.3,
+              height: height * 0.3,
+            ))
+          ],
+        )));
     return Image.asset(
       'images/decorations/LoginDecoration.png',
       width: width * 0.01,
@@ -171,31 +167,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
               actions: visiting
                   ? []
                   : [
-                Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/edit');
-                            },
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              user.signOut();
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/home', (_) => false);
-                            },
-                            icon: const Icon(
-                              Icons.logout,
-                              color: Colors.white,
-                            ))
-                      ],
-                    )),
-              ],
+                      Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/edit');
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  )),
+                              IconButton(
+                                  onPressed: () {
+                                    user.signOut();
+                                    setState(() {});
+                                  },
+                                  icon: const Icon(
+                                    Icons.logout,
+                                    color: Colors.white,
+                                  ))
+                            ],
+                          )),
+                    ],
             ),
             body: Column(
               children: [
@@ -206,28 +201,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         followingNum, followersNum)),
                 !visiting
                     ? Container(
-                  padding: EdgeInsets.only(bottom: height * 0.008),
-                )
+                        padding: EdgeInsets.only(bottom: height * 0.008),
+                      )
                     : ElevatedButton(
-                  child: const Text("Follow"),
-                  style: ElevatedButton.styleFrom(
-                      primary: const Color(0xff84C59E),
-                      shadowColor: appTheme,
-                      side: BorderSide(
-                          width: 2.0, color: Colors.black.withOpacity(0.5)),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)),
-                      fixedSize: Size(width * 0.25, height * 0.03),
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      )),
-                  onPressed: () async {
-                    const snackBar =
-                    SnackBar(content: Text('Feature coming soon'));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
-                ),
+                        child: const Text("Follow"),
+                        style: ElevatedButton.styleFrom(
+                            primary: const Color(0xff84C59E),
+                            shadowColor: appTheme,
+                            side: BorderSide(
+                                width: 2.0,
+                                color: Colors.black.withOpacity(0.5)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                            fixedSize: Size(width * 0.25, height * 0.03),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            )),
+                        onPressed: () async {
+                          const snackBar =
+                              SnackBar(content: Text('Feature coming soon'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        },
+                      ),
                 SizedBox(
                   height: height * 0.05,
                 ),
@@ -239,37 +235,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: TabBarView(
                     children: !visiting
                         ? (noPosts
-                        ? [
-                      emptyNote(height, width,
-                          'You haven\'t published a post yet'),
-                      emptyNote(height, width,
-                          'You haven\'t published a post yet'),
-                      emptyNote(height, width,
-                          'You haven\'t published a post yet'),
-                      savedNum == 0 ? emptyNote(height, width,
-                          'You haven\'t saved a post yet') : (_buildSaved()),
-                    ]
-                        : [
-                      _buildTab(),
-                      _buildTab(category: "Meal Plan"),
-                      _buildTab(category: "Workout"),
-                      savedNum == 0 ? emptyNote(height, width,
-                          'You haven\'t saved a post yet') : (_buildSaved()),
-                    ])
+                            ? [
+                                emptyNote(height, width,
+                                    'You haven\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'You haven\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'You haven\'t published a post yet'),
+                                savedNum == 0
+                                    ? emptyNote(height, width,
+                                        'You haven\'t saved a post yet')
+                                    : (_buildSaved()),
+                              ]
+                            : [
+                                _buildTab(),
+                                _buildTab(category: "Meal Plan"),
+                                _buildTab(category: "Workout"),
+                                savedNum == 0
+                                    ? emptyNote(height, width,
+                                        'You haven\'t saved a post yet')
+                                    : (_buildSaved()),
+                              ])
                         : (noPosts
-                        ? [
-                      emptyNote(height, width,
-                          'User hasn\'t published a post yet'),
-                      emptyNote(height, width,
-                          'User hasn\'t published a post yet'),
-                      emptyNote(height, width,
-                          'User hasn\'t published a post yet'),
-                    ]
-                        : [
-                      _buildTab(),
-                      _buildTab(category: "Meal Plan"),
-                      _buildTab(category: "Workout"),
-                    ]),
+                            ? [
+                                emptyNote(height, width,
+                                    'User hasn\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'User hasn\'t published a post yet'),
+                                emptyNote(height, width,
+                                    'User hasn\'t published a post yet'),
+                              ]
+                            : [
+                                _buildTab(),
+                                _buildTab(category: "Meal Plan"),
+                                _buildTab(category: "Workout"),
+                              ]),
                   ),
                 ),
               ],
@@ -294,13 +294,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (currCat != category) {
             return Container();
           }
-          return post(snapshot: posts,
+          return post(
+            snapshot: posts,
             index: index,
-            screen: visiting ? 'timeline' : 'profile',);
+            screen: visiting ? 'timeline' : 'profile',
+          );
         }
-        return post(snapshot: posts,
+        return post(
+          snapshot: posts,
           index: index,
-          screen: visiting ? 'timeline' : 'profile',);
+          screen: visiting ? 'timeline' : 'profile',
+        );
       },
     );
 
@@ -343,13 +347,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             itemCount: posts.data == null ? 0 : posts.data!.docs.length,
             itemBuilder: (context, index) {
               var currPost = posts?.data!.docs[index].id;
-              if(savedPosts!.contains(currPost))
-                {
-                  return post(snapshot: posts,
-                    index: index,
-                    screen: visiting ? 'timeline' : 'profile',);
-                }
-              else{
+              if (savedPosts!.contains(currPost)) {
+                return post(
+                  snapshot: posts,
+                  index: index,
+                  screen: visiting ? 'timeline' : 'profile',
+                );
+              } else {
                 return Container();
               }
             });
@@ -359,14 +363,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery
-        .of(context)
-        .size
-        .height;
-    final double width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final double height = MediaQuery.of(context).size.height;
+    final double width = MediaQuery.of(context).size.width;
     user = Provider.of<AuthRepository>(context);
 
     if (uid != null) {

@@ -11,7 +11,6 @@ import 'Screens/AuthenticationScreens/signinScreen.dart';
 import 'Screens/AuthenticationScreens/signupScreen.dart';
 import 'Screens/timelineScreen.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 

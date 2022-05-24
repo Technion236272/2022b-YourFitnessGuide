@@ -192,6 +192,18 @@ class PostManager with ChangeNotifier {
     return _userPosts.orderBy('createdAt', descending: true).snapshots();
   }
 
+  Future<List<String>> getUserPostsIDs(String uid) async {
+    List<String> ids = [];
+
+    await _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currID = doc.id;
+        ids.add(currID);
+      });
+    });
+    return ids;
+  }
+
   Future<void> deletePost(String postUid) async {
     _postCollection.doc(postUid).delete();
     notifyListeners();
@@ -200,6 +212,10 @@ class PostManager with ChangeNotifier {
   Future<bool> checkPostsExists(String postUid) async {
     var tmp = await _postCollection.doc(postUid).get();
     return tmp.exists;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getPost(String postUid) async {
+    return _postCollection.doc(postUid).get();
   }
 
   ///get user info from db
