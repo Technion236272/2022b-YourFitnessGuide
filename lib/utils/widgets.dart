@@ -195,9 +195,11 @@ class post extends StatefulWidget {
   late DateTime? date = null;
   late int? rating = null;
   late String? screen = null;
+  bool hide = true;
   var user;
-
-  post({Key? key, this.index, required this.snapshot, required this.screen}) : super(key: key) {
+  bool isSaved = false;
+  post({Key? key, this.index, required this.snapshot, required this.screen})
+      : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
             .getUserInfo(snapshot?.data!.docs[index].data()!['user_uid'])
@@ -239,13 +241,55 @@ class _postState extends State<post> {
         icon: Icon(ic, color: Colors.grey));
   }
 
+  Widget _buildSaveButton(){
+    return
+      IconButton(
+          onPressed: () {
+            if (widget.user.isAuthenticated) {
+              widget.isSaved = !widget.isSaved;
+              setState(() {});
+              if (!widget.isSaved) {
+                const _snackBar = SnackBar(
+                    content: Text('Deleting post from saved'));
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(_snackBar);
+                widget.user.modifySaved(
+                    widget.snapshot?.data!.docs[widget.index].id,
+                    true);
+              } else {
+                const _snackBar =
+                SnackBar(content: Text('Saving post'));
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(_snackBar);
+                widget.user.modifySaved(
+                    widget.snapshot?.data!.docs[widget.index].id,
+                    false);
+              }
+            } else {
+              const _snackBar = SnackBar(
+                  content:
+                  Text('You need to sign in to save posts'));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(_snackBar);
+            }
+          },
+          icon: Icon(Icons.bookmark,
+              color: widget.isSaved ? appTheme : Colors.grey));
+  }
+
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
+    var saved = [];
+    if (widget.user.isAuthenticated) {
+      var saved = widget.user.savedPosts;
+      widget.isSaved = saved == null
+          ? false
+          : saved.contains(widget.snapshot?.data!.docs[widget.index].id);
+    }
 
     return InkWell(
       onTap: () {
-        //TODO: Saleh/ Mohamed: Navigate to viewing post, for Mohamad: Saleh saved post_uid, utilize it
         var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
         print(cat);
         if (cat == 'Blog') {
@@ -335,15 +379,51 @@ class _postState extends State<post> {
                                     fontSize: 13,
                                     fontWeight: FontWeight.normal,
                                     color: Colors.grey)),
-                        trailing: widget.screen == 'timeline'? null: PopupMenuButton(
-                          icon: const Icon(Icons.more_horiz),
-                          onSelected: (value) {
-                            PostManager().deletePost(widget.snapshot?.data!.docs[widget.index].id);
-                          },
-                          itemBuilder: (BuildContext context) => [
-                            PopupMenuItem(value: 1, child: Text('Delete post'))
-                          ],
-                        ),
+                        trailing: widget.screen == 'timeline'
+                            ? null
+                            : PopupMenuButton(
+                                icon: const Icon(Icons.more_horiz),
+                                /*onSelected: (value) {
+                                  PostManager().deletePost(widget
+                                      .snapshot?.data!.docs[widget.index].id);
+                                },*/
+                                onSelected: (value) async {
+                                  Widget cancel = TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text(
+                                        'Cancel',
+                                        style: TextStyle(color: appTheme),
+                                      ));
+                                  Widget confirm = TextButton(
+                                      onPressed: () {
+                                        widget.user.modifySaved(widget
+                                            .snapshot?.data!.docs[widget.index].id, true);
+                                        PostManager().deletePost(widget
+                                            .snapshot?.data!.docs[widget.index].id);
+                                        Navigator.of(context).pop();
+
+                                      },
+                                      child: const Text('Confirm',
+                                          style: TextStyle(color: appTheme)));
+                                  AlertDialog alert = AlertDialog(
+                                    title: const Text('Are you sure?'),
+                                    content: const Text(
+                                        'Posts are unretrievable after deletion.'),
+                                    actions: [cancel, confirm],
+                                  );
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext) {
+                                        return alert;
+                                      });
+                                },
+                                itemBuilder: (BuildContext context) => [
+                                  PopupMenuItem(
+                                      value: 1, child: Text('Delete post'))
+                                ],
+                              ),
                       );
                     }),
                 Text(
@@ -367,10 +447,12 @@ class _postState extends State<post> {
                         ),
                       )
                     : Container()),
+                widget.hide? Center(child: _buildSaveButton(),) :
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
+
                       children: [
                         _buildPostIcon(Icons.arrow_upward),
                         Text(
@@ -386,7 +468,7 @@ class _postState extends State<post> {
                       ],
                     ),
                     _buildPostIcon(Icons.chat_bubble),
-                    _buildPostIcon(Icons.bookmark),
+                    _buildSaveButton(),
                   ],
                 )
               ],

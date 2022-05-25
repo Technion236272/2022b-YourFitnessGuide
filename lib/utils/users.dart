@@ -8,6 +8,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
+import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'dart:io';
 
 import 'database.dart';
@@ -25,8 +26,9 @@ class UserModel {
   int? rating;
   int? following;
   int? followers;
-  int? saved;
+  int saved;
   String? pictureUrl;
+  List<String>? savedPosts;
 
   UserModel(
       {this.name,
@@ -38,7 +40,8 @@ class UserModel {
       this.following,
       this.followers,
       this.rating,
-      this.saved});
+      required this.saved,
+      this.savedPosts});
 /*
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
 
@@ -69,6 +72,18 @@ class AuthRepository with ChangeNotifier {
 
   bool get isAuthenticated => status == Status.Authenticated;
 
+  List<String>? get savedPosts => _userData?.savedPosts;
+
+  Future<void> updateSaved() async{
+    for(var i = 0; i < savedPosts!.length; i++){
+      var tmp = await PostManager().checkPostsExists(savedPosts![i]);
+      if(tmp == false){
+        modifySaved(savedPosts![i], true);
+        i--;
+      }
+    }
+  }
+
   Future<Object?> signUp(String email, String password) async {
     try {
       _status = Status.Authenticating;
@@ -90,9 +105,20 @@ class AuthRepository with ChangeNotifier {
         'rating': 0,
         'saved': 0,
         'following': 0,
-        'followers': 0
+        'followers': 0,
+        'saved_posts': []
       });
-      _userData = UserModel(name: 'Undefined Name', pictureUrl: url, iWeight: 0, cWeight: 0, gWeight: 0, goal: 0, rating: 0, saved: 0,followers: 0,following: 0);
+      _userData = UserModel(
+          name: 'Undefined Name',
+          pictureUrl: url,
+          iWeight: 0,
+          cWeight: 0,
+          gWeight: 0,
+          goal: 0,
+          rating: 0,
+          saved: 0,
+          followers: 0,
+          following: 0);
       return res;
     } on FirebaseAuthException catch (error) {
       _userData = null;
@@ -174,10 +200,21 @@ class AuthRepository with ChangeNotifier {
         'rating': 0,
         'saved': 0,
         'following': 0,
-        'followers': 0
+        'followers': 0,
+        'saved_posts': []
       });
 
-      _userData = UserModel(name: data['name'], pictureUrl: data['picture']['data']['url'], iWeight: 0, cWeight: 0, gWeight: 0, goal: 0, rating: 0, saved: 0,followers: 0,following: 0);
+      _userData = UserModel(
+          name: data['name'],
+          pictureUrl: data['picture']['data']['url'],
+          iWeight: 0,
+          cWeight: 0,
+          gWeight: 0,
+          goal: 0,
+          rating: 0,
+          saved: 0,
+          followers: 0,
+          following: 0);
 
       if (redirected) {
         return 2;
@@ -238,9 +275,20 @@ class AuthRepository with ChangeNotifier {
         'rating': 0,
         'saved': 0,
         'following': 0,
-        'followers': 0
+        'followers': 0,
+        'saved_posts': []
       });
-      _userData = UserModel(name: name, pictureUrl: picture, iWeight: 0, cWeight: 0, gWeight: 0, goal: 0, rating: 0, saved: 0,followers: 0,following: 0);
+      _userData = UserModel(
+          name: name,
+          pictureUrl: picture,
+          iWeight: 0,
+          cWeight: 0,
+          gWeight: 0,
+          goal: 0,
+          rating: 0,
+          saved: 0,
+          followers: 0,
+          following: 0);
 
       if (redirected) return 2;
       return 1;
@@ -261,6 +309,26 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
+  Future<void> modifySaved(String postuid, bool delete) async {
+    if (delete) {
+      await _db.collection('users').doc(user!.uid).update({
+        'saved_posts': FieldValue.arrayRemove([postuid])
+      });
+      if(_userData!.savedPosts!.contains(postuid))
+        {
+          _userData?.saved--;
+          _userData?.savedPosts?.remove(postuid);
+        }
+    } else {
+      await _db.collection('users').doc(user!.uid).update({
+        'saved_posts': FieldValue.arrayUnion([postuid])
+      });
+      _userData?.saved++;
+      _userData?.savedPosts?.add(postuid);
+    }
+    notifyListeners();
+  }
+
   Future signOut() async {
     _auth.signOut();
     _status = Status.Unauthenticated;
@@ -274,8 +342,13 @@ class AuthRepository with ChangeNotifier {
 
   Future deleteUser() async {
     var uid = _auth.currentUser?.uid;
+    var ids = await PostManager().getUserPostsIDs(uid!);
+    for(int i = 0; i < ids.length; i++){
+      PostManager().deletePost(ids[i]);
+    }
+
     _auth.currentUser?.delete();
-    FirebaseDB().deleteUserData(uid!);
+    FirebaseDB().deleteUserData(uid);
     _user = null;
     _status = Status.Unauthenticated;
     await unsetUserData();
@@ -285,9 +358,9 @@ class AuthRepository with ChangeNotifier {
 
   Future<void> setUserData() async {
     try {
-      if(_userData != null)
-        return;
+      if (_userData != null) return;
       var dataDocument = await _db.collection('users').doc(user!.uid).get();
+      var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
           goal: dataDocument.get('goal'),
@@ -298,10 +371,12 @@ class AuthRepository with ChangeNotifier {
           following: dataDocument.get('following'),
           followers: dataDocument.get('followers'),
           rating: dataDocument.get('rating'),
-          saved: dataDocument.get('saved'));
+          saved: savedTmp.length,
+          savedPosts: savedTmp);
     } catch (_) {
       await Future.delayed(Duration(seconds: 1));
       var dataDocument = await _db.collection('users').doc(user!.uid).get();
+      var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
           goal: dataDocument.get('goal'),
@@ -312,7 +387,8 @@ class AuthRepository with ChangeNotifier {
           following: dataDocument.get('following'),
           followers: dataDocument.get('followers'),
           rating: dataDocument.get('rating'),
-          saved: dataDocument.get('saved'));
+          saved: savedTmp.length,
+          savedPosts: savedTmp);
     }
   }
 

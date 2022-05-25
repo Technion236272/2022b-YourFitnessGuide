@@ -8,6 +8,50 @@ import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
+class filterDialog extends StatefulWidget {
+  bool goalOrientation;
+  filterDialog({Key? key, required this.goalOrientation}) : super(key: key);
+  get goalOriented => goalOrientation;
+
+  @override
+  State<filterDialog> createState() => _filterDialogState();
+}
+
+class _filterDialogState extends State<filterDialog> {
+  @override
+  Widget build(BuildContext context) {
+    Widget cancel = TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Text(
+          'Cancel',
+          style: TextStyle(color: appTheme),
+        ));
+    Widget tmp = CheckboxListTile(
+        title: Text('Show posts that match my goal only', style: TextStyle(color: appTheme),),
+        value: widget.goalOrientation,
+        //groupValue: userGoal,
+        activeColor: appTheme,
+        onChanged: (value) => setState(() {
+          widget.goalOrientation = value!;
+        }));
+    Widget confirm = TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Text('Confirm',
+            style: TextStyle(color: appTheme)));
+    AlertDialog alert = AlertDialog(
+      title: const Text('Filters'),
+      content: tmp,
+      actions: [cancel, confirm],
+    );
+    return alert;
+  }
+}
+
+
 class TimelineScreen extends StatefulWidget {
   const TimelineScreen({Key? key}) : super(key: key);
 
@@ -18,10 +62,14 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   final PostManager _postManager = PostManager();
+  bool isGoalOriented = false;
 
   SpeedDialChild _buildDialOption(String name, String Route) {
     return SpeedDialChild(
-        child: const Icon(Icons.add, color: Colors.white,),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         label: name,
         labelBackgroundColor: appTheme,
         backgroundColor: appTheme,
@@ -35,6 +83,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<AuthRepository>(context);
+    filterDialog filters = filterDialog(goalOrientation: isGoalOriented);
 
     return Scaffold(
         appBar: AppBar(
@@ -47,10 +96,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            const snackBar = SnackBar(
-                                content: Text('Filtering options coming soon'));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext) {
+                                  return filters;
+                                });
+                            print(filters.goalOriented);
                           },
                           icon: const Icon(
                             Icons.filter_alt,
@@ -100,7 +151,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       }
                       return post(
                         index: index,
-                        snapshot: snapshot,screen: "timeline",
+                        snapshot: snapshot,
+                        screen: "timeline",
                       );
                     },
                   ));

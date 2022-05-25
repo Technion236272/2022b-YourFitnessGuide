@@ -131,7 +131,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               const Text('Enter the email you use to sign in below',
                   style: TextStyle(
-                      color: appTheme,
                       fontSize: 20,
                       fontWeight: FontWeight.bold)),
               SizedBox(

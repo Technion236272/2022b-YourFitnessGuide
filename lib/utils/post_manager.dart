@@ -59,6 +59,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     }
+    notifyListeners();
     return isSubmitted;
   }
 
@@ -113,6 +114,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     }
+    notifyListeners();
     return isSubmitted;
   }
 
@@ -121,7 +123,7 @@ class PostManager with ChangeNotifier {
       required description,
       File? postImage,
       required goals,
-       required mealsContents ,
+      required mealsContents,
       required mealsName,
       required mealsIngredients}) async {
     bool isSubmitted = false;
@@ -183,15 +185,37 @@ class PostManager with ChangeNotifier {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
-    final Query<Map<String, dynamic>> _userPosts =
-    _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid);
+    final Query<Map<String, dynamic>> _userPosts = _firebaseFirestore
+        .collection("posts")
+        .where('user_uid', isEqualTo: uid);
     notifyListeners();
-    return _userPosts.orderBy('createdAt',descending: true).snapshots();
+    return _userPosts.orderBy('createdAt', descending: true).snapshots();
+  }
+
+  Future<List<String>> getUserPostsIDs(String uid) async {
+    List<String> ids = [];
+
+    await _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currID = doc.id;
+        ids.add(currID);
+      });
+    });
+    return ids;
   }
 
   Future<void> deletePost(String postUid) async {
     _postCollection.doc(postUid).delete();
     notifyListeners();
+  }
+
+  Future<bool> checkPostsExists(String postUid) async {
+    var tmp = await _postCollection.doc(postUid).get();
+    return tmp.exists;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> getPost(String postUid) async {
+    return _postCollection.doc(postUid).get();
   }
 
   ///get user info from db

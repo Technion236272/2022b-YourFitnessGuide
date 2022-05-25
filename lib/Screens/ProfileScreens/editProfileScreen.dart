@@ -6,6 +6,7 @@ import 'package:yourfitnessguide/utils/users.dart';
 import 'dart:io';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EditProfileScreen extends StatefulWidget {
   late bool firstTime;
@@ -188,9 +189,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Row(
                   children: [
-                    IconButton(onPressed: () {
-                      showAboutDialog(context: context, applicationVersion: '1.0');
-                    }, icon: Icon(Icons.info_outline, color: Colors.white,)),
+                    firstTime
+                        ? Container()
+                        : IconButton(
+                            onPressed: () {
+                              showAboutDialog(
+                                context: context,
+                                applicationName: 'YourFitnessGuide',
+                                applicationIcon: Image.asset(
+                                  'images/decorations/LoginDecoration.png',
+                                  height: height * 0.08,
+                                  width: height * 0.08,
+                                ),
+                                applicationVersion: '1.1.0',
+                                applicationLegalese:
+                                    '© 2022 Google logo\n© 2022 Facebook logo\n© 2022 YourFitnessGuide logo by SIKE(stolen)',
+                                children: <Widget>[
+                                  InkWell(
+                                      child: const Text('Privacy Policy'),
+                                      onTap: () async {
+                                        var url = Uri.parse(
+                                            'https://github.com/MahmoudMahajna1/PrivacyPolicy/blob/main/YourFitnessGuide-PrivacyPolicy.md');
+                                        await launchUrl(url);
+                                      }),
+                                  InkWell(
+                                      child: const Text('Terms & Conditions'),
+                                      onTap: () async {
+                                        var url = Uri.parse(
+                                            'https://github.com/MahmoudMahajna1/PrivacyPolicy/blob/main/YourFitnessGuide-TOS.md');
+                                        await launchUrl(url);
+                                      }),
+                                ],
+                              );
+                            },
+                            icon: Icon(
+                              Icons.info_outline,
+                              color: Colors.white,
+                            )),
                     IconButton(
                         onPressed: () {
                           int init = int.parse(_initialController.text);
@@ -310,8 +345,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: const Text("DELETE ACCOUNT"),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red,
-                          side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
-
+                          side: BorderSide(
+                              width: 2.0, color: Colors.black.withOpacity(0.5)),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0)),
                           fixedSize: Size(width * 0.9, height * 0.055),
@@ -331,8 +366,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         Widget confirm = TextButton(
                             onPressed: () {
                               user.deleteUser();
-                              Navigator.pushNamedAndRemoveUntil(
-                                  context, '/home', (_) => false);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              setState(() {
+
+                              });
                             },
                             child: const Text('Confirm',
                                 style: TextStyle(color: appTheme)));
