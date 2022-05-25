@@ -43,6 +43,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 keyboardType: TextInputType.name,
                 controller: postNameController,
                 textAlign: TextAlign.left,
+                maxLength: 30,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: Text("Title"),

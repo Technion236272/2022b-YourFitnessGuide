@@ -88,7 +88,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
     return Scaffold(
         appBar: AppBar(
             title: const Text('YourFitnessGuide'),
-            centerTitle: true,
+            centerTitle: false,
             actions: [
               Padding(
                   padding: const EdgeInsets.only(right: 12.0),

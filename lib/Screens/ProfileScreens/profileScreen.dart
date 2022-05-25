@@ -163,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         length: visiting ? 3 : 4,
         child: Scaffold(
             appBar: AppBar(
-              centerTitle: true,
+              centerTitle: false,
               title: Text(username),
               actions: visiting
                   ? []
@@ -396,6 +396,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
       savedPosts = userData?.savedPosts;
     }
 
+    var x = StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
+        stream: PostManager().getUserPosts(uid),
+        builder: (context, snapshot) {
+          return RefreshIndicator(
+              onRefresh: () async {
+                print('Refreshing');
+                return null;
+              },
+              child: ListView.builder(
+                //separatorBuilder: (context, index) => const Divider(),
+                itemCount:
+                    snapshot.data == null ? 0 : snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  if (snapshot.connectionState == ConnectionState.waiting &&
+                      snapshot.data == null) {
+                    return Scaffold(
+                      appBar: AppBar(
+                        centerTitle: false,
+                        title: Text(username),
+                      ),
+                      body: const Center(
+                          child: CircularProgressIndicator.adaptive()),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.data == null) {
+                    return const Center(child: Text('No data available'));
+                  }
+                  return post(snapshot: snapshot, index: index, screen: 'profile',);
+                },
+              ));
+        });
+
     return FutureBuilder(
       future: FirebaseDB().getUserModel(currUid!),
       builder: (context, snapshot) {
@@ -417,7 +450,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (!snapshot2.hasData) {
               return Scaffold(
                 appBar: AppBar(
-                  centerTitle: true,
+                  centerTitle: false,
                   title: Text(username),
                 ),
                 body: const Center(child: CircularProgressIndicator.adaptive()),

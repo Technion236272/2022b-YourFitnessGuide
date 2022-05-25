@@ -180,7 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
         length: 4,
         child: Scaffold(
             appBar: AppBar(
-              centerTitle: true,
+              centerTitle: false,
               title: const Text('Search'),
               actions: [
                 Padding(
@@ -206,7 +206,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
                 Tab(
-                  child: Text('Plogs',
+                  child: Text('Blogs',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ),

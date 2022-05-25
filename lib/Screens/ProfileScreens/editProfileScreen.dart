@@ -182,7 +182,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          centerTitle: true,
+          centerTitle: false,
           title: Text(firstTime ? 'Set up your profile' : 'Edit your profile'),
           actions: [
             Padding(
