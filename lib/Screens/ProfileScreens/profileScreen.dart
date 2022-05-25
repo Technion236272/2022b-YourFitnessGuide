@@ -25,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var userData;
   String username = '';
   var posts;
+  var posts2;
   ListView? postsCards = null;
   ListView? meals = null;
   ListView? workouts = null;
@@ -341,15 +342,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const snackBar = SnackBar(content: Text('Something went wrong'));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
-        posts = snapshot;
+        posts2 = snapshot;
 
         return ListView.builder(
-            itemCount: posts.data == null ? 0 : posts.data!.docs.length,
+            itemCount: posts2.data == null ? 0 : posts2.data!.docs.length,
             itemBuilder: (context, index) {
-              var currPost = posts?.data!.docs[index].id;
+              var currPost = posts2?.data!.docs[index].id;
               if (savedPosts!.contains(currPost)) {
                 return post(
-                  snapshot: posts,
+                  snapshot: posts2,
                   index: index,
                   screen: visiting ? 'timeline' : 'profile',
                 );
