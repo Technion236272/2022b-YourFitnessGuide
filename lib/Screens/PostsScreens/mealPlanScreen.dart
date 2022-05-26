@@ -135,42 +135,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 onPressed: () {
                   setState(() {
                     index = _mealNames.indexOf(Name);
-                    // print(index);
-                    //print(_mealNames);
                     if (index != -1) {
                       _deleteButtonWidget(index);
-                      // print(_mealNames);
                     }
                   });
                 },
               ),
             ),
-
-            /*
-
-            Container(
-              alignment: Alignment.center,
-              child: IconButton(
-                icon: Icon(
-                  Icons.delete,
-                ),
-                iconSize: 30,
-                color: Colors.red,
-                //splashColor: Colors.purple,
-                onPressed: () {
-                  setState(() {
-                    index = _mealNames.indexOf(Name);
-                    // print(index);
-                    //print(_mealNames);
-                    if (index != -1) {
-                      _deleteButtonWidget(index);
-                      // print(_mealNames);
-                    }
-                  });
-                },
-              ),
-            ),
-            */
           ],
         ),
         SizedBox(height: height * 0.01),
@@ -838,7 +809,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
                             if (isSubmitted) {
                               const snackBar = SnackBar(
-                                  content: Text('MealPlan posted successfully'));
+                                  content: Text('Meal Plan posted successfully'));
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
 

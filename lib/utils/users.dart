@@ -91,8 +91,6 @@ class AuthRepository with ChangeNotifier {
       var res = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      print('noor');
-
       var url = await _storage.ref('images').child('cj.jpg').getDownloadURL();
 
       await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
@@ -171,6 +169,7 @@ class AuthRepository with ChangeNotifier {
       }
       return 1;
     } catch (e) {
+      print(e);
       _userData = null;
       _status = Status.Unauthenticated;
       notifyListeners();
