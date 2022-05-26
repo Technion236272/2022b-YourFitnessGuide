@@ -555,7 +555,6 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     ProtiensController.text = post_data["meals_contents"][1].toString();
     CarbsController.text = post_data["meals_contents"][2].toString();
     FatsController.text = post_data["meals_contents"][3].toString();
-    //print(post_data);
     if (_mealNames.isEmpty) {
       for (int i = 0; i < post_data["meals_name"].length; i++) {
         _mealNames.add(post_data["meals_name"][i] as String);

@@ -101,7 +101,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                 builder: (BuildContext) {
                                   return filters;
                                 });
-                            print(filters.goalOriented);
                           },
                           icon: const Icon(
                             Icons.filter_alt,

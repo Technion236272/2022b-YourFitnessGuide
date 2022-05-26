@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">YourFitnessGuide</string>
-    <string name="facebook_app_id">577461470148389</string>
-    <string name="fb_login_protocol_scheme">fb577461470148389</string>
-    <string name="facebook_client_token">6a15b4aa4de6e4bfc8a9665f142d0af6</string>
+    <string name="facebook_app_id">3321456638101704</string>
+    <string name="fb_login_protocol_scheme">fb3321456638101704</string>
+    <string name="facebook_client_token">9824893429393f9dbb8b227c018e4916</string>
 </resources>

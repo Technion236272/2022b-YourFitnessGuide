@@ -272,7 +272,6 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
     workoutNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
     user_data = _postManager.getUserInfo(post_data["user_uid"]).asStream();
-    //print(post_data);
 
     return Scaffold(
       appBar: AppBar(

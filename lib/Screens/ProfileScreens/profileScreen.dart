@@ -401,7 +401,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, snapshot) {
           return RefreshIndicator(
               onRefresh: () async {
-                print('Refreshing');
                 return null;
               },
               child: ListView.builder(

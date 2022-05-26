@@ -83,7 +83,6 @@ class FirebaseDB with ChangeNotifier {
         userData = null;
       }
     });
-    print(userData!.name);
     return userData;
   }
 }

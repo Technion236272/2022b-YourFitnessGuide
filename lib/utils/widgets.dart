@@ -291,7 +291,6 @@ class _postState extends State<post> {
     return InkWell(
       onTap: () {
         var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
-        print(cat);
         if (cat == 'Blog') {
           Navigator.pushNamed(context, viewBlogRoute,
               arguments: widget.snapshot?.data!.docs[widget.index].data()!);
