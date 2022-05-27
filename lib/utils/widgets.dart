@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/cupertino.dart';
@@ -288,6 +289,8 @@ class _postState extends State<post> {
           : saved.contains(widget.snapshot?.data!.docs[widget.index].id);
     }
 
+    var tmp = widget.snapshot?.data!.docs[widget.index].data()!['description'] as String;
+
     return InkWell(
       onTap: () {
         var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
@@ -430,6 +433,12 @@ class _postState extends State<post> {
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  widget.snapshot?.data!.docs[widget.index]
+                      .data()!['description']!.substring(0,min(65, tmp.length)) +  (20< tmp.length? '...' : ''),
+                  textAlign: TextAlign.left,
                 ),
                 SizedBox(height: 5),
                 (widget.snapshot?.data!.docs[widget.index]
