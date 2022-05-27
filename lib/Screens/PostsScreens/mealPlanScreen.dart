@@ -341,32 +341,20 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             )),
         Expanded(
           flex: 1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Meal title",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 20,
-                  // fontWeight: FontWeight.bold,
-                ),
+          child: TextField(
+            controller: mealNameController,
+            textAlign: TextAlign.left,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(bottom: 5),
+              label: Text("Meal Title"),
+              hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+              labelStyle: TextStyle(
+                color: appTheme,
+                fontSize: 20,
+                fontWeight: FontWeight.normal,
               ),
-              TextField(
-                keyboardType: TextInputType.name,
-                controller: mealNameController,
-                textAlign: TextAlign.left,
-                /*decoration: InputDecoration(
-                  focusedBorder:OutlineInputBorder(
-                    borderSide: const BorderSide( width: 1.0),
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                ),
-
-                 */
-              )
-            ],
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+            ),
           ),
         ),
       ],
@@ -388,34 +376,23 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             )),
         Expanded(
           flex: 8,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "Ingredients",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 20,
-                  //fontWeight: FontWeight.bold,
-                ),
+          child: TextField(
+            minLines: 1,
+            maxLines: 8,
+            keyboardType: TextInputType.multiline,
+            controller: mealIngredientsController,
+            textAlign: TextAlign.left,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(bottom: 5),
+              label: Text("Ingredients"),
+              hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+              labelStyle: TextStyle(
+                color: appTheme,
+                fontSize: 20,
+                fontWeight: FontWeight.normal,
               ),
-              TextField(
-                minLines: 1,
-                maxLines: 8,
-                keyboardType: TextInputType.multiline,
-                controller: mealIngredientsController,
-                textAlign: TextAlign.left,
-                /* decoration: InputDecoration(
-                  focusedBorder:OutlineInputBorder(
-                    borderSide: const BorderSide( width: 1.0),
-                    borderRadius: BorderRadius.circular(0),
-                  ),
-                ),
-
-                */
-              )
-            ],
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+            ),
           ),
         ),
       ],
