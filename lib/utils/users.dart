@@ -74,7 +74,15 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get savedPosts => _userData?.savedPosts;
 
+  set savedPosts(list){
+    savedPosts = list;
+  }
+
   Future<void> updateSaved() async{
+    if(savedPosts == null)
+      {
+        savedPosts = [];
+      }
     for(var i = 0; i < savedPosts!.length; i++){
       var tmp = await PostManager().checkPostsExists(savedPosts![i]);
       if(tmp == false){

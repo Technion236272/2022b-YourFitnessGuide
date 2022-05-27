@@ -31,6 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ListView? workouts = null;
   bool noPosts = false;
   List<String>? savedPosts = null;
+  late double height, width;
 
   get uid => widget.uid;
   int rating = 0, savedNum = 0, followingNum = 0, followersNum = 0;
@@ -151,7 +152,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildView(double height, double width) {
+  Widget _buildTab({String? category}) {
+    bool found = false;
+
+    var tmp = ListView.builder(
+      //separatorBuilder: (context, index) => const Divider(),
+      itemCount: posts.data == null ? 0 : posts.data!.docs.length,
+      itemBuilder: (context, index) {
+        if (posts.connectionState == ConnectionState.waiting &&
+            posts.data == null) {
+          return const Center(child: CircularProgressIndicator.adaptive());
+        }
+        if (posts.connectionState == ConnectionState.done &&
+            posts.data == null) {
+          return const Center(child: Text('No data available'));
+        }
+        if (category != null) {
+          var currCat = posts?.data!.docs[index].data()!['category'];
+          if (currCat != category) {
+            return Container();
+          }
+          found = true;
+          return post(
+            snapshot: posts,
+            index: index,
+            screen: visiting ? 'timeline' : 'profile',
+          );
+        }
+        return post(
+          snapshot: posts,
+          index: index,
+          screen: visiting ? 'timeline' : 'profile',
+        );
+      },
+    );
+
+
+    if(category != null && !found){
+      var pronoun = visiting? 'User hasn\'t ' : 'You have not ';
+      return emptyNote(height, width,
+          pronoun +'published a ' + category + ' yet');
+    }
+
+    if (category == null) {
+      postsCards = tmp;
+      return postsCards!;
+    }
+    if (category == "Meal Plan") {
+      meals = tmp;
+      return meals!;
+    } else {
+      workouts = tmp;
+      return workouts!;
+    }
+  }
+
+  Widget _buildView() {
     if (userData != null) {
       profileImage = userData?.pictureUrl;
       rating = 0;
@@ -238,14 +294,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? (noPosts
                             ? [
                                 emptyNote(height, width,
-                                    'You haven\'t published a post yet'),
+                                    'You have not published a post yet'),
                                 emptyNote(height, width,
-                                    'You haven\'t published a post yet'),
+                                    'You have not published a post yet'),
                                 emptyNote(height, width,
-                                    'You haven\'t published a post yet'),
+                                    'You have not published a post yet'),
                                 savedNum == 0
                                     ? emptyNote(height, width,
-                                        'You haven\'t saved a post yet')
+                                        'You have not saved a post yet')
                                     : (_buildSaved()),
                               ]
                             : [
@@ -254,17 +310,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 _buildTab(category: "Workout"),
                                 savedNum == 0
                                     ? emptyNote(height, width,
-                                        'You haven\'t saved a post yet')
+                                        'You have not saved a post yet')
                                     : (_buildSaved()),
                               ])
                         : (noPosts
                             ? [
                                 emptyNote(height, width,
-                                    'User hasn\'t published a post yet'),
+                                    'User has not published a post yet'),
                                 emptyNote(height, width,
-                                    'User hasn\'t published a post yet'),
+                                    'User has not published a post yet'),
                                 emptyNote(height, width,
-                                    'User hasn\'t published a post yet'),
+                                    'User has not published a post yet'),
                               ]
                             : [
                                 _buildTab(),
@@ -275,51 +331,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             )));
-  }
-
-  ListView _buildTab({String? category}) {
-    var tmp = ListView.builder(
-      //separatorBuilder: (context, index) => const Divider(),
-      itemCount: posts.data == null ? 0 : posts.data!.docs.length,
-      itemBuilder: (context, index) {
-        if (posts.connectionState == ConnectionState.waiting &&
-            posts.data == null) {
-          return const Center(child: CircularProgressIndicator.adaptive());
-        }
-        if (posts.connectionState == ConnectionState.done &&
-            posts.data == null) {
-          return const Center(child: Text('No data available'));
-        }
-        if (category != null) {
-          var currCat = posts?.data!.docs[index].data()!['category'];
-          if (currCat != category) {
-            return Container();
-          }
-          return post(
-            snapshot: posts,
-            index: index,
-            screen: visiting ? 'timeline' : 'profile',
-          );
-        }
-        return post(
-          snapshot: posts,
-          index: index,
-          screen: visiting ? 'timeline' : 'profile',
-        );
-      },
-    );
-
-    if (category == null) {
-      postsCards = tmp;
-      return postsCards!;
-    }
-    if (category == "Meal Plan") {
-      meals = tmp;
-      return meals!;
-    } else {
-      workouts = tmp;
-      return workouts!;
-    }
   }
 
   StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved(
@@ -352,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return post(
                   snapshot: posts2,
                   index: index,
-                  screen: visiting ? 'timeline' : 'profile',
+                  screen: 'timeline',
                 );
               } else {
                 return Container();
@@ -364,8 +375,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
     user = Provider.of<AuthRepository>(context);
 
     if (uid != null) {
@@ -396,38 +407,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       savedPosts = userData?.savedPosts;
     }
 
-    var x = StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
-        stream: PostManager().getUserPosts(uid),
-        builder: (context, snapshot) {
-          return RefreshIndicator(
-              onRefresh: () async {
-                return null;
-              },
-              child: ListView.builder(
-                //separatorBuilder: (context, index) => const Divider(),
-                itemCount:
-                    snapshot.data == null ? 0 : snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  if (snapshot.connectionState == ConnectionState.waiting &&
-                      snapshot.data == null) {
-                    return Scaffold(
-                      appBar: AppBar(
-                        centerTitle: false,
-                        title: Text(username),
-                      ),
-                      body: const Center(
-                          child: CircularProgressIndicator.adaptive()),
-                    );
-                  }
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.data == null) {
-                    return const Center(child: Text('No data available'));
-                  }
-                  return post(snapshot: snapshot, index: index, screen: 'profile',);
-                },
-              ));
-        });
-
     return FutureBuilder(
       future: FirebaseDB().getUserModel(currUid!),
       builder: (context, snapshot) {
@@ -442,8 +421,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
         userData = snapshot.data;
-
-        return StreamBuilder(
+        return RefreshIndicator(child: StreamBuilder(
           stream: PostManager().getUserPosts(uid),
           builder: (context, snapshot2) {
             if (!snapshot2.hasData) {
@@ -464,9 +442,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (posts.data!.docs.length == 0) {
               noPosts = true;
             }
-            return _buildView(height, width);
+            else{
+              noPosts = false;
+            }
+
+            return _buildView();
           },
-        );
+        ), onRefresh: () async {
+          setState(() {
+
+          });
+
+        });
+
       },
     );
   }
