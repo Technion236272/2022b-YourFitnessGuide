@@ -239,7 +239,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               (init < goal || curr < goal)) {
                             const snackBar = SnackBar(
                                 content: Text(
-                                    'Invalid data inserted: User goal set to losing weight but initial\\current weight is lower that goal weight.'));
+                                    'Invalid data: Initial weight must be bigger than goal weight.'));
 
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
@@ -250,7 +250,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               (init > goal || curr > goal)) {
                             const snackBar = SnackBar(
                                 content: Text(
-                                    'Invalid data inserted: User goal set to gaining weight but initial\\current weight is higher that goal weight.'));
+                                    'Invalid data: Goal weight must be bigger than goal weight.'));
 
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
@@ -258,8 +258,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           }
 
                           if (firstTime) {
-                            if (int.parse(_initialController.text) == 0 ||
-                                int.parse(_goalController.text) == 0) {
+                            if (int.parse(_initialController.text) <= 0 ||
+                                int.parse(_goalController.text) <= 0 ||int.parse(_initialController.text) >= 500 || int.parse(_goalController.text) >= 500) {
                               const snackBar = SnackBar(
                                   content:
                                       Text('You need to fill all the fields'));
@@ -277,9 +277,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   context, homeRoute);
                             }
                           } else {
-                            if (int.parse(_initialController.text) == 0 ||
-                                int.parse(_goalController.text) == 0 ||
-                                int.parse(_goalController.text) == 0) {
+                            if (int.parse(_initialController.text) <= 0 ||
+                                int.parse(_currentController.text) <= 0 ||
+                                int.parse(_goalController.text) <= 0 || int.parse(_initialController.text) >= 500 || int.parse(_currentController.text) >= 500 || int.parse(_goalController.text) >= 500) {
                               const snackBar = SnackBar(
                                   content:
                                       Text('You need to fill all the fields'));
