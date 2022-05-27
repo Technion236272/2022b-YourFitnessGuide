@@ -34,10 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late double height, width;
 
   get uid => widget.uid;
-  int rating = 0,
-      savedNum = 0,
-      followingNum = 0,
-      followersNum = 0;
+  int rating = 0, savedNum = 0, followingNum = 0, followersNum = 0;
 
   Widget _buildStatline(String stat, int value) {
     return Center(
@@ -75,8 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: visiting
               ? Container()
               : Container(
-            child: _buildStatline('Saved', savedNum),
-          ),
+                  child: _buildStatline('Saved', savedNum),
+                ),
         ),
         imageContainer(
           height: height,
@@ -101,34 +98,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildTabHeader(String tabText) {
     return Tab(
         child: Text(
-          tabText,
-          style:
+      tabText,
+      style:
           TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-        ));
+    ));
   }
 
   Widget _buildTabBar() {
     return TabBar(
       tabs: !visiting
           ? [
-        _buildTabHeader('All posts'),
-        _buildTabHeader('Meals'),
-        _buildTabHeader('Workouts'),
-        _buildTabHeader('Saved'),
-      ]
+              _buildTabHeader('All posts'),
+              _buildTabHeader('Meals'),
+              _buildTabHeader('Workouts'),
+              _buildTabHeader('Saved'),
+            ]
           : [
-        _buildTabHeader('All posts'),
-        _buildTabHeader('Meals'),
-        _buildTabHeader('Workouts'),
-      ],
+              _buildTabHeader('All posts'),
+              _buildTabHeader('Meals'),
+              _buildTabHeader('Workouts'),
+            ],
     );
   }
 
   Widget emptyNote(double height, double width, String text) {
-    return RefreshIndicator(child: Card(
-    color: Colors.grey[200],
-        child: Center(
-            child: Column(
+    return RefreshIndicator(
+        child: Card(
+            color: Colors.grey[200],
+            child: Center(
+                child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -137,26 +135,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 Flexible(
                     child: Text(
-                      text,
-                      style: TextStyle(fontSize: 20),
-                    )),
+                  text,
+                  style: TextStyle(fontSize: 20),
+                )),
                 Flexible(
                     child: Image.asset(
-                      'images/decorations/404.png',
-                      width: width * 0.3,
-                      height: height * 0.3,
-                    ))
+                  'images/decorations/404.png',
+                  width: width * 0.3,
+                  height: height * 0.3,
+                ))
               ],
-            ))), onRefresh: () async{
-    setState(() {
-
-    });
-    });
-
+            ))),
+        onRefresh: () async {
+          setState(() {});
+        });
   }
 
   Widget _buildTab({String? category}) {
-    bool found = false;
+    bool workoutsFound = false, mealsFound = false;
+
+    for (int i = 0; i < posts.data!.docs.length; i++) {
+      if (category != null) {
+        if (posts?.data!.docs[i].data()!['category'] == 'Meal Plan') {
+          mealsFound = true;
+        }
+        if (posts?.data!.docs[i].data()!['category'] == 'Workout') {
+          workoutsFound = true;
+        }
+      }
+    }
+
+    if (category != null) {
+      if (category == 'Meal Plan' && !mealsFound) {
+        var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
+        return emptyNote(
+            height, width, pronoun + 'published a ' + category + ' yet');
+      }
+      else if(category == 'Workout' && !workoutsFound){
+        var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
+
+        return emptyNote(
+            height, width, pronoun + 'published a ' + category + ' yet');
+      }
+    }
 
     var tmp = ListView.builder(
       //separatorBuilder: (context, index) => const Divider(),
@@ -170,12 +191,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             posts.data == null) {
           return const Center(child: Text('No data available'));
         }
+
         if (category != null) {
           var currCat = posts?.data!.docs[index].data()!['category'];
           if (currCat != category) {
             return Container();
           }
-          found = true;
           return post(
             snapshot: posts,
             index: index,
@@ -190,36 +211,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
 
-
-    if (category != null && !found) {
-      var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
-      return emptyNote(height, width,
-          pronoun + 'published a ' + category + ' yet');
-    }
-
     if (category == null) {
       postsCards = tmp;
-      return RefreshIndicator(child: postsCards!, onRefresh: () async {
-        setState(() {
-
-        });
-      });
+      return RefreshIndicator(
+          child: postsCards!,
+          onRefresh: () async {
+            setState(() {});
+          });
       return postsCards!;
     }
     if (category == "Meal Plan") {
       meals = tmp;
-      return RefreshIndicator(child: meals!, onRefresh: () async {
-        setState(() {
-
-        });
-      });
+      return RefreshIndicator(
+          child: meals!,
+          onRefresh: () async {
+            setState(() {});
+          });
     } else {
       workouts = tmp;
-      return RefreshIndicator(child: workouts!, onRefresh: () async {
-        setState(() {
-
-        });
-      });
+      return RefreshIndicator(
+          child: workouts!,
+          onRefresh: () async {
+            setState(() {});
+          });
     }
   }
 
@@ -240,30 +254,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
               actions: visiting
                   ? []
                   : [
-                Padding(
-                    padding: const EdgeInsets.only(right: 12.0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/edit');
-                            },
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              user.signOut();
-                              setState(() {});
-                            },
-                            icon: const Icon(
-                              Icons.logout,
-                              color: Colors.white,
-                            ))
-                      ],
-                    )),
-              ],
+                      Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(context, '/edit');
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                  )),
+                              IconButton(
+                                  onPressed: () {
+                                    user.signOut();
+                                    setState(() {});
+                                  },
+                                  icon: const Icon(
+                                    Icons.logout,
+                                    color: Colors.white,
+                                  ))
+                            ],
+                          )),
+                    ],
             ),
             body: Column(
               children: [
@@ -274,29 +288,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         followingNum, followersNum)),
                 !visiting
                     ? Container(
-                  padding: EdgeInsets.only(bottom: height * 0.008),
-                )
+                        padding: EdgeInsets.only(bottom: height * 0.008),
+                      )
                     : ElevatedButton(
-                  child: const Text("Follow"),
-                  style: ElevatedButton.styleFrom(
-                      primary: const Color(0xff84C59E),
-                      shadowColor: appTheme,
-                      side: BorderSide(
-                          width: 2.0,
-                          color: Colors.black.withOpacity(0.5)),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)),
-                      fixedSize: Size(width * 0.25, height * 0.03),
-                      textStyle: const TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                      )),
-                  onPressed: () async {
-                    const snackBar =
-                    SnackBar(content: Text('Feature coming soon'));
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  },
-                ),
+                        child: const Text("Follow"),
+                        style: ElevatedButton.styleFrom(
+                            primary: const Color(0xff84C59E),
+                            shadowColor: appTheme,
+                            side: BorderSide(
+                                width: 2.0,
+                                color: Colors.black.withOpacity(0.5)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                            fixedSize: Size(width * 0.25, height * 0.03),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            )),
+                        onPressed: () async {
+                          const snackBar =
+                              SnackBar(content: Text('Feature coming soon'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        },
+                      ),
                 SizedBox(
                   height: height * 0.05,
                 ),
@@ -308,41 +322,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: TabBarView(
                     children: !visiting
                         ? (noPosts
-                        ? [
-                      emptyNote(height, width,
-                          'You have not published a post yet'),
-                      emptyNote(height, width,
-                          'You have not published a post yet'),
-                      emptyNote(height, width,
-                          'You have not published a post yet'),
-                      savedNum == 0
-                          ? emptyNote(height, width,
-                          'You have not saved a post yet')
-                          : (_buildSaved()),
-                    ]
-                        : [
-                      _buildTab(),
-                      _buildTab(category: "Meal Plan"),
-                      _buildTab(category: "Workout"),
-                      savedNum == 0
-                          ? emptyNote(height, width,
-                          'You have not saved a post yet')
-                          : (_buildSaved()),
-                    ])
+                            ? [
+                                emptyNote(height, width,
+                                    'You have not published a post yet'),
+                                emptyNote(height, width,
+                                    'You have not published a post yet'),
+                                emptyNote(height, width,
+                                    'You have not published a post yet'),
+                                savedNum == 0
+                                    ? emptyNote(height, width,
+                                        'You have not saved a post yet')
+                                    : (_buildSaved()),
+                              ]
+                            : [
+                                _buildTab(),
+                                _buildTab(category: "Meal Plan"),
+                                _buildTab(category: "Workout"),
+                                savedNum == 0
+                                    ? emptyNote(height, width,
+                                        'You have not saved a post yet')
+                                    : (_buildSaved()),
+                              ])
                         : (noPosts
-                        ? [
-                      emptyNote(height, width,
-                          'User has not published a post yet'),
-                      emptyNote(height, width,
-                          'User has not published a post yet'),
-                      emptyNote(height, width,
-                          'User has not published a post yet'),
-                    ]
-                        : [
-                      _buildTab(),
-                      _buildTab(category: "Meal Plan"),
-                      _buildTab(category: "Workout"),
-                    ]),
+                            ? [
+                                emptyNote(height, width,
+                                    'User has not published a post yet'),
+                                emptyNote(height, width,
+                                    'User has not published a post yet'),
+                                emptyNote(height, width,
+                                    'User has not published a post yet'),
+                              ]
+                            : [
+                                _buildTab(),
+                                _buildTab(category: "Meal Plan"),
+                                _buildTab(category: "Workout"),
+                              ]),
                   ),
                 ),
               ],
@@ -371,36 +385,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
         posts2 = snapshot;
 
-        return RefreshIndicator(child: ListView.builder(
-        itemCount: posts2.data == null ? 0 : posts2.data!.docs.length,
-            itemBuilder: (context, index) {
-              var currPost = posts2?.data!.docs[index].id;
-              if (savedPosts!.contains(currPost)) {
-                return post(
-                  snapshot: posts2,
-                  index: index,
-                  screen: 'timeline',
-                );
-              } else {
-                return Container();
-              }
-            }), onRefresh: () async{ setState(() {
-
-            });});
+        return RefreshIndicator(
+            child: ListView.builder(
+                itemCount: posts2.data == null ? 0 : posts2.data!.docs.length,
+                itemBuilder: (context, index) {
+                  var currPost = posts2?.data!.docs[index].id;
+                  if (savedPosts!.contains(currPost)) {
+                    return post(
+                      snapshot: posts2,
+                      index: index,
+                      screen: 'timeline',
+                    );
+                  } else {
+                    return Container();
+                  }
+                }),
+            onRefresh: () async {
+              setState(() {});
+            });
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    height = MediaQuery
-        .of(context)
-        .size
-        .height;
-    width = MediaQuery
-        .of(context)
-        .size
-        .width;
+    height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
     user = Provider.of<AuthRepository>(context);
 
     if (uid != null) {
@@ -445,38 +455,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
         userData = snapshot.data;
-        return RefreshIndicator(child: StreamBuilder(
-          stream: PostManager().getUserPosts(uid),
-          builder: (context, snapshot2) {
-            if (!snapshot2.hasData) {
-              return Scaffold(
-                appBar: AppBar(
-                  centerTitle: false,
-                  title: Text(username),
-                ),
-                body: const Center(child: CircularProgressIndicator.adaptive()),
-              );
-            }
-            if (snapshot2.hasError) {
-              Navigator.pop(context);
-              const snackBar = SnackBar(content: Text('Something went wrong'));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
-            posts = snapshot2;
-            if (posts.data!.docs.length == 0) {
-              noPosts = true;
-            }
-            else {
-              noPosts = false;
-            }
+        return RefreshIndicator(
+            child: StreamBuilder(
+              stream: PostManager().getUserPosts(uid),
+              builder: (context, snapshot2) {
+                if (!snapshot2.hasData) {
+                  return Scaffold(
+                    appBar: AppBar(
+                      centerTitle: false,
+                      title: Text(username),
+                    ),
+                    body: const Center(
+                        child: CircularProgressIndicator.adaptive()),
+                  );
+                }
+                if (snapshot2.hasError) {
+                  Navigator.pop(context);
+                  const snackBar =
+                      SnackBar(content: Text('Something went wrong'));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+                posts = snapshot2;
+                if (posts.data!.docs.length == 0) {
+                  noPosts = true;
+                } else {
+                  noPosts = false;
+                }
 
-            return _buildView();
-          },
-        ), onRefresh: () async {
-          setState(() {
-
-          });
-        });
+                return _buildView();
+              },
+            ),
+            onRefresh: () async {
+              setState(() {});
+            });
       },
     );
   }
