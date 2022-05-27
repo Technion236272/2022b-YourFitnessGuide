@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/services/file_upload_service.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class PostManager with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -183,6 +184,30 @@ class PostManager with ChangeNotifier {
   Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts() {
     return _postCollection.orderBy('createdAt', descending: true).snapshots();
   }
+
+  Future<List<post>> getPosts() async {
+    List<post> res = [];
+
+    await _postCollection.get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var fullData = doc.data();
+        fullData['uid'] = doc.id;
+        var currentPost = post(
+          uid: doc.id,
+          screen: 'timeline',
+            data: fullData,);
+        res.add(currentPost);
+      });
+    });
+    return Future<List<post>>.value(res);
+  }
+
+  Future<Map<String, dynamic>?> getPostByID(String uid) async {
+    var call = await _postCollection.doc(uid);
+    var post = await call.get();
+    return post.data();
+  }
+
 
   Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
     final Query<Map<String, dynamic>> _userPosts = _firebaseFirestore

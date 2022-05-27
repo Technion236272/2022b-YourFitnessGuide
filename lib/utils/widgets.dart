@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/cupertino.dart';
@@ -194,15 +195,18 @@ class post extends StatefulWidget {
   late String? username = null;
   late DateTime? date = null;
   late int? rating = null;
+  late String? title = null;
   late String? screen = null;
+  late String? uid = null;
+  late Map<String,dynamic>? data = null;
   bool hide = true;
   var user;
   bool isSaved = false;
-  post({Key? key, this.index, required this.snapshot, required this.screen})
+  post({Key? key, this.index, this.snapshot, this.data,required this.screen, this.uid})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
-            .getUserInfo(snapshot?.data!.docs[index].data()!['user_uid'])
+            .getUserInfo(data?['user_uid'] ?? snapshot?.data!.docs[index].data()!['user_uid'])
             .asStream(),
         builder: (context, userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting &&
@@ -214,13 +218,15 @@ class post extends StatefulWidget {
             completed = false;
             return const ListTile();
           }
-          userPicture = Image.network(userSnapshot.data!['picture']!);
-          category = snapshot?.data!.docs[index].data()!['category'];
-          username = userSnapshot.data!['name'];
-          rating = userSnapshot.data!['rating'];
-          date = snapshot?.data!.docs[index].data()!['createdAt'] != null
+          userPicture = Image.network(data?['picture'] ?? userSnapshot.data!['picture']!);
+          category = data?['category'] ?? snapshot?.data!.docs[index].data()!['category'];
+          username = data?['name'] ?? userSnapshot.data!['name'];
+          title = data?['title'] ?? userSnapshot.data!['title']!;
+          rating = data?['rating'] ?? userSnapshot.data!['rating'];
+          date = data != null? (data?['createdAt'].toDate()
+              ) : (snapshot?.data!.docs[index].data()!['createdAt'] != null
               ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
-              : DateTime.now();
+              : DateTime.now());
 
           return const ListTile();
         });
@@ -253,7 +259,7 @@ class _postState extends State<post> {
                     content: Text('Deleting post from saved'));
                 ScaffoldMessenger.of(context)
                     .showSnackBar(_snackBar);
-                widget.user.modifySaved(
+                widget.user.modifySaved( widget.data != null? widget.data!['uid']:
                     widget.snapshot?.data!.docs[widget.index].id,
                     true);
               } else {
@@ -261,7 +267,8 @@ class _postState extends State<post> {
                 SnackBar(content: Text('Saving post'));
                 ScaffoldMessenger.of(context)
                     .showSnackBar(_snackBar);
-                widget.user.modifySaved(
+                widget.user.modifySaved( widget.data != null?
+                  widget.data!['uid']:
                     widget.snapshot?.data!.docs[widget.index].id,
                     false);
               }
@@ -280,26 +287,25 @@ class _postState extends State<post> {
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
-    var saved = [];
     if (widget.user.isAuthenticated) {
       var saved = widget.user.savedPosts;
       widget.isSaved = saved == null
           ? false
-          : saved.contains(widget.snapshot?.data!.docs[widget.index].id);
+          : saved.contains(widget.data != null? widget.data!['uid'] : widget.snapshot?.data!.docs[widget.index].id);
     }
 
     return InkWell(
       onTap: () {
-        var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
+        var cat = widget.data?['category'] ?? widget.snapshot?.data!.docs[widget.index].data()!['category'];
         if (cat == 'Blog') {
           Navigator.pushNamed(context, viewBlogRoute,
-              arguments: widget.snapshot?.data!.docs[widget.index].data()!);
+              arguments: widget.data != null? widget.data : widget.snapshot?.data!.docs[widget.index].data()!);
         } else if (cat == 'Workout') {
           Navigator.pushNamed(context, viewWorkoutRoute,
-              arguments: widget.snapshot?.data!.docs[widget.index].data()!);
+              arguments: widget.data != null? widget.data : widget.snapshot?.data!.docs[widget.index].data()!);
         } else {
           Navigator.pushNamed(context, viewMealPlanRoute,
-              arguments: widget.snapshot?.data!.docs[widget.index].data()!);
+              arguments: widget.data != null? widget.data :widget.snapshot?.data!.docs[widget.index].data()!);
         }
       },
       child: Card(
@@ -312,7 +318,7 @@ class _postState extends State<post> {
                 /// user pic + name + 3 dots
                 StreamBuilder<Map<String, dynamic>?>(
                     stream: _postManager
-                        .getUserInfo(widget.snapshot?.data!.docs[widget.index]
+                        .getUserInfo(widget.data?['user_uid'] ?? widget.snapshot?.data!.docs[widget.index]
                             .data()!['user_uid'])
                         .asStream(),
                     builder: (context, userSnapshot) {
@@ -332,7 +338,7 @@ class _postState extends State<post> {
                           radius: 30,
                           backgroundImage: widget.userPicture != null
                               ? widget.userPicture?.image
-                              : NetworkImage(userSnapshot.data!['picture']!),
+                              : (widget.data?['picture'] ?? NetworkImage(userSnapshot.data!['picture']!)),
                         ),
                         title: RichText(
                           text: TextSpan(
@@ -344,16 +350,16 @@ class _postState extends State<post> {
                               TextSpan(
                                   text: widget.category != null
                                       ? widget.category
-                                      : widget
+                                      : (widget.data?['category'] ?? widget
                                           .snapshot?.data!.docs[widget.index]
-                                          .data()!['category'],
+                                          .data()!['category']),
                                   style: TextStyle(
                                       //fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .appBarTheme
                                           .backgroundColor)),
                               const TextSpan(text: ' by '),
-                              TextSpan(text: userSnapshot.data!['name']),
+                              TextSpan(text: widget.data?['name'] ?? userSnapshot.data!['name']),
                             ],
                           ),
                         ),
@@ -362,14 +368,9 @@ class _postState extends State<post> {
                                 ? timeago.format(widget.date!,
                                     allowFromNow: true)
                                 : timeago.format(
-                                    widget.snapshot?.data!.docs[widget.index]
-                                                .data()!['createdAt'] !=
-                                            null
-                                        ? widget
-                                            .snapshot?.data!.docs[widget.index]
-                                            .data()!['createdAt']
-                                            .toDate()
-                                        : DateTime.now(),
+                                widget.data != null? (widget.data?['createdAt'].toDate()) : (widget.snapshot?.data!.docs[widget.index].data()!['createdAt'] != null
+                                    ? widget.snapshot?.data!.docs[widget.index].data()!['createdAt'].toDate()
+                                    : DateTime.now()),
                                     allowFromNow: true),
                             style: Theme.of(context)
                                 .textTheme
@@ -425,21 +426,21 @@ class _postState extends State<post> {
                               ),
                       );
                     }),
-                Text(
-                  widget.snapshot?.data!.docs[widget.index].data()!['title']!,
+                Text( widget.data?['title'] ??
+                    widget.snapshot?.data!.docs[widget.index].data()!['title']!,
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(height: 5),
-                (widget.snapshot?.data!.docs[widget.index]
+                (((widget.data!= null && widget.data!['image_url'] != null) || widget.snapshot?.data!.docs[widget.index]
                             .data()!['image_url'] !=
-                        null
+                        null)
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          widget.snapshot?.data!.docs[widget.index]
-                              .data()!['image_url']!,
+                        child: Image.network( widget.data != null? widget.data!['image_url']  : (widget.data?['image_url'] ??
+                            widget.snapshot?.data!.docs[widget.index]
+                              .data()!['image_url']!),
                           height: 200,
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.cover,
@@ -455,7 +456,7 @@ class _postState extends State<post> {
                       children: [
                         _buildPostIcon(Icons.arrow_upward),
                         Text(
-                          (widget.snapshot?.data.docs[widget.index]
+                          (widget.data?['rating'] ?? widget.snapshot?.data.docs[widget.index]
                                   .data()['rating'])!
                               .toString(),
                           style: TextStyle(
