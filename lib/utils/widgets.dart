@@ -437,7 +437,7 @@ class _postState extends State<post> {
                 SizedBox(height: 5),
                 Text(
                   widget.snapshot?.data!.docs[widget.index]
-                      .data()!['description']!.substring(0,min(65, tmp.length)) +  (20< tmp.length? '...' : ''),
+                      .data()!['description']!.substring(0,min(65, tmp.length)) +  (65< tmp.length? '...' : ''),
                   textAlign: TextAlign.left,
                 ),
                 SizedBox(height: 5),
