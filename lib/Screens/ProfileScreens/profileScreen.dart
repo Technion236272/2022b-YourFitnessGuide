@@ -390,7 +390,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 itemCount: posts2.data == null ? 0 : posts2.data!.docs.length,
                 itemBuilder: (context, index) {
                   var currPost = posts2?.data!.docs[index].id;
-                  if (savedPosts!.contains(currPost)) {
+                  if (savedPosts != null && savedPosts!.contains(currPost)) {
                     return post(
                       snapshot: posts2,
                       index: index,
@@ -430,15 +430,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (userData != null) {
-      user.updateSaved();
       profileImage = userData?.pictureUrl;
+      savedPosts = userData?.savedPosts;
       rating = userData?.rating;
       savedNum = userData?.saved;
       followingNum = userData?.following;
       followersNum = userData?.followers;
       currUid = uid ?? user.getCurrUid();
       username = userData?.name ?? 'Mclovin';
-      savedPosts = userData?.savedPosts;
+      user.updateSaved();
     }
 
     return FutureBuilder(

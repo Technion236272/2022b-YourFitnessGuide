@@ -28,7 +28,7 @@ class UserModel {
   int? followers;
   int saved;
   String? pictureUrl;
-  List<String>? savedPosts;
+  List<String>? savedPosts = [];
 
   UserModel(
       {this.name,
@@ -74,18 +74,10 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get savedPosts => _userData?.savedPosts;
 
-  set savedPosts(list){
-    savedPosts = list;
-  }
-
-  Future<void> updateSaved() async{
-    if(savedPosts == null)
-      {
-        savedPosts = [];
-      }
-    for(var i = 0; i < savedPosts!.length; i++){
+  Future<void> updateSaved() async {
+    for (var i = 0; i < savedPosts!.length; i++) {
       var tmp = await PostManager().checkPostsExists(savedPosts![i]);
-      if(tmp == false){
+      if (tmp == false) {
         modifySaved(savedPosts![i], true);
         i--;
       }
@@ -124,7 +116,8 @@ class AuthRepository with ChangeNotifier {
           rating: 0,
           saved: 0,
           followers: 0,
-          following: 0);
+          following: 0,
+          savedPosts: []);
       return res;
     } on FirebaseAuthException catch (error) {
       _userData = null;
@@ -221,7 +214,8 @@ class AuthRepository with ChangeNotifier {
           rating: 0,
           saved: 0,
           followers: 0,
-          following: 0);
+          following: 0,
+          savedPosts: []);
 
       if (redirected) {
         return 2;
@@ -295,7 +289,8 @@ class AuthRepository with ChangeNotifier {
           rating: 0,
           saved: 0,
           followers: 0,
-          following: 0);
+          following: 0,
+          savedPosts: []);
 
       if (redirected) return 2;
       return 1;
@@ -321,11 +316,10 @@ class AuthRepository with ChangeNotifier {
       await _db.collection('users').doc(user!.uid).update({
         'saved_posts': FieldValue.arrayRemove([postuid])
       });
-      if(_userData!.savedPosts!.contains(postuid))
-        {
-          _userData?.saved--;
-          _userData?.savedPosts?.remove(postuid);
-        }
+      if (_userData!.savedPosts!.contains(postuid)) {
+        _userData?.saved--;
+        _userData?.savedPosts?.remove(postuid);
+      }
     } else {
       await _db.collection('users').doc(user!.uid).update({
         'saved_posts': FieldValue.arrayUnion([postuid])
@@ -350,7 +344,7 @@ class AuthRepository with ChangeNotifier {
   Future deleteUser() async {
     var uid = _auth.currentUser?.uid;
     var ids = await PostManager().getUserPostsIDs(uid!);
-    for(int i = 0; i < ids.length; i++){
+    for (int i = 0; i < ids.length; i++) {
       PostManager().deletePost(ids[i]);
     }
 
