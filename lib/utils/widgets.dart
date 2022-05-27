@@ -447,7 +447,13 @@ class _postState extends State<post> {
                         ),
                       )
                     : Container()),
-                widget.hide? Center(child: _buildSaveButton(),) :
+                widget.hide? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(),
+                      _buildSaveButton()
+                    ]
+                ):
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
