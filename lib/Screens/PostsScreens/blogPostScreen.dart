@@ -266,15 +266,9 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-
                     const Icon(Icons.add_photo_alternate, color: Colors.white),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      photoText,
-                      style: const TextStyle(color: Colors.white),
-                    ),
+                    const SizedBox(height: 4),
+                    Text(photoText,style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),

@@ -21,7 +21,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
   TextEditingController mealNameController = TextEditingController();
   TextEditingController mealIngredientsController = TextEditingController();
   TextEditingController KcalController = TextEditingController();
-  TextEditingController ProtiensController = TextEditingController();
+  TextEditingController ProteinsController = TextEditingController();
   TextEditingController CarbsController = TextEditingController();
   TextEditingController FatsController = TextEditingController();
   bool? loseWeight = false;
@@ -380,7 +380,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
               width: 0.05 * width,
             ),
             Expanded(
-              child: _buildStat('Proteins', ProtiensController),
+              child: _buildStat('Proteins', ProteinsController),
             ),
             SizedBox(
               width: 0.05 * width,
@@ -459,17 +459,13 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
           padding: const EdgeInsets.fromLTRB(10, 150, 10, 200),
           child: Dialog(
               insetPadding: const EdgeInsets.all(5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25.0),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
               elevation: 0,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(
-                      height: height * 0.01,
-                    ),
+                    SizedBox(height: height * 0.01),
                     Container(
                       padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
                       child: _buildContents(height),
@@ -509,7 +505,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     mealPlanNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
     KcalController.text = post_data["meals_contents"][0].toString();
-    ProtiensController.text = post_data["meals_contents"][1].toString();
+    ProteinsController.text = post_data["meals_contents"][1].toString();
     CarbsController.text = post_data["meals_contents"][2].toString();
     FatsController.text = post_data["meals_contents"][3].toString();
     if (_mealNames.isEmpty) {

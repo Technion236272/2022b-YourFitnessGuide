@@ -438,6 +438,7 @@ class _postState extends State<post> {
                   widget.snapshot?.data!.docs[widget.index]
                       .data()!['description']!.substring(0,min(65, tmp.length)) +  (65< tmp.length? '...' : ''),
                   textAlign: TextAlign.left,
+                  maxLines: 5
                 ),
                 const SizedBox(height: 5),
                 (widget.snapshot?.data!.docs[widget.index]
@@ -458,7 +459,6 @@ class _postState extends State<post> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-
                       children: [
                         _buildPostIcon(Icons.arrow_upward),
                         Text(

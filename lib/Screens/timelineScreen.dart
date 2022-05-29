@@ -139,19 +139,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     itemBuilder: (context, index) {
                       if (snapshot.connectionState == ConnectionState.waiting &&
                           snapshot.data == null) {
-                        return const Center(
-                            child: CircularProgressIndicator.adaptive());
+                        return const Center(child: CircularProgressIndicator.adaptive());
                       }
 
                       if (snapshot.connectionState == ConnectionState.done &&
                           snapshot.data == null) {
                         return const Center(child: Text('No data available'));
                       }
-                      return post(
-                        index: index,
-                        snapshot: snapshot,
-                        screen: "timeline",
-                      );
+                      return post(index: index, snapshot: snapshot, screen: "timeline");
                     },
                   ));
             }));
