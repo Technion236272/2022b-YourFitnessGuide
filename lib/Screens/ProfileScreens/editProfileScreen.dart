@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yourfitnessguide/utils/ImageCrop.dart';
 
 class EditProfileScreen extends StatefulWidget {
   late bool firstTime;
@@ -20,7 +21,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   textField nameField = textField(
     fieldName: 'Name',
-    hint: 'McLovin',
+    hint: 'Enter your name here',
   );
   final TextEditingController _initialController = TextEditingController();
   final TextEditingController _currentController = TextEditingController();
@@ -83,7 +84,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           fontWeight: FontWeight.bold,
         ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        hintText: "80",
         hintStyle:
             const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
       ),
@@ -119,9 +119,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       }
+
+
+      final croppedFile = await myImageCropper(selectedImage.path);
+
+
       setState(() {
-        newImage = File(selectedImage.path);
+        newImage = File(croppedFile!.path);//File(selectedImage.path);
       });
+
     } on PlatformException catch (_) {
       const snackBar = SnackBar(
           content: Text(
@@ -183,7 +189,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(
           centerTitle: false,
-          title: Text(firstTime ? 'Set up your profile' : 'Edit your profile'),
+          title: Text(firstTime ? 'Setup your profile' : 'Edit your profile'),
           actions: [
             Padding(
                 padding: const EdgeInsets.only(right: 12.0),
@@ -222,10 +228,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               );
                             },
-                            icon: Icon(
-                              Icons.info_outline,
-                              color: Colors.white,
-                            )),
+                            icon: const Icon(Icons.info_outline,color: Colors.white,)
+                    ),
                     IconButton(
                         onPressed: () {
                           int init = int.parse(_initialController.text);
@@ -342,7 +346,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               firstTime
                   ? Container()
                   : ElevatedButton(
-                      child: const Text("DELETE ACCOUNT"),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red,
                           side: BorderSide(
@@ -372,20 +375,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                               });
                             },
-                            child: const Text('Confirm',
-                                style: TextStyle(color: appTheme)));
+                            child: const Text('Confirm', style: TextStyle(color: appTheme)));
                         AlertDialog alert = AlertDialog(
                           title: const Text('Are you sure?'),
-                          content: const Text(
-                              'Deleting your account is permanent and cannot be reversed.'),
+                          content: const Text('Deleting your account is permanent and cannot be reversed.'),
                           actions: [cancel, confirm],
                         );
                         showDialog(
                             context: context,
-                            builder: (BuildContext) {
+                            builder: (_) {
                               return alert;
                             });
                       },
+                      child: const Text("DELETE ACCOUNT"),
                     ),
             ],
           ),

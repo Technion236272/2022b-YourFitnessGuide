@@ -5,6 +5,8 @@ import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/utils/ImageCrop.dart';
+
 
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({Key? key}) : super(key: key);
@@ -21,12 +23,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
   bool? gainWeight = false;
   bool? maintainHealth = false;
   bool selectedGoal = false;
-  List<bool?> _goals = [false, false, false, false];
+  final List<bool?> _goals = [false, false, false, false];
   final List<TextEditingController> _controllerInput = [];
   final List<TextField> _textFieldInput = [];
   final List<String?> _exercises = [];
   var color = appTheme;
-  String photo = "attach a photo";
+  String photo = "Add Image";
 
   final PostManager _postManager = PostManager();
   bool _isLoading = false;
@@ -42,8 +44,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         _postImageFile = null;
         return;
       }
+
+      final croppedFile = await myImageCropper(selectedImage.path);
+
       setState(() {
-        _postImageFile = File(selectedImage.path);
+        _postImageFile = File(croppedFile!.path);//File(selectedImage.path);
       });
     } on PlatformException catch (_) {
       const snackBar = SnackBar(
@@ -86,14 +91,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 controller: workoutNameController,
                 textAlign: TextAlign.left,
                 maxLength: 30,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.only(bottom: 5),
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom: 5),
                   label: false
                       ? Center(
                     child: Text("Workout name"),
                   )
                       : Text("Workout name"),
-                  hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -143,14 +148,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 keyboardType: TextInputType.multiline,
                 controller: descriptionController,
                 textAlign: TextAlign.left,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.only(bottom: 5),
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom: 5),
                   label: false
                       ? Center(
                     child: Text("Description"),
                   )
                       : Text("Description"),
-                  hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -186,7 +191,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 "Goal",
                 style: TextStyle(
                   color: appTheme,
@@ -207,7 +212,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CheckboxListTile(
-            title: Text('Lose Weight'),
+            title: const Text('Lose Weight'),
             value: loseWeight,
             //groupValue: userGoal,
             activeColor: appTheme,
@@ -223,7 +228,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
-            title: Text('Gain Muscle'),
+            title: const Text('Gain Muscle'),
             value: gainMuscle,
             activeColor: appTheme,
             onChanged: (value) => setState(() {
@@ -238,7 +243,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
-            title: Text('Gain Healthy Weight'),
+            title: const Text('Gain Healthy Weight'),
             value: gainWeight,
             activeColor: appTheme,
             onChanged: (value) => setState(() {
@@ -253,7 +258,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
-            title: Text('Maintain Healthy Lifestyle'),
+            title: const Text('Maintain Healthy Lifestyle'),
             value: maintainHealth,
             activeColor: appTheme,
             onChanged: (value) => setState(() {
@@ -283,7 +288,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 "Exercises",
                 style: TextStyle(
                   color: appTheme,
@@ -295,7 +300,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 shrinkWrap: true,
                 itemCount: _controllerInput.length,
                 itemBuilder: (context, index) {
-                  return Container(
+                  return SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: _textFieldInput.elementAt(index),
                   );
@@ -304,22 +309,22 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               Container(
                   padding: const EdgeInsets.fromLTRB(3, 8, 40, 10),
                   child: ElevatedButton(
-                    child: const Text("Add Exercise"),
                     style: ElevatedButton.styleFrom(
                         primary: appTheme,
                         side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                         shadowColor: appTheme,
                         elevation: 1,
-                        shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(20.0)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0)),
                         fixedSize: Size(width * 0.3, height * 0.040),
-                        textStyle: TextStyle(
+                        textStyle: const TextStyle(
                           fontSize: 14,
                           color: Colors.white,
                         )),
                     onPressed: () {
                       _addInputField(context);
                     },
+                    child: const Text("Add Exercise"),
                   )),
             ],
           ),
@@ -448,9 +453,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 ),
               )  : const Padding(
                   padding: EdgeInsets.all(0))),
-              SizedBox(
-                height: 4,
-              ),
+              const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
                 width: 205,
@@ -466,13 +469,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                       await pickImage();
                       if(_postImageFile!=null) {
                         color = Colors.red;
-                        photo = "detach the photo";
+                        photo = "Remove Image";
                       }
                     }
                     else {
                       _postImageFile = null;
                       color = appTheme;
-                      photo = "attach a photo";
+                      photo = "Add Image";
                     }
                     setState(() {
                       build(context);
@@ -481,11 +484,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Icon(Icons.add_photo_alternate, color: Colors.white),
-                      SizedBox(
+                      const Icon(Icons.add_photo_alternate, color: Colors.white),
+                      const SizedBox(
                         height: 4,
                       ),
-                      Text(photo, style: TextStyle(color: Colors.white),),
+                      Text(photo, style: const TextStyle(color: Colors.white),),
 
 
 

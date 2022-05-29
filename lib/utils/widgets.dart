@@ -186,11 +186,11 @@ class _textFieldState extends State<textField> {
 
 class post extends StatefulWidget {
   AsyncSnapshot? snapshot;
-  late int? index = null;
+  late int? index;
   bool completed = true;
   bool owner = false;
   late Image? userPicture = null;
-  late Image? postImage = null;
+  late Image? postImage;
   late String? category = null;
   late String? username = null;
   late DateTime? date = null;
@@ -227,6 +227,7 @@ class post extends StatefulWidget {
         });
   }
 
+  @override
   State<post> createState() => _postState();
 }
 
@@ -236,8 +237,8 @@ class _postState extends State<post> {
   Widget _buildPostIcon(IconData ic) {
     return IconButton(
         onPressed: () {
-          const _snackBar = SnackBar(content: Text('Not implemented yet'));
-          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+          const snackBar = SnackBar(content: Text('Not implemented yet'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         },
         icon: Icon(ic, color: Colors.grey));
   }
@@ -250,28 +251,28 @@ class _postState extends State<post> {
               widget.isSaved = !widget.isSaved;
               setState(() {});
               if (!widget.isSaved) {
-                const _snackBar = SnackBar(
+                const snackBar = SnackBar(
                     content: Text('Deleting post from saved'));
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(_snackBar);
+                    .showSnackBar(snackBar);
                 widget.user.modifySaved(
                     widget.snapshot?.data!.docs[widget.index].id,
                     true);
               } else {
-                const _snackBar =
+                const snackBar =
                 SnackBar(content: Text('Saving post'));
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(_snackBar);
+                    .showSnackBar(snackBar);
                 widget.user.modifySaved(
                     widget.snapshot?.data!.docs[widget.index].id,
                     false);
               }
             } else {
-              const _snackBar = SnackBar(
+              const snackBar = SnackBar(
                   content:
                   Text('You need to sign in to save posts'));
               ScaffoldMessenger.of(context)
-                  .showSnackBar(_snackBar);
+                  .showSnackBar(snackBar);
             }
           },
           icon: Icon(Icons.bookmark,
@@ -345,9 +346,7 @@ class _postState extends State<post> {
                                 .copyWith(fontSize: 16),
                             children: <TextSpan>[
                               TextSpan(
-                                  text: widget.category != null
-                                      ? widget.category
-                                      : widget
+                                  text: widget.category ?? widget
                                           .snapshot?.data!.docs[widget.index]
                                           .data()!['category'],
                                   style: TextStyle(
@@ -412,17 +411,17 @@ class _postState extends State<post> {
                                   AlertDialog alert = AlertDialog(
                                     title: const Text('Are you sure?'),
                                     content: const Text(
-                                        'Posts are unretrievable after deletion.'),
+                                        'Posts are not retrievable after deletion.'),
                                     actions: [cancel, confirm],
                                   );
                                   showDialog(
                                       context: context,
-                                      builder: (BuildContext) {
+                                      builder: (_) {
                                         return alert;
                                       });
                                 },
                                 itemBuilder: (BuildContext context) => [
-                                  PopupMenuItem(
+                                  const PopupMenuItem(
                                       value: 1, child: Text('Delete post'))
                                 ],
                               ),
@@ -434,22 +433,21 @@ class _postState extends State<post> {
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Text(
                   widget.snapshot?.data!.docs[widget.index]
                       .data()!['description']!.substring(0,min(65, tmp.length)) +  (65< tmp.length? '...' : ''),
                   textAlign: TextAlign.left,
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 (widget.snapshot?.data!.docs[widget.index]
-                            .data()!['image_url'] !=
-                        null
+                            .data()!['image_url'] != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
                           widget.snapshot?.data!.docs[widget.index]
                               .data()!['image_url']!,
-                          height: 200,
+                          //height: 200,
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.cover,
                         ),

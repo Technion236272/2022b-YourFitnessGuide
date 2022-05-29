@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'dart:io';
+import 'package:yourfitnessguide/utils/ImageCrop.dart';
+
 
 class MealPlanScreen extends StatefulWidget {
   const MealPlanScreen({Key? key}) : super(key: key);
@@ -33,7 +35,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   final List<Widget> _list = [];
   final List<int> _mealsContents = [0, 0, 0, 0];
   var color = appTheme;
-  String photo = "attach a photo";
+  String photo = "Add Image";
   final PostManager _postManager = PostManager();
   bool _isLoading = false;
   File? _postImageFile;
@@ -48,8 +50,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         _postImageFile = null;
         return;
       }
+
+      final croppedFile = await myImageCropper(selectedImage.path);
+
       setState(() {
-        _postImageFile = File(selectedImage.path);
+        _postImageFile = File(croppedFile!.path);//File(selectedImage.path);
       });
     } on PlatformException catch (_) {
       const snackBar = SnackBar(
@@ -382,10 +387,10 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             keyboardType: TextInputType.multiline,
             controller: mealIngredientsController,
             textAlign: TextAlign.left,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(bottom: 5),
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.only(bottom: 5),
               label: Text("Ingredients"),
-              hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+              hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
               labelStyle: TextStyle(
                 color: appTheme,
                 fontSize: 20,
@@ -850,9 +855,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 ),
               )  : const Padding(
                   padding: EdgeInsets.all(0))),
-              SizedBox(
-                height: 4,
-              ),
+              const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
                 width: 205,
@@ -868,13 +871,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                       await pickImage();
                       if(_postImageFile!=null) {
                         color = Colors.red;
-                        photo = "detach the photo";
+                        photo = "Remove Image";
                       }
                     }
                     else {
                       _postImageFile = null;
                       color = appTheme;
-                      photo = "attach a photo";
+                      photo = "Add Image";
                     }
                     setState(() {
                       build(context);
@@ -885,11 +888,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                     children: <Widget>[
 
 
-                      Icon(Icons.add_photo_alternate, color: Colors.white),
-                      SizedBox(
-                        height: 4,
-                      ),
-                      Text(photo, style: TextStyle(color: Colors.white),),
+                      const Icon(Icons.add_photo_alternate, color: Colors.white),
+                      const SizedBox(height: 4),
+                      Text(photo, style: const TextStyle(color: Colors.white)),
 
 
 
