@@ -846,7 +846,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   height: 300,
                   width:
                   MediaQuery.of(context).size.width*0.9,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
               )  : const Padding(
                   padding: EdgeInsets.all(0))),

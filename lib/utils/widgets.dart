@@ -129,14 +129,14 @@ class imageContainer extends StatelessWidget {
             shape: BoxShape.circle,
             image: imageFile != null
                 ? DecorationImage(
-                    fit: BoxFit.cover, image: Image.file(imageFile!).image)
+                    fit: BoxFit.contain, image: Image.file(imageFile!).image)
                 : (imageLink == null
                     ? DecorationImage(
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         image:
                             Image.asset('images/decorations/mclovin.png').image)
                     : DecorationImage(
-                        fit: BoxFit.cover, image: NetworkImage(imageLink!)))));
+                        fit: BoxFit.contain, image: NetworkImage(imageLink!)))));
   }
 }
 
