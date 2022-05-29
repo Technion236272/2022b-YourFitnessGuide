@@ -204,7 +204,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                   ],
                 )),
           ]),
-      body: Center(
+      body: SingleChildScrollView(child: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.start,
               //crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -227,7 +227,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                     height: 300,
                     width:
                     MediaQuery.of(context).size.width*0.9,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 )  : const Padding(
                     padding: EdgeInsets.all(0))),
@@ -284,7 +284,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
 
 
 
-          ])),
+          ]))),
 
       resizeToAvoidBottomInset: false,
     );
