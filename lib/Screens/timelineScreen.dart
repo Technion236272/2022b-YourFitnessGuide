@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,16 +7,16 @@ import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
-class filterDialog extends StatefulWidget {
+class FilterDialog extends StatefulWidget {
   bool goalOrientation;
-  filterDialog({Key? key, required this.goalOrientation}) : super(key: key);
+  FilterDialog({Key? key, required this.goalOrientation}) : super(key: key);
   get goalOriented => goalOrientation;
 
   @override
-  State<filterDialog> createState() => _filterDialogState();
+  State<FilterDialog> createState() => _FilterDialogState();
 }
 
-class _filterDialogState extends State<filterDialog> {
+class _FilterDialogState extends State<FilterDialog> {
   @override
   Widget build(BuildContext context) {
     Widget cancel = TextButton(
@@ -29,7 +28,7 @@ class _filterDialogState extends State<filterDialog> {
           style: TextStyle(color: appTheme),
         ));
     Widget tmp = CheckboxListTile(
-        title: Text('Show posts that match my goal only', style: TextStyle(color: appTheme),),
+        title: const Text('Show posts that match my goal only', style: TextStyle(color: appTheme),),
         value: widget.goalOrientation,
         //groupValue: userGoal,
         activeColor: appTheme,
@@ -64,7 +63,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   final PostManager _postManager = PostManager();
   bool isGoalOriented = false;
 
-  SpeedDialChild _buildDialOption(String name, String Route) {
+  SpeedDialChild _buildDialOption(String name, String route) {
     return SpeedDialChild(
         child: const Icon(
           Icons.add,
@@ -73,17 +72,17 @@ class _TimelineScreenState extends State<TimelineScreen> {
         label: name,
         labelBackgroundColor: appTheme,
         backgroundColor: appTheme,
-        labelStyle: TextStyle(color: Colors.white),
+        labelStyle: const TextStyle(color: Colors.white),
         onTap: () {
           isDialOpen.value = false;
-          Navigator.pushNamed(context, Route);
+          Navigator.pushNamed(context, route);
         });
   }
 
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<AuthRepository>(context);
-    filterDialog filters = filterDialog(goalOrientation: isGoalOriented);
+    FilterDialog filters = FilterDialog(goalOrientation: isGoalOriented);
 
     return Scaffold(
         appBar: AppBar(
@@ -98,7 +97,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                           onPressed: () {
                             showDialog(
                                 context: context,
-                                builder: (BuildContext) {
+                                builder: (_) {
                                   return filters;
                                 });
                           },

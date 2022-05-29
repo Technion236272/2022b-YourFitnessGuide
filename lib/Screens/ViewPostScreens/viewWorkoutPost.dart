@@ -48,20 +48,13 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                "Workout name",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 20,
-                  // fontWeight: FontWeight.bold,
-                ),
-              ),
+              const Text("Workout name",style: TextStyle(color: appTheme,fontSize: 20)),
               TextField(
                 keyboardType: TextInputType.name,
                 controller: workoutNameController,
                 textAlign: TextAlign.left,
                 readOnly: true,
-                decoration: InputDecoration(border: InputBorder.none),
+                decoration: const InputDecoration(border: InputBorder.none),
               )
             ],
           ),
@@ -89,16 +82,6 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              /*  Text(
-                "Description",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 20,
-                  //fontWeight: FontWeight.bold,
-                ),
-              ),
-
-             */
               TextField(
                 minLines: 1,
                 maxLines: 8,
@@ -106,14 +89,14 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                 controller: descriptionController,
                 textAlign: TextAlign.left,
                 readOnly: true,
-                decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.only(bottom: 5),
+                decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.only(bottom: 5),
                     label: false
                         ? Center(
                             child: Text("Description"),
                           )
                         : Text("Description"),
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                         height: 1, fontSize: 16, color: Colors.grey),
                     labelStyle: TextStyle(
                       color: appTheme,
@@ -149,7 +132,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 "Goal",
                 style: TextStyle(
                   color: appTheme,
@@ -170,7 +153,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CheckboxListTile(
-            title: Text('Lose Weight'),
+            title: const Text('Lose Weight'),
             value: post_data["goals"][0] as bool,
             //groupValue: userGoal,
             activeColor: appTheme,
@@ -183,7 +166,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
-            title: Text('Gain Muscle'),
+            title: const Text('Gain Muscle'),
             value: post_data["goals"][1] as bool,
             activeColor: appTheme,
             onChanged: null),
@@ -195,7 +178,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
-            title: Text('Gain Healthy Weight'),
+            title: const Text('Gain Healthy Weight'),
             value: post_data["goals"][2] as bool,
             activeColor: appTheme,
             onChanged: null),
@@ -207,7 +190,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
-            title: Text('Maintain Healthy Lifestyle'),
+            title: const Text('Maintain Healthy Lifestyle'),
             value: post_data["goals"][3] as bool,
             activeColor: appTheme,
             onChanged: null),
@@ -239,7 +222,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
+              const Text(
                 "Exercises",
                 style: TextStyle(
                   color: appTheme,
@@ -251,7 +234,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                 shrinkWrap: true,
                 itemCount: _controllerInput.length,
                 itemBuilder: (context, index) {
-                  return Container(
+                  return SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: _textFieldInput.elementAt(index),
                   );
@@ -352,21 +335,25 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             thickness: 1,
             color: Colors.black45,
           ),
-          SizedBox(
-            height: 5,
-          ),
           (post_data!['image_url'] != null
               ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  //borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     post_data!['image_url']!,
-                    height: 300,
-                    width: MediaQuery.of(context).size.width * 0.9,
+                    //height: 300,
+                    width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
                   ),
                 )
               : const Padding(padding: EdgeInsets.all(0))),
           //SizedBox(height: height * 0.04),
+          post_data!['image_url'] != null
+          ? Divider(
+            height: height * 0.00001,
+            thickness: 1,
+            color: Colors.black45,
+          )
+          : const Padding(padding: EdgeInsets.all(0)),
           Container(
             padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
             child: _buildDescription(height),

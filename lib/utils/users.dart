@@ -3,11 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'dart:io';
 
@@ -91,14 +88,14 @@ class AuthRepository with ChangeNotifier {
       var res = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      var url = await _storage.ref('images').child('cj.jpg').getDownloadURL();
+      var url = await _storage.ref('images').child('ProfilePicture.jpg').getDownloadURL();
 
       await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
         'name': 'Undefined Name',
         'picture': url,
-        'initial_weight': 0,
-        'current_weight': 0,
-        'goal_weight': 0,
+        'initial_weight': null,
+        'current_weight': null,
+        'goal_weight': null,
         'goal': 0,
         'rating': 0,
         'saved': 0,

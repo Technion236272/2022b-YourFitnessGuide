@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _views = [
     const TimelineScreen(),
-    SearchScreen(),
+    const SearchScreen(),
     const NotificationsScreen(),
     const LoginScreen()
   ];
@@ -49,8 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
         body: IndexedStack(
-          children: _views,
           index: _selectedIndex,
+          children: _views,
         ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
