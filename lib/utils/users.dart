@@ -71,16 +71,6 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get savedPosts => _userData?.savedPosts;
 
-  Future<void> updateSaved() async {
-    for (var i = 0; i < savedPosts!.length; i++) {
-      var tmp = await PostManager().checkPostsExists(savedPosts![i]);
-      if (tmp == false) {
-        modifySaved(savedPosts![i], true);
-        i--;
-      }
-    }
-  }
-
   Future<Object?> signUp(String email, String password) async {
     try {
       _status = Status.Authenticating;
@@ -305,6 +295,16 @@ class AuthRepository with ChangeNotifier {
       return true;
     } catch (_) {
       return false;
+    }
+  }
+
+  Future<void> updateSaved() async {
+    for (var i = 0; i < savedPosts!.length; i++) {
+      var tmp = await PostManager().checkPostsExists(savedPosts![i]);
+      if (tmp == false) {
+        modifySaved(savedPosts![i], true);
+        i--;
+      }
     }
   }
 

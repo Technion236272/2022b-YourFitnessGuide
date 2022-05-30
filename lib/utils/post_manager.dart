@@ -181,7 +181,7 @@ class PostManager with ChangeNotifier {
 
   /// get all post from the db
   Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts() {
-    return _postCollection.orderBy('createdAt', descending: true).snapshots();
+      return _postCollection.orderBy('createdAt', descending: true).snapshots();
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
@@ -196,10 +196,10 @@ class PostManager with ChangeNotifier {
     List<String> ids = [];
 
     await _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
+      for (var doc in querySnapshot.docs) {
         var currID = doc.id;
         ids.add(currID);
-      });
+      }
     });
     return ids;
   }

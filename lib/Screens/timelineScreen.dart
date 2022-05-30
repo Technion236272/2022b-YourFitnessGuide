@@ -12,42 +12,44 @@ class FilterDialog extends StatefulWidget {
   FilterDialog({Key? key, required this.goalOrientation}) : super(key: key);
   get goalOriented => goalOrientation;
 
+
   @override
   State<FilterDialog> createState() => _FilterDialogState();
 }
 
 class _FilterDialogState extends State<FilterDialog> {
-  bool temp_orientation = false;
 
   @override
   Widget build(BuildContext context) {
-    Widget cancel = TextButton(
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        child: const Text('Cancel',style: TextStyle(color: appTheme))
-    );
-    Widget tmp = CheckboxListTile(
-        title: const Text('Show posts that match my goal only', style: TextStyle(color: appTheme)),
-        value: temp_orientation,
-        //groupValue: userGoal,
+    Widget filter1 = CheckboxListTile(
+        title: const Text('Only show posts that match my goal', style: TextStyle(color: appTheme)),
+        value: widget.goalOrientation,
         activeColor: appTheme,
-        onChanged: (value) => setState(() {
-          temp_orientation = value!;
-        }));
-    Widget confirm = TextButton(
-        onPressed: () {
-          setState(){
-            widget.goalOrientation = temp_orientation;
-          }
-          Navigator.of(context).pop();
-        },
-        child: const Text('Confirm', style: TextStyle(color: appTheme))
+        onChanged: (value) => setState((){
+            widget.goalOrientation = value!;
+          })
+    );
+    Widget okButton = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK',
+                textAlign: TextAlign.right,
+                style: TextStyle(color: appTheme, fontSize: 16, fontWeight: FontWeight.bold)
+              ),
+            )
+          ]),
     );
     AlertDialog alert = AlertDialog(
       title: const Text('Filters'),
-      content: tmp,
-      actions: [cancel, confirm],
+      content: filter1,
+      actions: [okButton],
     );
     return alert;
   }
@@ -86,19 +88,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
   Widget build(BuildContext context) {
     var user = Provider.of<AuthRepository>(context);
     FilterDialog filters = FilterDialog(goalOrientation: isGoalOriented);
-
     return Scaffold(
         appBar: AppBar(
             title: const Text('YourFitnessGuide'),
             centerTitle: false,
             actions: [
-              Padding(
+              user.isAuthenticated
+                ? Padding(
                   padding: const EdgeInsets.only(right: 12.0),
                   child: Row(
                     children: [
                       IconButton(
                           onPressed: () {
                             showDialog(
+                                barrierDismissible: false,
                                 context: context,
                                 builder: (_) {
                                   return filters;
@@ -107,9 +110,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                           icon: const Icon(
                             Icons.filter_alt,
                             color: Colors.white,
-                          ))
+                          )
+                      )
                     ],
-                  )),
+                  )
+                )
+              : const Padding(padding: EdgeInsets.all(0)),
             ]),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,
@@ -136,15 +142,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     setState(() {});
                   },
                   child: ListView.builder(
-                    //separatorBuilder: (context, index) => const Divider(),
-                    itemCount:
-                        snapshot.data == null ? 0 : snapshot.data!.docs.length,
+                    itemCount: snapshot.data == null ? 0 : snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       if (snapshot.connectionState == ConnectionState.waiting &&
                           snapshot.data == null) {
                         return const Center(child: CircularProgressIndicator.adaptive());
                       }
-
                       if (snapshot.connectionState == ConnectionState.done &&
                           snapshot.data == null) {
                         return const Center(child: Text('No data available'));
