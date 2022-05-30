@@ -340,20 +340,22 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             )),
         Expanded(
           flex: 1,
-          child: TextField(
-            controller: mealNameController,
-            textAlign: TextAlign.left,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.only(bottom: 5),
-              label: Text("Meal Title"),
-              hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
-              labelStyle: TextStyle(
-                color: appTheme,
-                fontSize: 20,
-                fontWeight: FontWeight.normal,
-              ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
-            ),
+          child: Padding(
+              padding: EdgeInsets.fromLTRB(0,0,iconSize,0),
+              child: TextField(
+                controller: mealNameController,
+                textAlign: TextAlign.left,
+                decoration: const InputDecoration(
+                  contentPadding: EdgeInsets.only(bottom: 5),
+                  label: Text("Meal Title"),
+                  labelStyle: TextStyle(
+                    color: appTheme,
+                    fontSize: 20,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+              )
           ),
         ),
       ],
@@ -375,24 +377,27 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
             )),
         Expanded(
           flex: 8,
-          child: TextField(
-            minLines: 1,
-            maxLines: 8,
-            keyboardType: TextInputType.multiline,
-            controller: mealIngredientsController,
-            textAlign: TextAlign.left,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.only(bottom: 5),
-              label: Text("Ingredients"),
-              hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
-              labelStyle: TextStyle(
-                color: appTheme,
-                fontSize: 20,
-                fontWeight: FontWeight.normal,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0,0,iconSize,0),
+            child: TextField(
+              minLines: 1,
+              maxLines: 8,
+              keyboardType: TextInputType.multiline,
+              controller: mealIngredientsController,
+              textAlign: TextAlign.left,
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.only(bottom: 5),
+                label: Text("Ingredients"),
+                hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                labelStyle: TextStyle(
+                  color: appTheme,
+                  fontSize: 20,
+                  fontWeight: FontWeight.normal,
+                ),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
               ),
-              floatingLabelBehavior: FloatingLabelBehavior.always,
             ),
-          ),
+          )
         ),
       ],
     );
@@ -611,7 +616,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       context: context,
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(2, 30, 2, 30),
+          padding: const EdgeInsets.all(8),//(2, 30, 2, 30),
           child: Dialog(
               insetPadding: const EdgeInsets.all(5),
               shape: RoundedRectangleBorder(
@@ -619,6 +624,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               ),
               elevation: 0,
               child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -626,15 +632,15 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                       height: height * 0.012,
                     ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                       child: _buildMealName(height),
                     ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                       child: _buildContents(height),
                     ),
-                    Expanded(
-                      flex: 1,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -666,7 +672,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             )),
                             TextButton(
                               onPressed: () {
-                                // todo if we dont add anything
+                                // todo if we don't add anything
                                 if (index == -1) {
                                   if (mealNameController.text.toString() !=
                                       "") {

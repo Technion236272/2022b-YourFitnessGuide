@@ -17,30 +17,33 @@ class FilterDialog extends StatefulWidget {
 }
 
 class _FilterDialogState extends State<FilterDialog> {
+  bool temp_orientation = false;
+
   @override
   Widget build(BuildContext context) {
     Widget cancel = TextButton(
         onPressed: () {
           Navigator.of(context).pop();
         },
-        child: const Text(
-          'Cancel',
-          style: TextStyle(color: appTheme),
-        ));
+        child: const Text('Cancel',style: TextStyle(color: appTheme))
+    );
     Widget tmp = CheckboxListTile(
-        title: const Text('Show posts that match my goal only', style: TextStyle(color: appTheme),),
-        value: widget.goalOrientation,
+        title: const Text('Show posts that match my goal only', style: TextStyle(color: appTheme)),
+        value: temp_orientation,
         //groupValue: userGoal,
         activeColor: appTheme,
         onChanged: (value) => setState(() {
-          widget.goalOrientation = value!;
+          temp_orientation = value!;
         }));
     Widget confirm = TextButton(
         onPressed: () {
+          setState(){
+            widget.goalOrientation = temp_orientation;
+          }
           Navigator.of(context).pop();
         },
-        child: const Text('Confirm',
-            style: TextStyle(color: appTheme)));
+        child: const Text('Confirm', style: TextStyle(color: appTheme))
+    );
     AlertDialog alert = AlertDialog(
       title: const Text('Filters'),
       content: tmp,

@@ -340,7 +340,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                   //borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     post_data!['image_url']!,
-                    //height: 300,
+                    //height: 400,
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
                   ),
