@@ -199,7 +199,8 @@ class post extends StatefulWidget {
   bool hide = true;
   var user;
   bool isSaved = false;
-  post({Key? key, this.index, required this.snapshot, required this.screen})
+  bool? goalFiltered = false;
+  post({Key? key, this.index, required this.snapshot, required this.screen, this.goalFiltered})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
@@ -288,7 +289,21 @@ class _postState extends State<post> {
       widget.isSaved = saved == null
           ? false
           : saved.contains(widget.snapshot?.data!.docs[widget.index].id);
-    }
+
+      if(widget.goalFiltered!= null && widget.goalFiltered!){
+        var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
+        var postGoals = widget.snapshot?.data!.docs[widget.index].data()!['goals'];
+        if(cat != "Blog"){
+          var userGoal = widget.user.userData.goal;
+          print('dandan');
+          if(!postGoals[userGoal]!){
+            return Container();
+          }
+          }
+        }
+      }
+    print('aa');
+
 
     var tmp = widget.snapshot?.data!.docs[widget.index].data()!['description'] as String;
 
