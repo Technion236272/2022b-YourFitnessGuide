@@ -249,7 +249,6 @@ class _LoginScreenState extends State<LoginScreen> {
           'Sign in',
         ),
         backgroundColor: appTheme,
-        centerTitle: true,
       ),
       body: Center(
         child: SingleChildScrollView(

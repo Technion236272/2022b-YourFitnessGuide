@@ -121,7 +121,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             'Reset your password',
           ),
           backgroundColor: appTheme,
-          centerTitle: true,
         ),
         body: SingleChildScrollView(
           child: Column(
