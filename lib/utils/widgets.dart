@@ -295,14 +295,12 @@ class _postState extends State<post> {
         var postGoals = widget.snapshot?.data!.docs[widget.index].data()!['goals'];
         if(cat != "Blog"){
           var userGoal = widget.user.userData.goal;
-          print('dandan');
           if(!postGoals[userGoal]!){
             return Container();
           }
           }
         }
       }
-    print('aa');
 
 
     var tmp = widget.snapshot?.data!.docs[widget.index].data()!['description'] as String;

@@ -28,7 +28,6 @@ class _FilterDialogState extends State<FilterDialog> {
         activeColor: appTheme,
         onChanged: (value) => setState(() {
               widget.goalOrientation = value!;
-              print(widget.goalOrientation);
             }));
     Widget okButton = Padding(
       padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
@@ -101,7 +100,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     activeColor: appTheme,
                     onChanged: (value) => setStatee(() {
                           widget.isGoalOriented = value!;
-                          print(widget.isGoalOriented);
                         })),
                 actions: [
                   Padding(
