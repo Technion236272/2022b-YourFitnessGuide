@@ -599,7 +599,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   Future<List<String>?> createMealDialog(
-      BuildContext context, String? mealName, String? mealIngredients) {
+      BuildContext context,
+      String? mealName,
+      String? mealIngredients) {
     final screenSize = MediaQuery.of(context).size;
     final height = screenSize.height;
     final width = screenSize.width;
@@ -613,10 +615,12 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       index = _mealNames.indexOf(mealName);
     }
     return showDialog(
+      //barrierDismissible: false,
+      //useRootNavigator: false,
       context: context,
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.all(8),//(2, 30, 2, 30),
+          padding: const EdgeInsets.all(8),
           child: Dialog(
               insetPadding: const EdgeInsets.all(5),
               shape: RoundedRectangleBorder(
@@ -632,11 +636,11 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                       height: height * 0.012,
                     ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      padding: const EdgeInsets.all(8),
                       child: _buildMealName(height),
                     ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      padding: const EdgeInsets.all(8),
                       child: _buildContents(height),
                     ),
                     Padding(
@@ -645,17 +649,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            /* TextButton(
-                              onPressed: () {},
-                              child: Text('ATTACH PHOTO',
-                                  style: TextStyle(
-                                    color: appTheme,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                            ),
-
-                            */
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop(["", ""]);
@@ -673,31 +666,37 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             TextButton(
                               onPressed: () {
                                 // todo if we don't add anything
-                                if (index == -1) {
-                                  if (mealNameController.text.toString() !=
-                                      "") {
-                                    _mealNames.add(
-                                        mealNameController.text.toString());
-                                    _mealIngredients.add(
-                                        mealIngredientsController.text
-                                            .toString());
-                                  }
-                                } else if (index != -1) {
-                                  _mealNames[index] =
-                                      mealNameController.text.toString();
-                                  _mealIngredients[index] =
-                                      mealIngredientsController.text.toString();
-                                  _updateButtonWidget(
-                                      mealNameController.text.toString(),
-                                      mealIngredientsController.text.toString(),
-                                      height,
-                                      width,
-                                      index);
+                                if (mealNameController.text.isEmpty
+                                    || mealIngredientsController.text.isEmpty) {
+                                  const snackBar = SnackBar(content: Text('You must fill all the fields and add exercises'));
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  //Navigator.of(context).pop(["",""]);
                                 }
-                                Navigator.of(context).pop([
-                                  mealNameController.text.toString(),
-                                  mealIngredientsController.text.toString()
-                                ]);
+                                else {
+                                  if (index == -1) {
+                                    /// Create
+                                    if (mealNameController.text.toString() != "") {
+                                      _mealNames.add(mealNameController.text.toString());
+                                      _mealIngredients.add(mealIngredientsController.text.toString());
+                                    }
+                                  } else if (index != -1) {
+                                    /// Edit
+                                    _mealNames[index] = mealNameController.text.toString();
+                                    _mealIngredients[index] = mealIngredientsController.text.toString();
+                                    _updateButtonWidget(
+                                        mealNameController.text.toString(),
+                                        mealIngredientsController.text
+                                            .toString(),
+                                        height,
+                                        width,
+                                        index
+                                    );
+                                  }
+                                  Navigator.of(context).pop([
+                                    mealNameController.text.toString(),
+                                    mealIngredientsController.text.toString()
+                                  ]);
+                                }
                               },
                               child: const Text('OK',
                                   textAlign: TextAlign.right,
