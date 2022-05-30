@@ -73,21 +73,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildWeightField(String label, TextEditingController ctrl) {
     return Expanded(
         child: TextField(
-      keyboardType: TextInputType.number,
-      controller: ctrl,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: appTheme,
-          fontSize: 23,
-          fontWeight: FontWeight.bold,
-        ),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        hintStyle:
+          keyboardType: TextInputType.number,
+          controller: ctrl,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+            labelText: label,
+            labelStyle: const TextStyle(
+              color: appTheme,
+              fontSize: 23,
+              fontWeight: FontWeight.bold,
+            ),
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintText: "80",
+            hintStyle:
             const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-      ),
-    ));
+          ),
+        ));
   }
 
   Widget _buildWeightProgress(double height, double width) {
