@@ -191,19 +191,17 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
             thickness: 1,
             color: Colors.black45,
           ),
-          //const SizedBox(height: 5),
           (post_data!['image_url'] != null
               ? ClipRRect(
                   //borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     post_data!['image_url']!,
-                    height: 500,
+                    //height: 400,
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
                   ),
                 )
               : const Padding(padding: EdgeInsets.all(0))),
-        //const SizedBox(height:5),
             post_data!['image_url'] != null
             ? Divider(
               height: height * 0.00001,

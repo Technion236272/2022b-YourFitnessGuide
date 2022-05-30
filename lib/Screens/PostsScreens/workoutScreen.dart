@@ -51,9 +51,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         _postImageFile = File(croppedFile!.path);//File(selectedImage.path);
       });
     } on PlatformException catch (_) {
-      const snackBar = SnackBar(
-          content: Text(
-              'You need to grant permission if you want to select a photo'));
+      const snackBar = SnackBar(content: Text('You need to grant permission if you want to select a photo'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -372,9 +370,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                               description == "" ||
                               selectedGoal == false ||
                               _exercises.isEmpty) {
-                            const snackBar = SnackBar(
-                                content: Text(
-                                    'You must fill all the fields and add exercises'));
+                            const snackBar = SnackBar(content: Text('You must fill all the fields and add exercises'));
                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           } else {
                             setState(() {

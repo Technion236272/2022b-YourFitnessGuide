@@ -290,8 +290,9 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
               width: iconSize,
             )),
         Expanded(
-          flex: 8,
+          //flex: 8,
           child: Column(
+            //mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -303,14 +304,23 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                   //fontWeight: FontWeight.bold,
                 ),
               ),
-              TextField(
-                minLines: 1,
-                maxLines: 14,
-                keyboardType: TextInputType.multiline,
-                controller: mealIngredientsController,
-                textAlign: TextAlign.left,
-                readOnly: true,
-                decoration: const InputDecoration(border: InputBorder.none),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0,0,iconSize,0),
+                child: TextField(
+                  minLines: 1,
+                  maxLines: 15,
+                  keyboardType: TextInputType.multiline,
+                  controller: mealIngredientsController,
+                  textAlign: TextAlign.left,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    //prefix: Icon(Icons.ac_unit),
+                    border: InputBorder.none,
+                    filled: true,
+                    fillColor: Colors.grey[100]
+                    //fillColor: Colors.red
+                  ),
+                ),
               )
             ],
           ),
@@ -456,23 +466,25 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
       context: context,
       builder: (BuildContext context) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(10, 150, 10, 200),
+          padding: const EdgeInsets.all(8.0),
           child: Dialog(
               insetPadding: const EdgeInsets.all(5),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
               elevation: 0,
               child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(height: height * 0.01),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                      child: _buildContents(height),
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      child: _buildContents(height),//Padding(padding: EdgeInsets.all(0))//
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Row(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                        child: Row(
+                      //mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -489,7 +501,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                                   )),
                             )
                           ]),
-                    ),
+                    )
                   ])),
         );
       },
@@ -595,7 +607,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                   //borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     post_data!['image_url']!,
-                    //height: 300,
+                    //height: 400,
                     width: MediaQuery.of(context).size.width,
                     fit: BoxFit.cover,
                   ),
