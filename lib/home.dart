@@ -22,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _views = [
-    const TimelineScreen(),
+    TimelineScreen(),
     const SearchScreen(),
     const NotificationsScreen(),
     const LoginScreen()
