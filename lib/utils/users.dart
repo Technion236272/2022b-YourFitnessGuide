@@ -80,7 +80,7 @@ class AuthRepository with ChangeNotifier {
 
       var url = await _storage.ref('images').child('ProfilePicture.jpg').getDownloadURL();
 
-      await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).set({
         'name': 'Undefined Name',
         'picture': url,
         'initial_weight': null,
@@ -177,7 +177,7 @@ class AuthRepository with ChangeNotifier {
 
       final data = await FacebookAuth.i.getUserData();
 
-      await _db.collection('users').doc(user!.uid).set({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).set({
         'name': data['name'],
         'picture': data['picture']['data']['url'],
         'initial_weight': 0,
@@ -190,6 +190,7 @@ class AuthRepository with ChangeNotifier {
         'followers': 0,
         'saved_posts': []
       });
+
 
       _userData = UserModel(
           name: data['name'],
@@ -253,7 +254,7 @@ class AuthRepository with ChangeNotifier {
       final name = await _auth.currentUser?.displayName;
       final picture = await _auth.currentUser?.photoURL;
 
-      await _db.collection('users').doc(user!.uid).set({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).set({
         'name': name,
         'picture': picture,
         'initial_weight': 0,
@@ -310,7 +311,7 @@ class AuthRepository with ChangeNotifier {
 
   Future<void> modifySaved(String postuid, bool delete) async {
     if (delete) {
-      await _db.collection('users').doc(user!.uid).update({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).update({
         'saved_posts': FieldValue.arrayRemove([postuid])
       });
       if (_userData!.savedPosts!.contains(postuid)) {
@@ -318,7 +319,7 @@ class AuthRepository with ChangeNotifier {
         _userData?.savedPosts?.remove(postuid);
       }
     } else {
-      await _db.collection('users').doc(user!.uid).update({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).update({
         'saved_posts': FieldValue.arrayUnion([postuid])
       });
       _userData?.saved++;
@@ -357,7 +358,8 @@ class AuthRepository with ChangeNotifier {
   Future<void> setUserData() async {
     try {
       if (_userData != null) return;
-      var dataDocument = await _db.collection('users').doc(user!.uid).get();
+      var dataDocument = await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).get();
+      print(dataDocument.get('name'));
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
@@ -371,9 +373,10 @@ class AuthRepository with ChangeNotifier {
           rating: dataDocument.get('rating'),
           saved: savedTmp.length,
           savedPosts: savedTmp);
+      print(savedPosts);
     } catch (_) {
       await Future.delayed(Duration(seconds: 1));
-      var dataDocument = await _db.collection('users').doc(user!.uid).get();
+      var dataDocument = await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).get();
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
@@ -406,7 +409,7 @@ class AuthRepository with ChangeNotifier {
       _userData?.pictureUrl =
           await _storage.ref('images').child(_user!.uid).getDownloadURL();
     }
-    await _db.collection('users').doc(user!.uid).update({
+    await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).update({
       'name': newName,
       'initial_weight': newInitialWeight,
       'current_weight': newCurrentWeight,

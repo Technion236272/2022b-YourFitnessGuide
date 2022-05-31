@@ -6,13 +6,13 @@ import 'package:yourfitnessguide/services/file_upload_service.dart';
 
 class PostManager with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  static final FirebaseFirestore _firebaseFirestore =
+  static final FirebaseFirestore _db =
       FirebaseFirestore.instance;
 
   final CollectionReference<Map<String, dynamic>> _postCollection =
-      _firebaseFirestore.collection("posts");
+      _db.collection("versions").doc("v1").collection("posts");
   final CollectionReference<Map<String, dynamic>> _userCollection =
-      _firebaseFirestore.collection("users");
+      _db.collection("versions").doc("v1").collection("users");
 
   final FileUploadService _fileUploadService = FileUploadService();
 
@@ -185,8 +185,7 @@ class PostManager with ChangeNotifier {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
-    final Query<Map<String, dynamic>> _userPosts = _firebaseFirestore
-        .collection("posts")
+    final Query<Map<String, dynamic>> _userPosts = _postCollection
         .where('user_uid', isEqualTo: uid);
     notifyListeners();
     return _userPosts.orderBy('createdAt', descending: true).snapshots();
@@ -195,7 +194,7 @@ class PostManager with ChangeNotifier {
   Future<List<String>> getUserPostsIDs(String uid) async {
     List<String> ids = [];
 
-    await _firebaseFirestore.collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
+    await _db.collection("versions").doc("v1").collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
       for (var doc in querySnapshot.docs) {
         var currID = doc.id;
         ids.add(currID);
