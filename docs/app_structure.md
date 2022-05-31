@@ -19,5 +19,4 @@ The diagram below shows the exploring scenario of the app:
 - [ ] View Blog Post Page
 - [ ] View Workout Post Page
 - [ ] View Meal Plan Post Page
-- [ ] Notification Page
 
