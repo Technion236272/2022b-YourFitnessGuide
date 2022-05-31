@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "806553046801",
+    "project_id": "yourfitnessguide-cb71f",
+    "storage_bucket": "yourfitnessguide-cb71f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:806553046801:android:8c2433ce5ba0886b2346b0",
+        "android_client_info": {
+          "package_name": "com.technion.yourfitnessguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "806553046801-1im5df6ll063ubtds8jtt69048vtqmac.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOUPR2JWyXRx7enGfokgf8p1WcZkqu1ws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "806553046801-1im5df6ll063ubtds8jtt69048vtqmac.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
