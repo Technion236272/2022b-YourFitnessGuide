@@ -8,7 +8,7 @@ import 'package:yourfitnessguide/home.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/Screens/PostsCreationScreens/mealPlanScreen.dart';
 import 'package:yourfitnessguide/Screens/PostsCreationScreens/workoutScreen.dart';
-import 'package:yourfitnessguide/Screens/PostsScreens/BlogPostScreen.dart';
+import 'package:yourfitnessguide/Screens/PostsCreationScreens/BlogPostScreen.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewBlogPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewWorkoutPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewMealPlanPost.dart';
