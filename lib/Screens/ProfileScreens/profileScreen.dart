@@ -19,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? profileImage;
+  var hide = false;
   String? currUid;
   bool visiting = false;
   var user;
@@ -290,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ? Container(
                         padding: EdgeInsets.only(bottom: height * 0.008),
                       )
-                    : ElevatedButton(
+                    : (!hide? Container() : ElevatedButton(
                         child: const Text("Follow"),
                         style: ElevatedButton.styleFrom(
                             primary: const Color(0xff84C59E),
@@ -310,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SnackBar(content: Text('Feature coming soon'));
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         },
-                      ),
+                      )),
                 SizedBox(
                   height: height * 0.05,
                 ),

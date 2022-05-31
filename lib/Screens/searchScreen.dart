@@ -23,6 +23,7 @@ class search extends StatefulWidget {
 
 class _searchState extends State<search> {
   final searchController = TextEditingController();
+  var hide = false;
 
   @override
   Widget build(BuildContext context) {
@@ -177,11 +178,11 @@ class _SearchScreenState extends State<SearchScreen> {
     FirebaseDB().getUsers().then((value) => allUsers = value);
 
     return DefaultTabController(
-        length: 4,
+        length: 1,
         child: Scaffold(
             appBar: AppBar(
               centerTitle: false,
-              title: const Text('Search'),
+              title: const Text('Search')/*,
               actions: [
                 Padding(
                     padding: const EdgeInsets.only(right: 12.0),
@@ -198,13 +199,13 @@ class _SearchScreenState extends State<SearchScreen> {
                             ))
                       ],
                     )),
-              ],
+              ]*/,
               bottom: const TabBar(tabs: [
                 Tab(
                   child: Text('Users',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                ),
+                ),/*
                 Tab(
                   child: Text('Blogs',
                       style:
@@ -217,7 +218,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 Tab(
                     child: Text('Workouts',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15)))
+                            fontWeight: FontWeight.bold, fontSize: 15)))*/
               ]),
             ),
             body: TabBarView(
@@ -242,9 +243,10 @@ class _SearchScreenState extends State<SearchScreen> {
                     ))
                   ],
                 ),
+                /*
                 Column(
                   children: [
-                    _buildSearch('Search Plog posts',),
+                    _buildSearch('Search Blog posts',),
                     Divider(
                       color: Colors.grey,
                       height: 0,
@@ -275,7 +277,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     indent: width * 0.05,
                     endIndent: width * 0.05,
                   ),
-                ])
+                ])*/
               ],
             )));
   }
