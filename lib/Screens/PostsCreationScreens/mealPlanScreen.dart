@@ -33,7 +33,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   final List<String?> _mealNames = [];
   final List<String?> _mealIngredients = [];
   final List<Widget> _list = [];
-  final List<int> _mealsContents = [0, 0, 0, 0];
+  final List<int?> _mealsContents = [0, 0, 0, 0];
   var color = appTheme;
   String photo = "Add Image";
   final PostManager _postManager = PostManager();
@@ -345,6 +345,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               child: TextField(
                 controller: mealNameController,
                 textAlign: TextAlign.left,
+                maxLength: 30,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: Text("Meal Title"),
@@ -615,7 +616,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       index = _mealNames.indexOf(mealName);
     }
     return showDialog(
-      //barrierDismissible: false,
+      barrierDismissible: false,
       //useRootNavigator: false,
       context: context,
       builder: (BuildContext context) {
@@ -666,11 +667,13 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                             TextButton(
                               onPressed: () {
                                 // todo if we don't add anything
-                                if (mealNameController.text.isEmpty
-                                    || mealIngredientsController.text.isEmpty) {
-                                  const snackBar = SnackBar(content: Text('You must fill all the fields and add exercises'));
+                                if(  mealNameController.text.isEmpty ||mealIngredientsController.text.isEmpty )
+                                {
+                                  Navigator.of(context).pop(["", ""]);
+                                  const snackBar = SnackBar(
+                                      content: Text(
+                                          'You must fill all the fields, adding meal failed'));
                                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                  //Navigator.of(context).pop(["",""]);
                                 }
                                 else {
                                   if (index == -1) {
@@ -740,9 +743,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           final String title = mealPlanNameController.text;
                           final String description = descriptionController.text;
                           final String kcal = kcalController.text;
-                          final String proteins = proteinsController.text;
+                          final String protiens = proteinsController.text;
                           final String carbs = carbsController.text;
                           final String fats = fatsController.text;
+
+                          _mealsContents[0] = int.tryParse(kcal);
+                          _mealsContents[1] = int.tryParse(protiens);
+                          _mealsContents[2] = int.tryParse(carbs);
+                          _mealsContents[3] = int.tryParse(fats);
 
                           if (loseWeight! ||
                               gainMuscle! ||
@@ -753,7 +761,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                           if (title == "" ||
                               description == "" ||
                               kcal == "" ||
-                              proteins == "" ||
+                              protiens == "" ||
                               carbs == "" ||
                               fats == "" ||
                               selectedGoal == false ||
@@ -762,21 +770,23 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                 content: Text(
                                     'You must fill all the fields and add meals'));
                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          } else if (int.parse(kcal) < 0 || int.parse(kcal) > 9999
-                              || int.parse(proteins) < 0 || int.parse(proteins) > 9999
-                              || int.parse(carbs) < 0 || int.parse(carbs) > 9999
-                              || int.parse(fats) < 0 || int.parse(fats) > 9999){
+                          }
+                          else if(_mealsContents[0]==null || _mealsContents[0]! <=0 ||  _mealsContents[0]! >=9999
+                              ||_mealsContents[1]==null || _mealsContents[1]! <=0   ||  _mealsContents[0]! >=9999
+                              ||_mealsContents[2]==null || _mealsContents[2]! <=0   ||  _mealsContents[0]! >=9999
+                              ||_mealsContents[3]==null || _mealsContents[3]! <=0   ||  _mealsContents[0]! >=9999
+                          )
+                          {
                             const snackBar = SnackBar(
-                                content: Text('You must enter valid values'));
+                                content: Text(
+                                    'You must enter a positive integer in Kcal,Protiens,Carbs and Fats'));
                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          }else {
+                          }
+                          else {
                             setState(() {
                               _isLoading = true;
                             });
-                            _mealsContents[0] = int.parse(kcal);
-                            _mealsContents[1] = int.parse(proteins);
-                            _mealsContents[2] = int.parse(carbs);
-                            _mealsContents[3] = int.parse(fats);
+
                             bool isSubmitted = await _postManager.submitMealPlan(
                                 title: title,
                                 description: description,
@@ -791,19 +801,22 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
 
                             if (isSubmitted) {
                               const snackBar = SnackBar(
-                                  content: Text('Meal Plan posted successfully'));
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  content: Text('MealPlan posted successfully'));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
 
                               Navigator.pop(context);
                             } else {
                               const snackBar = SnackBar(
                                   content:
                                   Text('There was a problem logging you in'));
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
                             }
                           }
                         },
-                        icon: const Icon(Icons.check_sharp, color: Colors.white)),
+                        icon:
+                        const Icon(Icons.check_sharp, color: Colors.white)),
                   ],
                 )),
           ]),
