@@ -6,8 +6,8 @@ import 'package:yourfitnessguide/Screens/AuthenticationScreens/resetPasswordScre
 import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'package:yourfitnessguide/home.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
-import 'package:yourfitnessguide/Screens/PostsScreens/mealPlanScreen.dart';
-import 'package:yourfitnessguide/Screens/PostsScreens/workoutScreen.dart';
+import 'package:yourfitnessguide/Screens/PostsCreationScreens/mealPlanScreen.dart';
+import 'package:yourfitnessguide/Screens/PostsCreationScreens/workoutScreen.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/BlogPostScreen.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewBlogPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewWorkoutPost.dart';
