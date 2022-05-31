@@ -168,9 +168,8 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
                               text: post_data['category'],
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context)
-                                      .appBarTheme
-                                      .backgroundColor)),
+                                  color: Theme.of(context).appBarTheme.backgroundColor)
+                          ),
                           const TextSpan(text: ' by '),
                           TextSpan(text: userSnapshot.data!['name']),
                         ],
@@ -193,7 +192,6 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
           ),
           (post_data!['image_url'] != null
               ? ClipRRect(
-                  //borderRadius: BorderRadius.circular(10),
                   child: Image.network(
                     post_data!['image_url']!,
                     //height: 400,
