@@ -136,7 +136,8 @@ class imageContainer extends StatelessWidget {
                         image:
                             Image.asset('images/decorations/mclovin.png').image)
                     : DecorationImage(
-                        fit: BoxFit.contain, image: NetworkImage(imageLink!)))));
+                        fit: BoxFit.contain,
+                        image: NetworkImage(imageLink!)))));
   }
 }
 
@@ -200,7 +201,13 @@ class post extends StatefulWidget {
   var user;
   bool isSaved = false;
   bool? goalFiltered = false;
-  post({Key? key, this.index, required this.snapshot, required this.screen, this.goalFiltered})
+
+  post(
+      {Key? key,
+      this.index,
+      required this.snapshot,
+      required this.screen,
+      this.goalFiltered})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
@@ -244,40 +251,32 @@ class _postState extends State<post> {
         icon: Icon(ic, color: Colors.grey));
   }
 
-  Widget _buildSaveButton(){
-    return
-      IconButton(
-          onPressed: () {
-            if (widget.user.isAuthenticated) {
-              widget.isSaved = !widget.isSaved;
-              setState(() {});
-              if (!widget.isSaved) {
-                const snackBar = SnackBar(
-                    content: Text('Deleting post from saved'));
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(snackBar);
-                widget.user.modifySaved(
-                    widget.snapshot?.data!.docs[widget.index].id,
-                    true);
-              } else {
-                const snackBar =
-                SnackBar(content: Text('Saving post'));
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(snackBar);
-                widget.user.modifySaved(
-                    widget.snapshot?.data!.docs[widget.index].id,
-                    false);
-              }
+  Widget _buildSaveButton() {
+    return IconButton(
+        onPressed: () {
+          if (widget.user.isAuthenticated) {
+            widget.isSaved = !widget.isSaved;
+            setState(() {});
+            if (!widget.isSaved) {
+              const snackBar =
+                  SnackBar(content: Text('Deleting post from saved'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              widget.user.modifySaved(
+                  widget.snapshot?.data!.docs[widget.index].id, true);
             } else {
-              const snackBar = SnackBar(
-                  content:
-                  Text('You need to sign in to save posts'));
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(snackBar);
+              const snackBar = SnackBar(content: Text('Saving post'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              widget.user.modifySaved(
+                  widget.snapshot?.data!.docs[widget.index].id, false);
             }
-          },
-          icon: Icon(Icons.bookmark,
-              color: widget.isSaved ? appTheme : Colors.grey));
+          } else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to save posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.bookmark,
+            color: widget.isSaved ? appTheme : Colors.grey));
   }
 
   @override
@@ -289,21 +288,30 @@ class _postState extends State<post> {
       widget.isSaved = saved == null
           ? false
           : saved.contains(widget.snapshot?.data!.docs[widget.index].id);
-
-      if(widget.goalFiltered!= null && widget.goalFiltered!){
-        var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
-        var postGoals = widget.snapshot?.data!.docs[widget.index].data()!['goals'];
-        if(cat != "Blog"){
-          var userGoal = widget.user.userData.goal;
-          if(!postGoals[userGoal]!){
-            return Container();
-          }
-          }
-        }
+      var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
+      if (widget.goalFiltered != null &&
+          widget.goalFiltered! &&
+          cat == 'Blog') {
+        return Container();
       }
 
+      if (widget.goalFiltered != null && widget.goalFiltered!) {
+        var postGoals =
+            widget.snapshot?.data!.docs[widget.index].data()!['goals'];
+        if (cat == "Blog") {
+          Container();
+        }
+        
+          var userGoal = widget.user.userData.goal;
+          if (!postGoals[userGoal]!) {
+            return Container();
+          }
 
-    var tmp = widget.snapshot?.data!.docs[widget.index].data()!['description'] as String;
+      }
+    }
+
+    var tmp = widget.snapshot?.data!.docs[widget.index].data()!['description']
+        as String;
 
     return InkWell(
       onTap: () {
@@ -359,8 +367,8 @@ class _postState extends State<post> {
                                 .copyWith(fontSize: 16),
                             children: <TextSpan>[
                               TextSpan(
-                                  text: widget.category ?? widget
-                                          .snapshot?.data!.docs[widget.index]
+                                  text: widget.category ??
+                                      widget.snapshot?.data!.docs[widget.index]
                                           .data()!['category'],
                                   style: TextStyle(
                                       //fontWeight: FontWeight.bold,
@@ -412,12 +420,13 @@ class _postState extends State<post> {
                                       ));
                                   Widget confirm = TextButton(
                                       onPressed: () {
-                                        widget.user.modifySaved(widget
-                                            .snapshot?.data!.docs[widget.index].id, true);
-                                        PostManager().deletePost(widget
-                                            .snapshot?.data!.docs[widget.index].id);
+                                        widget.user.modifySaved(
+                                            widget.snapshot?.data!
+                                                .docs[widget.index].id,
+                                            true);
+                                        PostManager().deletePost(widget.snapshot
+                                            ?.data!.docs[widget.index].id);
                                         Navigator.of(context).pop();
-
                                       },
                                       child: const Text('Confirm',
                                           style: TextStyle(color: appTheme)));
@@ -448,14 +457,16 @@ class _postState extends State<post> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  widget.snapshot?.data!.docs[widget.index]
-                      .data()!['description']!.substring(0,min(65, tmp.length)) +  (65< tmp.length? '...' : ''),
-                  textAlign: TextAlign.left,
-                  maxLines: 5
-                ),
+                    widget.snapshot?.data!.docs[widget.index]
+                            .data()!['description']!
+                            .substring(0, min(65, tmp.length)) +
+                        (65 < tmp.length ? '...' : ''),
+                    textAlign: TextAlign.left,
+                    maxLines: 5),
                 const SizedBox(height: 5),
                 (widget.snapshot?.data!.docs[widget.index]
-                            .data()!['image_url'] != null
+                            .data()!['image_url'] !=
+                        null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
@@ -467,29 +478,32 @@ class _postState extends State<post> {
                         ),
                       )
                     : Container()),
-                widget.hide? Center(child: _buildSaveButton(),) :
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        _buildPostIcon(Icons.arrow_upward),
-                        Text(
-                          (widget.snapshot?.data.docs[widget.index]
-                                  .data()['rating'])!
-                              .toString(),
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black.withOpacity(0.9),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        _buildPostIcon(Icons.arrow_downward),
-                      ],
-                    ),
-                    _buildPostIcon(Icons.chat_bubble),
-                    _buildSaveButton(),
-                  ],
-                )
+                widget.hide
+                    ? Center(
+                        child: _buildSaveButton(),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              _buildPostIcon(Icons.arrow_upward),
+                              Text(
+                                (widget.snapshot?.data.docs[widget.index]
+                                        .data()['rating'])!
+                                    .toString(),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black.withOpacity(0.9),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              _buildPostIcon(Icons.arrow_downward),
+                            ],
+                          ),
+                          _buildPostIcon(Icons.chat_bubble),
+                          _buildSaveButton(),
+                        ],
+                      )
               ],
             ),
           )),

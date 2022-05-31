@@ -52,7 +52,7 @@ dependencies:
   image_cropper: ^2.0.3
 
 flutter_icons:
-  image_path: "images/decorations/LoginDecoration.png"
+  image_path: "images/decorations/appIcon.png"
   android: true
   ios: true
 
