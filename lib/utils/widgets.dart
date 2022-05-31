@@ -275,10 +275,9 @@ class _postState extends State<post> {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon: Icon(Icons.bookmark,
+        icon:  Icon(Icons.bookmark,
             color: widget.isSaved ? appTheme : Colors.grey));
   }
-
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
@@ -480,7 +479,7 @@ class _postState extends State<post> {
                     : Container()),
                 widget.hide
                     ? Center(
-                        child: _buildSaveButton(),
+                        child: (widget.user != null && widget.user.isAuthenticated)? _buildSaveButton() : Container(),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

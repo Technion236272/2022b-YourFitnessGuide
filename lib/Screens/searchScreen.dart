@@ -182,7 +182,7 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Scaffold(
             appBar: AppBar(
               centerTitle: false,
-              title: const Text('Search')/*,
+              title: const Text('Search Users')/*,
               actions: [
                 Padding(
                     padding: const EdgeInsets.only(right: 12.0),
@@ -199,7 +199,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             ))
                       ],
                     )),
-              ]*/,
+              ],
               bottom: const TabBar(tabs: [
                 Tab(
                   child: Text('Users',
@@ -220,9 +220,8 @@ class _SearchScreenState extends State<SearchScreen> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 15)))*/
               ]),
-            ),
-            body: TabBarView(
-              children: [
+            ),*/),
+            body:
                 Column(
                   children: [
                     search(searchHint: 'Search users',searchContent: searchController.text, onChanged: searchUser,),
@@ -278,7 +277,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     endIndent: width * 0.05,
                   ),
                 ])*/
-              ],
-            )));
+
+            ));
   }
 }
