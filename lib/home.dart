@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _views = [
     TimelineScreen(),
-    const SearchScreen(),
+    SearchScreen(),
 //    const NotificationsScreen(),
     const LoginScreen()
   ];

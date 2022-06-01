@@ -20,6 +20,7 @@ const Color appTheme = const Color(0xff4CC47C);
 enum Goal { loseWeight, gainMuscle, gainWeight, maintainHealth }
 class SearchArguments {
   final String uid;
+  final String? postid;
   final bool isUser;
-  SearchArguments({required this.uid, required this.isUser});
+  SearchArguments({required this.uid, required this.isUser, this.postid});
 }

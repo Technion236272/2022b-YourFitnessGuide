@@ -3,42 +3,38 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 
-class SearchModel {
+class SearchUserModel {
   String? name;
   String? uid;
   String? pictureUrl;
   late Image picture;
 
-  SearchModel(
+  SearchUserModel(
       {required this.name, required this.uid, required this.pictureUrl}){
     picture = Image.network(pictureUrl!);
   }
-/*
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-
-      name: json['name'],
-  pictureUrl: json['picture'],*/
-
 }
 
 class FirebaseDB with ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  Future<List<SearchModel>> getUsers() async {
-    List<SearchModel> res = [];
+  Future<List<SearchUserModel>> getUsers() async {
+    List<SearchUserModel> res = [];
 
     await _db.collection("versions").doc("v1").collection("users").get().then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         var currentDocument = doc.get('name');
-        var currentUser = SearchModel(
+        var currentUser = SearchUserModel(
             name: doc.get('name'),
             uid: doc.id.toString(),
             pictureUrl: doc.get('picture'));
         res.add(currentUser);
       });
     });
-    return Future<List<SearchModel>>.value(res);
+    return Future<List<SearchUserModel>>.value(res);
   }
+
+
 
   Future<void> deleteUserData(String uid) async {
     await _db.collection("versions").doc("v1").collection('users').doc(uid).delete();

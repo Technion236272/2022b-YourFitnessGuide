@@ -327,9 +327,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 emptyNote(height, width,
                                     'You have not published a post yet'),
                                 emptyNote(height, width,
-                                    'You have not published a post yet'),
+                                    'You have not published a Meal Plan yet'),
                                 emptyNote(height, width,
-                                    'You have not published a post yet'),
+                                    'You have not published a Workout yet'),
                                 savedNum == 0
                                     ? emptyNote(height, width,
                                         'You have not saved a post yet')
@@ -349,9 +349,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 emptyNote(height, width,
                                     'User has not published a post yet'),
                                 emptyNote(height, width,
-                                    'User has not published a post yet'),
+                                    'User has not published a Meal Plan yet'),
                                 emptyNote(height, width,
-                                    'User has not published a post yet'),
+                                    'User has not published a Workout yet'),
                               ]
                             : [
                                 _buildTab(),
