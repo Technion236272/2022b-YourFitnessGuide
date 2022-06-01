@@ -144,13 +144,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <TextSpan>[
               TextSpan(
                   text: 'Not an existing user?',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                  )),
+                  style: TextStyle(color: appTheme, fontSize: 16)// fontWeight: FontWeight.bold)
+              ),
               TextSpan(
                 text: ' Click here to sign up!',
-                style: TextStyle(color: appTheme, fontWeight: FontWeight.bold),
+                style: TextStyle(color: appTheme,)// fontWeight: FontWeight.bold),
               ),
             ],
                 style: TextStyle(
