@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:yourfitnessguide/utils/ImageCrop.dart';
 
 class EditProfileScreen extends StatefulWidget {
   late bool firstTime;
@@ -20,7 +21,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   textField nameField = textField(
     fieldName: 'Name',
-    hint: 'McLovin',
+    hint: 'Enter your name here',
   );
   final TextEditingController _initialController = TextEditingController();
   final TextEditingController _currentController = TextEditingController();
@@ -72,22 +73,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildWeightField(String label, TextEditingController ctrl) {
     return Expanded(
         child: TextField(
-      keyboardType: TextInputType.number,
-      controller: ctrl,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: appTheme,
-          fontSize: 23,
-          fontWeight: FontWeight.bold,
-        ),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        hintText: "80",
-        hintStyle:
+          keyboardType: TextInputType.number,
+          controller: ctrl,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+            labelText: label,
+            labelStyle: const TextStyle(
+              color: appTheme,
+              fontSize: 23,
+              fontWeight: FontWeight.bold,
+            ),
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintText: "80",
+            hintStyle:
             const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-      ),
-    ));
+          ),
+        ));
   }
 
   Widget _buildWeightProgress(double height, double width) {
@@ -119,9 +120,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       }
+
+
+      final croppedFile = await myImageCropper(selectedImage.path);
+
+
       setState(() {
-        newImage = File(selectedImage.path);
+        newImage = File(croppedFile!.path);//File(selectedImage.path);
       });
+
     } on PlatformException catch (_) {
       const snackBar = SnackBar(
           content: Text(
@@ -183,7 +190,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       appBar: AppBar(
           centerTitle: false,
-          title: Text(firstTime ? 'Set up your profile' : 'Edit your profile'),
+          title: Text(firstTime ? 'Setup your profile' : 'Edit your profile'),
           actions: [
             Padding(
                 padding: const EdgeInsets.only(right: 12.0),
@@ -222,10 +229,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               );
                             },
-                            icon: Icon(
-                              Icons.info_outline,
-                              color: Colors.white,
-                            )),
+                            icon: const Icon(Icons.info_outline,color: Colors.white,)
+                    ),
                     IconButton(
                         onPressed: () {
                           int init = int.parse(_initialController.text);
@@ -239,7 +244,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               (init < goal || curr < goal)) {
                             const snackBar = SnackBar(
                                 content: Text(
-                                    'Invalid data inserted: User goal set to losing weight but initial\\current weight is lower that goal weight.'));
+                                    'Invalid data: Initial weight must be bigger than goal weight.'));
 
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
@@ -250,7 +255,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               (init > goal || curr > goal)) {
                             const snackBar = SnackBar(
                                 content: Text(
-                                    'Invalid data inserted: User goal set to gaining weight but initial\\current weight is higher that goal weight.'));
+                                    'Invalid data: Goal weight must be bigger than goal weight.'));
 
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
@@ -258,8 +263,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           }
 
                           if (firstTime) {
-                            if (int.parse(_initialController.text) == 0 ||
-                                int.parse(_goalController.text) == 0) {
+                            if (int.parse(_initialController.text) <= 0 ||
+                                int.parse(_goalController.text) <= 0 ||int.parse(_initialController.text) >= 500 || int.parse(_goalController.text) >= 500) {
                               const snackBar = SnackBar(
                                   content:
                                       Text('You need to fill all the fields'));
@@ -277,9 +282,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   context, homeRoute);
                             }
                           } else {
-                            if (int.parse(_initialController.text) == 0 ||
-                                int.parse(_goalController.text) == 0 ||
-                                int.parse(_goalController.text) == 0) {
+                            if (int.parse(_initialController.text) <= 0 ||
+                                int.parse(_currentController.text) <= 0 ||
+                                int.parse(_goalController.text) <= 0 || int.parse(_initialController.text) >= 500 || int.parse(_currentController.text) >= 500 || int.parse(_goalController.text) >= 500) {
                               const snackBar = SnackBar(
                                   content:
                                       Text('You need to fill all the fields'));
@@ -342,7 +347,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               firstTime
                   ? Container()
                   : ElevatedButton(
-                      child: const Text("DELETE ACCOUNT"),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red,
                           side: BorderSide(
@@ -372,20 +376,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                               });
                             },
-                            child: const Text('Confirm',
-                                style: TextStyle(color: appTheme)));
+                            child: const Text('Confirm', style: TextStyle(color: appTheme)));
                         AlertDialog alert = AlertDialog(
                           title: const Text('Are you sure?'),
-                          content: const Text(
-                              'Deleting your account is permanent and cannot be reversed.'),
+                          content: const Text('Deleting your account is permanent and cannot be reversed.'),
                           actions: [cancel, confirm],
                         );
                         showDialog(
                             context: context,
-                            builder: (BuildContext) {
+                            builder: (_) {
                               return alert;
                             });
                       },
+                      child: const Text("DELETE ACCOUNT"),
                     ),
             ],
           ),

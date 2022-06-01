@@ -3,11 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'dart:io';
 
@@ -74,16 +71,6 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get savedPosts => _userData?.savedPosts;
 
-  Future<void> updateSaved() async {
-    for (var i = 0; i < savedPosts!.length; i++) {
-      var tmp = await PostManager().checkPostsExists(savedPosts![i]);
-      if (tmp == false) {
-        modifySaved(savedPosts![i], true);
-        i--;
-      }
-    }
-  }
-
   Future<Object?> signUp(String email, String password) async {
     try {
       _status = Status.Authenticating;
@@ -91,14 +78,14 @@ class AuthRepository with ChangeNotifier {
       var res = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      var url = await _storage.ref('images').child('cj.jpg').getDownloadURL();
+      var url = await _storage.ref('images').child('ProfilePicture.jpg').getDownloadURL();
 
-      await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).set({
         'name': 'Undefined Name',
         'picture': url,
-        'initial_weight': 0,
-        'current_weight': 0,
-        'goal_weight': 0,
+        'initial_weight': null,
+        'current_weight': null,
+        'goal_weight': null,
         'goal': 0,
         'rating': 0,
         'saved': 0,
@@ -190,7 +177,7 @@ class AuthRepository with ChangeNotifier {
 
       final data = await FacebookAuth.i.getUserData();
 
-      await _db.collection('users').doc(user!.uid).set({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).set({
         'name': data['name'],
         'picture': data['picture']['data']['url'],
         'initial_weight': 0,
@@ -203,6 +190,7 @@ class AuthRepository with ChangeNotifier {
         'followers': 0,
         'saved_posts': []
       });
+
 
       _userData = UserModel(
           name: data['name'],
@@ -266,7 +254,7 @@ class AuthRepository with ChangeNotifier {
       final name = await _auth.currentUser?.displayName;
       final picture = await _auth.currentUser?.photoURL;
 
-      await _db.collection('users').doc(user!.uid).set({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).set({
         'name': name,
         'picture': picture,
         'initial_weight': 0,
@@ -311,9 +299,19 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
+  Future<void> updateSaved() async {
+    for (var i = 0; i < savedPosts!.length; i++) {
+      var tmp = await PostManager().checkPostsExists(savedPosts![i]);
+      if (tmp == false) {
+        modifySaved(savedPosts![i], true);
+        i--;
+      }
+    }
+  }
+
   Future<void> modifySaved(String postuid, bool delete) async {
     if (delete) {
-      await _db.collection('users').doc(user!.uid).update({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).update({
         'saved_posts': FieldValue.arrayRemove([postuid])
       });
       if (_userData!.savedPosts!.contains(postuid)) {
@@ -321,7 +319,7 @@ class AuthRepository with ChangeNotifier {
         _userData?.savedPosts?.remove(postuid);
       }
     } else {
-      await _db.collection('users').doc(user!.uid).update({
+      await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).update({
         'saved_posts': FieldValue.arrayUnion([postuid])
       });
       _userData?.saved++;
@@ -360,7 +358,8 @@ class AuthRepository with ChangeNotifier {
   Future<void> setUserData() async {
     try {
       if (_userData != null) return;
-      var dataDocument = await _db.collection('users').doc(user!.uid).get();
+      var dataDocument = await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).get();
+      print(dataDocument.get('name'));
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
@@ -374,9 +373,10 @@ class AuthRepository with ChangeNotifier {
           rating: dataDocument.get('rating'),
           saved: savedTmp.length,
           savedPosts: savedTmp);
+      print(savedPosts);
     } catch (_) {
       await Future.delayed(Duration(seconds: 1));
-      var dataDocument = await _db.collection('users').doc(user!.uid).get();
+      var dataDocument = await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).get();
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
@@ -409,7 +409,7 @@ class AuthRepository with ChangeNotifier {
       _userData?.pictureUrl =
           await _storage.ref('images').child(_user!.uid).getDownloadURL();
     }
-    await _db.collection('users').doc(user!.uid).update({
+    await _db.collection("versions").doc("v1").collection('users').doc(user!.uid).update({
       'name': newName,
       'initial_weight': newInitialWeight,
       'current_weight': newCurrentWeight,

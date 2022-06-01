@@ -21,7 +21,7 @@ class FirebaseDB with ChangeNotifier {
   Future<List<SearchUserModel>> getUsers() async {
     List<SearchUserModel> res = [];
 
-    await _db.collection("users").get().then((querySnapshot) {
+    await _db.collection("versions").doc("v1").collection("users").get().then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         var currentDocument = doc.get('name');
         var currentUser = SearchUserModel(
@@ -37,14 +37,14 @@ class FirebaseDB with ChangeNotifier {
 
 
   Future<void> deleteUserData(String uid) async {
-    await _db.collection('users').doc(uid).delete();
+    await _db.collection("versions").doc("v1").collection('users').doc(uid).delete();
 
   }
 
   ///get user info from db
   Future<Map<String, dynamic>?> getUserInfo(String userUid) async {
     Map<String, dynamic>? userData;
-    await _db.collection("users")
+    await _db.collection("versions").doc("v1").collection("users")
         .doc(userUid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -59,7 +59,7 @@ class FirebaseDB with ChangeNotifier {
 
   Future<UserModel?> getUserModel(String userUid) async {
     UserModel? userData;
-    await _db.collection("users")
+    await _db.collection("versions").doc("v1").collection("users")
         .doc(userUid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> dataDocument) {

@@ -240,7 +240,6 @@ class _SignupScreenState extends State<SignupScreen> {
           'Sign up',
         ),
         backgroundColor: appTheme,
-        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Column(

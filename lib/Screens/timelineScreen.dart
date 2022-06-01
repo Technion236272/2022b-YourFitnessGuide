@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,52 +7,62 @@ import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
-class filterDialog extends StatefulWidget {
+class FilterDialog extends StatefulWidget {
   bool goalOrientation;
-  filterDialog({Key? key, required this.goalOrientation}) : super(key: key);
+
+  FilterDialog({Key? key, required this.goalOrientation}) : super(key: key);
+
   get goalOriented => goalOrientation;
 
   @override
-  State<filterDialog> createState() => _filterDialogState();
+  State<FilterDialog> createState() => _FilterDialogState();
 }
 
-class _filterDialogState extends State<filterDialog> {
+class _FilterDialogState extends State<FilterDialog> {
   @override
   Widget build(BuildContext context) {
-    Widget cancel = TextButton(
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        child: const Text(
-          'Cancel',
-          style: TextStyle(color: appTheme),
-        ));
-    Widget tmp = CheckboxListTile(
-        title: Text('Show posts that match my goal only', style: TextStyle(color: appTheme),),
+    Widget filter1 = CheckboxListTile(
+        title: const Text('Only show posts that match my goal',
+            style: TextStyle(color: appTheme)),
         value: widget.goalOrientation,
-        //groupValue: userGoal,
         activeColor: appTheme,
         onChanged: (value) => setState(() {
-          widget.goalOrientation = value!;
-        }));
-    Widget confirm = TextButton(
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-        child: const Text('Confirm',
-            style: TextStyle(color: appTheme)));
+              widget.goalOrientation = value!;
+            }));
+    Widget okButton = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                      color: appTheme,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold)),
+            )
+          ]),
+    );
     AlertDialog alert = AlertDialog(
       title: const Text('Filters'),
-      content: tmp,
-      actions: [cancel, confirm],
+      content: filter1,
+      actions: [okButton],
     );
     return alert;
   }
 }
 
-
 class TimelineScreen extends StatefulWidget {
-  const TimelineScreen({Key? key}) : super(key: key);
+  bool? isGoalOriented = false;
+
+  TimelineScreen({Key? key, bool? oriented = false}) : super(key: key) {
+    this.isGoalOriented = oriented ?? false;
+  }
 
   @override
   State<TimelineScreen> createState() => _TimelineScreenState();
@@ -62,9 +71,8 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   final PostManager _postManager = PostManager();
-  bool isGoalOriented = false;
 
-  SpeedDialChild _buildDialOption(String name, String Route) {
+  SpeedDialChild _buildDialOption(String name, String route) {
     return SpeedDialChild(
         child: const Icon(
           Icons.add,
@@ -73,41 +81,79 @@ class _TimelineScreenState extends State<TimelineScreen> {
         label: name,
         labelBackgroundColor: appTheme,
         backgroundColor: appTheme,
-        labelStyle: TextStyle(color: Colors.white),
+        labelStyle: const TextStyle(color: Colors.white),
         onTap: () {
           isDialOpen.value = false;
-          Navigator.pushNamed(context, Route);
+          Navigator.pushNamed(context, route);
         });
   }
 
+  Future openDialog() => showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+          builder: (context, setStatee) => AlertDialog(
+                title: const Text('Filters'),
+                content: CheckboxListTile(
+                    title: const Text('Only show posts that match my goal',
+                        style: TextStyle(color: appTheme)),
+                    value: widget.isGoalOriented,
+                    activeColor: appTheme,
+                    onChanged: (value) => setStatee(() {
+                          widget.isGoalOriented = value!;
+                        })),
+                actions: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              setStatee(() => widget.isGoalOriented = widget.isGoalOriented!);
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('OK',
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                    color: appTheme,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold)),
+                          )
+                        ]),
+                  )
+                ],
+              )));
+
   @override
   Widget build(BuildContext context) {
+    widget.isGoalOriented ??= false;
     var user = Provider.of<AuthRepository>(context);
-    filterDialog filters = filterDialog(goalOrientation: isGoalOriented);
-
+    FilterDialog filters =
+        FilterDialog(goalOrientation: widget.isGoalOriented ?? false);
     return Scaffold(
         appBar: AppBar(
             title: const Text('YourFitnessGuide'),
             centerTitle: false,
             actions: [
-              Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext) {
-                                  return filters;
-                                });
-                          },
-                          icon: const Icon(
-                            Icons.filter_alt,
-                            color: Colors.white,
-                          ))
-                    ],
-                  )),
+              user.isAuthenticated
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Row(
+                        children: [
+                          IconButton(
+                              onPressed: () async {
+                                await openDialog();
+                                setState(() {});
+                              },
+                              icon: const Icon(
+                                Icons.filter_alt,
+                                color: Colors.white,
+                              ))
+                        ],
+                      ))
+                  : const Padding(padding: EdgeInsets.all(0)),
             ]),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,
@@ -134,7 +180,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     setState(() {});
                   },
                   child: ListView.builder(
-                    //separatorBuilder: (context, index) => const Divider(),
                     itemCount:
                         snapshot.data == null ? 0 : snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
@@ -143,7 +188,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         return const Center(
                             child: CircularProgressIndicator.adaptive());
                       }
-
                       if (snapshot.connectionState == ConnectionState.done &&
                           snapshot.data == null) {
                         return const Center(child: Text('No data available'));
@@ -152,6 +196,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         index: index,
                         snapshot: snapshot,
                         screen: "timeline",
+                        goalFiltered: widget.isGoalOriented ?? false,
                       );
                     },
                   ));

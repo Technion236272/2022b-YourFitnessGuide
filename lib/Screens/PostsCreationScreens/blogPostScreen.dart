@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/utils/ImageCrop.dart';
 
 class BlogPostScreen extends StatefulWidget {
   const BlogPostScreen({Key? key}) : super(key: key);
@@ -18,9 +19,9 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
   TextEditingController descriptionController = TextEditingController();
   final PostManager _postManager = PostManager();
   bool _isLoading = false;
-  File? _postImageFile = null;
+  File? _postImageFile;
   var color = appTheme;
-  String photo = "attach a photo";
+  String photoText = "Add Image";
 
   Widget _buildPostName(double height) {
     final iconSize = height * 0.050;
@@ -127,8 +128,12 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
         _postImageFile = null;
         return;
       }
+
+      final croppedFile = await myImageCropper(selectedImage.path);
+
+
       setState(() {
-        _postImageFile = File(selectedImage.path);
+        _postImageFile = File(croppedFile!.path);//File(selectedImage.path);
       });
     } on PlatformException catch (_) {
       const snackBar = SnackBar(
@@ -165,8 +170,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                                   descriptionController.text;
                               if (title == "" || description == "") {
                                 const snackBar = SnackBar(
-                                    content: Text(
-                                        'You must enter title and description'));
+                                    content: Text('You must enter title and description'));
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(snackBar);
                               } else {
@@ -186,9 +190,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                                   const snackBar = SnackBar(
                                       content:
                                           Text('Blog posted successfully'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                   Navigator.pop(context);
                                 } else {
                                   const snackBar = SnackBar(
@@ -204,7 +206,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                   ],
                 )),
           ]),
-      body: Center(
+      body: SingleChildScrollView(child: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.start,
               //crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -227,7 +229,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                     height: 300,
                     width:
                     MediaQuery.of(context).size.width*0.9,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 )  : const Padding(
                     padding: EdgeInsets.all(0))),
@@ -249,13 +251,13 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                     await pickImage();
                     if(_postImageFile!=null) {
                       color = Colors.red;
-                      photo = "detach the photo";
+                      photoText = "Remove Image";
                     }
                   }
                   else {
                     _postImageFile = null;
                     color = appTheme;
-                    photo = "attach a photo";
+                    photoText = "Add Image";
                   }
                   setState(() {
                     build(context);
@@ -264,15 +266,9 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-
                     const Icon(Icons.add_photo_alternate, color: Colors.white),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    Text(
-                      photo,
-                      style: const TextStyle(color: Colors.white),
-                    ),
+                    const SizedBox(height: 4),
+                    Text(photoText,style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
@@ -284,7 +280,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
 
 
 
-          ])),
+          ]))),
 
       resizeToAvoidBottomInset: false,
     );

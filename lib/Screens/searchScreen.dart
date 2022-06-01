@@ -49,13 +49,13 @@ class _searchState extends State<search> {
           icon: const Icon(Icons.search, color: appTheme),
           suffixIcon: searchUserController.text.isNotEmpty
               ? GestureDetector(
-                  child: const Icon(Icons.close, color: appTheme),
-                  onTap: () {
-                    searchUserController.clear();
-                    widget.onChanged('');
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                )
+            child: const Icon(Icons.close, color: appTheme),
+            onTap: () {
+              searchUserController.clear();
+              widget.onChanged('');
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+          )
               : null,
           hintText: widget.searchHint,
           border: InputBorder.none,
@@ -89,31 +89,31 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Future init() async{
-      FirebaseDB().getUsers().then((result) {
-        allUsers = List.from(result);
-        users = List.from(result);
+    FirebaseDB().getUsers().then((result) {
+      allUsers = List.from(result);
+      users = List.from(result);
+    });
+    PostManager().getPosts().then((value) {
+      allPosts = List.from(value);
+      posts = List.from(value);
+      allBlogs = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
+      allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
+      allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
+      allMeals.sort((post1, post2){
+        return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
       });
-      PostManager().getPosts().then((value) {
-        allPosts = List.from(value);
-        posts = List.from(value);
-        allBlogs = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
-        allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
-        allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
-        allMeals.sort((post1, post2){
-          return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
-        });
-        allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
-        allWorkouts.sort((post1, post2){
-          return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
-        });
-        allBlogs = allPosts.where((element) {return element.data!['category'].startsWith('Blog');}).toList();
-        allBlogs.sort((post1, post2){
-          return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
-        });
-        blogs = allBlogs;
-        meals = allMeals;
-        workouts = allWorkouts;
+      allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
+      allWorkouts.sort((post1, post2){
+        return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
       });
+      allBlogs = allPosts.where((element) {return element.data!['category'].startsWith('Blog');}).toList();
+      allBlogs.sort((post1, post2){
+        return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+      });
+      blogs = allBlogs;
+      meals = allMeals;
+      workouts = allWorkouts;
+    });
 
   }
 
@@ -137,12 +137,12 @@ class _SearchScreenState extends State<SearchScreen> {
           icon: Icon(Icons.search, color: appTheme),
           suffixIcon: searchUserController.text.isNotEmpty
               ? GestureDetector(
-                  child: Icon(Icons.close, color: appTheme),
-                  onTap: () {
-                    searchUserController.clear();
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                )
+            child: Icon(Icons.close, color: appTheme),
+            onTap: () {
+              searchUserController.clear();
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+          )
               : null,
           hintText: Title,
           border: InputBorder.none,
@@ -152,10 +152,10 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget buildUser(SearchUserModel model) => ListTile(
-    onTap: () {
-      SearchArguments arg = SearchArguments(uid: model.uid!, isUser: false);
-      Navigator.pushNamed(context, '/profile', arguments: arg);
-    },
+      onTap: () {
+        SearchArguments arg = SearchArguments(uid: model.uid!, isUser: false);
+        Navigator.pushNamed(context, '/profile', arguments: arg);
+      },
       title: Container(
           padding: EdgeInsets.symmetric(vertical: height * 0.01),
           child: Column(children: [
@@ -174,13 +174,13 @@ class _SearchScreenState extends State<SearchScreen> {
                         shape: BoxShape.circle,
                         image: model.pictureUrl == null
                             ? DecorationImage(
-                                fit: BoxFit.cover,
-                                image: Image.asset(
-                                        'images/decorations/mclovin.png')
-                                    .image)
+                            fit: BoxFit.cover,
+                            image: Image.asset(
+                                'images/decorations/mclovin.png')
+                                .image)
                             : DecorationImage(
-                                fit: BoxFit.cover,
-                                image: model.picture.image))),
+                            fit: BoxFit.cover,
+                            image: model.picture.image))),
                 SizedBox(
                   width: width * 0.02,
                 ),
@@ -328,12 +328,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 Tab(
                   child: Text('Users',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
                 Tab(
                   child: Text('Blogs',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ),
                 Tab(
                     child: Text('Meals',
@@ -359,12 +359,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                     Expanded(
                         child: ListView.builder(
-                      itemCount: users.length,
-                      itemBuilder: (context, index) {
-                        final user = users[index];
-                        return buildUser(user);
-                      },
-                    ))
+                          itemCount: users.length,
+                          itemBuilder: (context, index) {
+                            final user = users[index];
+                            return buildUser(user);
+                          },
+                        ))
                   ],
                 ),
                 Column(

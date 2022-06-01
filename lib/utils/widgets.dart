@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/cupertino.dart';
@@ -129,14 +129,15 @@ class imageContainer extends StatelessWidget {
             shape: BoxShape.circle,
             image: imageFile != null
                 ? DecorationImage(
-                    fit: BoxFit.cover, image: Image.file(imageFile!).image)
+                    fit: BoxFit.contain, image: Image.file(imageFile!).image)
                 : (imageLink == null
                     ? DecorationImage(
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                         image:
                             Image.asset('images/decorations/mclovin.png').image)
                     : DecorationImage(
-                        fit: BoxFit.cover, image: NetworkImage(imageLink!)))));
+                        fit: BoxFit.contain,
+                        image: NetworkImage(imageLink!)))));
   }
 }
 
@@ -186,11 +187,11 @@ class _textFieldState extends State<textField> {
 
 class post extends StatefulWidget {
   AsyncSnapshot? snapshot;
-  late int? index = null;
+  late int? index;
   bool completed = true;
   bool owner = false;
   late Image? userPicture = null;
-  late Image? postImage = null;
+  late Image? postImage;
   late String? category = null;
   late String? username = null;
   late DateTime? date = null;
@@ -202,7 +203,14 @@ class post extends StatefulWidget {
   bool hide = true;
   var user;
   bool isSaved = false;
-  post({Key? key, this.index, this.snapshot, this.data,required this.screen, this.uid})
+  bool? goalFiltered = false;
+
+  post(
+      {Key? key,
+      this.index,
+      this.snapshot,
+      required this.screen,
+      this.goalFiltered, this.uid, this.data})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
@@ -232,6 +240,7 @@ class post extends StatefulWidget {
         });
   }
 
+  @override
   State<post> createState() => _postState();
 }
 
@@ -241,15 +250,14 @@ class _postState extends State<post> {
   Widget _buildPostIcon(IconData ic) {
     return IconButton(
         onPressed: () {
-          const _snackBar = SnackBar(content: Text('Not implemented yet'));
-          ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+          const snackBar = SnackBar(content: Text('Not implemented yet'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         },
         icon: Icon(ic, color: Colors.grey));
   }
 
   Widget _buildSaveButton(){
-    return
-      IconButton(
+    return IconButton(
           onPressed: () {
             if (widget.user.isAuthenticated) {
               widget.isSaved = !widget.isSaved;
@@ -272,18 +280,16 @@ class _postState extends State<post> {
                     widget.snapshot?.data!.docs[widget.index].id,
                     false);
               }
-            } else {
-              const _snackBar = SnackBar(
-                  content:
-                  Text('You need to sign in to save posts'));
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(_snackBar);
             }
-          },
-          icon: Icon(Icons.bookmark,
-              color: widget.isSaved ? appTheme : Colors.grey));
+           else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to save posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon:  Icon(Icons.bookmark,
+            color: widget.isSaved ? appTheme : Colors.grey));
   }
-
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
@@ -291,8 +297,31 @@ class _postState extends State<post> {
       var saved = widget.user.savedPosts;
       widget.isSaved = saved == null
           ? false
-          : saved.contains(widget.data != null? widget.data!['uid'] : widget.snapshot?.data!.docs[widget.index].id);
+          : saved.contains(widget.data != null? widget.data!['uid']: widget.snapshot?.data!.docs[widget.index].id);
+      var cat = widget.data != null? widget.data!['category']: widget.snapshot?.data!.docs[widget.index].data()!['category'];
+      if (widget.goalFiltered != null &&
+          widget.goalFiltered! &&
+          cat == 'Blog') {
+        return Container();
+      }
+
+      if (widget.goalFiltered != null && widget.goalFiltered!) {
+        var postGoals = widget.data != null? widget.data!['goals']:
+            widget.snapshot?.data!.docs[widget.index].data()!['goals'];
+        if (cat == "Blog") {
+          Container();
+        }
+
+          var userGoal = widget.user.userData.goal;
+          if (!postGoals[userGoal]!) {
+            return Container();
+          }
+
+      }
     }
+
+    var tmp = (widget.data?['description'] ?? widget.snapshot?.data!.docs[widget.index].data()!['description'])
+        as String;
 
     return InkWell(
       onTap: () {
@@ -353,6 +382,7 @@ class _postState extends State<post> {
                                       : (widget.data?['category'] ?? widget
                                           .snapshot?.data!.docs[widget.index]
                                           .data()!['category']),
+
                                   style: TextStyle(
                                       //fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
@@ -398,29 +428,30 @@ class _postState extends State<post> {
                                       ));
                                   Widget confirm = TextButton(
                                       onPressed: () {
-                                        widget.user.modifySaved(widget
-                                            .snapshot?.data!.docs[widget.index].id, true);
-                                        PostManager().deletePost(widget
-                                            .snapshot?.data!.docs[widget.index].id);
+                                        widget.user.modifySaved(
+                                            widget.snapshot?.data!
+                                                .docs[widget.index].id,
+                                            true);
+                                        PostManager().deletePost(widget.snapshot
+                                            ?.data!.docs[widget.index].id);
                                         Navigator.of(context).pop();
-
                                       },
                                       child: const Text('Confirm',
                                           style: TextStyle(color: appTheme)));
                                   AlertDialog alert = AlertDialog(
                                     title: const Text('Are you sure?'),
                                     content: const Text(
-                                        'Posts are unretrievable after deletion.'),
+                                        'Posts are not retrievable after deletion.'),
                                     actions: [cancel, confirm],
                                   );
                                   showDialog(
                                       context: context,
-                                      builder: (BuildContext) {
+                                      builder: (_) {
                                         return alert;
                                       });
                                 },
                                 itemBuilder: (BuildContext context) => [
-                                  PopupMenuItem(
+                                  const PopupMenuItem(
                                       value: 1, child: Text('Delete post'))
                                 ],
                               ),
@@ -432,28 +463,31 @@ class _postState extends State<post> {
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                SizedBox(height: 5),
-                (((widget.data!= null && widget.data!['image_url'] != null) || widget.snapshot?.data!.docs[widget.index]
-                            .data()!['image_url'] !=
-                        null)
+                const SizedBox(height: 5),
+                Text( widget.data != null? widget.data!['description'].substring(0, min(65, tmp.length)) +
+                    (65 < tmp.length ? '...' : ''):
+                    widget.snapshot?.data!.docs[widget.index]
+                            .data()!['description']!
+                            .substring(0, min(65, tmp.length)) +
+                        (65 < tmp.length ? '...' : ''),
+                    textAlign: TextAlign.left,
+                    maxLines: 5),
+                const SizedBox(height: 5),
+    ((widget.data!= null && widget.data!['image_url'] != null) || widget.snapshot?.data!.docs[widget.index]
+        .data()!['image_url'] !=
+    null)
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network( widget.data != null? widget.data!['image_url']  : (widget.data?['image_url'] ??
                             widget.snapshot?.data!.docs[widget.index]
                               .data()!['image_url']!),
-                          height: 200,
+                          //height: 200,
+
                           width: MediaQuery.of(context).size.width,
                           fit: BoxFit.cover,
                         ),
                       )
-                    : Container()),
-                widget.hide? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(),
-                      _buildSaveButton()
-                    ]
-                ):
+                    : Container(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -477,6 +511,7 @@ class _postState extends State<post> {
                     _buildSaveButton(),
                   ],
                 )
+
               ],
             ),
           )),

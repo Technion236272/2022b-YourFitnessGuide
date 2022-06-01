@@ -22,9 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _views = [
-    const TimelineScreen(),
+    TimelineScreen(),
     SearchScreen(),
-    const NotificationsScreen(),
+//    const NotificationsScreen(),
     const LoginScreen()
   ];
 
@@ -39,18 +39,18 @@ class _HomeScreenState extends State<HomeScreen> {
     var user = Provider.of<AuthRepository>(context);
 
     if(user.isAuthenticated && (user.userData?.iWeight != 0)){
-      _views.removeAt(3);
+      _views.removeAt(2);
       _views.add(ProfileScreen(uid: user.getCurrUid(),));
     }
     else{
-      _views.removeAt(3);
+      _views.removeAt(2);
       _views.add(const LoginScreen());
     }
 
     return Scaffold(
         body: IndexedStack(
-          children: _views,
           index: _selectedIndex,
+          children: _views,
         ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
@@ -59,9 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.search), label: 'Search'),
+                icon: Icon(Icons.search), label: 'Search'),/*
             BottomNavigationBarItem(
-                icon: Icon(Icons.notifications), label: 'Notifications'),
+                icon: Icon(Icons.notifications), label: 'Notifications'),*/
             BottomNavigationBarItem(
                 icon: Icon(Icons.person), label: 'Profile')
           ],

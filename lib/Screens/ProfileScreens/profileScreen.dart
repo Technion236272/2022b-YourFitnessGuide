@@ -19,6 +19,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? profileImage;
+  var hide = false;
   String? currUid;
   bool visiting = false;
   var user;
@@ -290,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ? Container(
                         padding: EdgeInsets.only(bottom: height * 0.008),
                       )
-                    : ElevatedButton(
+                    : (!hide? Container() : ElevatedButton(
                         child: const Text("Follow"),
                         style: ElevatedButton.styleFrom(
                             primary: const Color(0xff84C59E),
@@ -310,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               SnackBar(content: Text('Feature coming soon'));
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         },
-                      ),
+                      )),
                 SizedBox(
                   height: height * 0.05,
                 ),
@@ -365,7 +366,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved(
       {String? category}) {
-    int counter = 0;
     return StreamBuilder(
       stream: PostManager().getAllPosts(),
       builder: (context, snapshot) {
@@ -384,7 +384,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
         posts2 = snapshot;
-
         return RefreshIndicator(
             child: ListView.builder(
                 itemCount: posts2.data == null ? 0 : posts2.data!.docs.length,
@@ -476,6 +475,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 posts = snapshot2;
+                print(posts.data!.docs.length);
                 if (posts.data!.docs.length == 0) {
                   noPosts = true;
                 } else {
