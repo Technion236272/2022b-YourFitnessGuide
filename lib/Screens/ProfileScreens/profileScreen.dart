@@ -10,6 +10,7 @@ import 'package:yourfitnessguide/utils/widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   late String? uid;
+  int? followingNum = null, followersNum = null;
 
   ProfileScreen({Key? key, this.uid}) : super(key: key);
 
@@ -33,9 +34,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool noPosts = false;
   List<String>? savedPosts = null;
   late double height, width;
+  String followButtonText = 'Follow';
+  bool setup = true;
 
   get uid => widget.uid;
-  int rating = 0, savedNum = 0, followingNum = 0, followersNum = 0;
+  int rating = 0, savedNum = 0;
 
   Widget _buildStatline(String stat, int value) {
     return Center(
@@ -51,15 +54,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Text(
             stat,
-            style: const TextStyle(color: Colors.grey, fontSize: 14),
+            style: const TextStyle(color: appTheme, fontSize: 14),
           )
         ],
       ),
     );
   }
 
-  Widget _buildTopDisplayRow(double height, double width, int rating,
-      int savedNum, int followingNum, int followersNum) {
+  Widget _buildTabHeader(String tabText) {
+    return Tab(
+        child: Text(
+      tabText,
+      style:
+          TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
+    ));
+  }
+
+  Widget _buildTopDisplayRow(
+      double height, double width, int rating, int savedNum) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -84,25 +96,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         Expanded(
           child: Container(
-            child: _buildStatline('Following', followingNum),
+            child: _buildStatline('Following', widget.followingNum ?? 0),
           ),
         ),
         Expanded(
           child: Container(
-            child: _buildStatline('Followers', followersNum),
+            child: _buildStatline('Followers', widget.followersNum ?? 0),
           ),
         ),
       ],
     );
-  }
-
-  Widget _buildTabHeader(String tabText) {
-    return Tab(
-        child: Text(
-      tabText,
-      style:
-          TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-    ));
   }
 
   Widget _buildTabBar() {
@@ -171,8 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
         return emptyNote(
             height, width, pronoun + 'published a ' + category + ' yet');
-      }
-      else if(category == 'Workout' && !workoutsFound){
+      } else if (category == 'Workout' && !workoutsFound) {
         var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
 
         return emptyNote(
@@ -242,9 +244,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userData != null) {
       profileImage = userData?.pictureUrl;
       rating = 0;
-      followingNum = 0;
-      followersNum = 0;
-      username = userData?.name ?? 'Mclovin';
+      username = userData?.name ?? 'Undefined name';
     }
     return DefaultTabController(
         length: visiting ? 3 : 4,
@@ -285,14 +285,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                     padding: EdgeInsets.only(
                         top: height * 0.035, bottom: height * 0.008),
-                    child: _buildTopDisplayRow(height, width, rating, savedNum,
-                        followingNum, followersNum)),
+                    child: _buildTopDisplayRow(
+                      height,
+                      width,
+                      rating,
+                      savedNum,
+                    )),
                 !visiting
                     ? Container(
                         padding: EdgeInsets.only(bottom: height * 0.008),
                       )
-                    : (!hide? Container() : ElevatedButton(
-                        child: const Text("Follow"),
+                    : (ElevatedButton(
+                        child: Text(followButtonText),
                         style: ElevatedButton.styleFrom(
                             primary: const Color(0xff84C59E),
                             shadowColor: appTheme,
@@ -301,17 +305,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: Colors.black.withOpacity(0.5)),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20.0)),
-                            fixedSize: Size(width * 0.25, height * 0.03),
+                            fixedSize: Size(width * 0.32, height * 0.03),
                             textStyle: const TextStyle(
                               fontSize: 20,
                               color: Colors.white,
                             )),
                         onPressed: () async {
-                          const snackBar =
-                              SnackBar(content: Text('Feature coming soon'));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        },
-                      )),
+                          if (followButtonText == 'Following') {
+                            setState(() {
+                              followButtonText = 'Follow';
+                              if(widget.followersNum != null){
+                                widget.followersNum =widget.followersNum! - 1;
+                              }
+
+                              user.modifyFollow(currUid, true);
+                            });
+                          } else {
+                            setState(() {
+                              followButtonText = 'Following';
+                              if(widget.followersNum != null){
+                                widget.followersNum =widget.followersNum! + 1;
+                              }
+                              user.modifyFollow(currUid, false);
+                            });
+                          }
+                        })),
                 SizedBox(
                   height: height * 0.05,
                 ),
@@ -433,8 +451,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       savedPosts = userData?.savedPosts;
       rating = userData?.rating;
       savedNum = userData?.saved;
-      followingNum = userData?.following;
-      followersNum = userData?.followers;
+      widget.followingNum = widget.followingNum ?? userData?.following;
+      widget.followersNum = widget.followersNum ?? userData?.followers;
       currUid = uid ?? user.getCurrUid();
       username = userData?.name ?? 'Mclovin';
       user.updateSaved();
@@ -454,6 +472,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
         userData = snapshot.data;
+
+        if(widget.followingNum == null || widget.followingNum == null){
+          if(user.isAuthenticated && user.checkAlreadyFollowing(currUid)){
+            followButtonText = 'Following';
+          }
+          widget.followersNum = userData?.followers;
+          widget.followingNum = userData?.following;
+        }
+
         return RefreshIndicator(
             child: StreamBuilder(
               stream: PostManager().getUserPosts(uid),
@@ -475,7 +502,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 posts = snapshot2;
-                print(posts.data!.docs.length);
                 if (posts.data!.docs.length == 0) {
                   noPosts = true;
                 } else {

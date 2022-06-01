@@ -34,7 +34,39 @@ class FirebaseDB with ChangeNotifier {
     return Future<List<SearchUserModel>>.value(res);
   }
 
+  int? getFollowingNumber(String userid)  {
+    int? following = 0;
+    _db
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(userid)
+        .get()
+        .then((doc) {
+      var followersList = List<String>.from(doc.get('imFollowing') as List);
+      following = followersList.length;
 
+    });
+    return following;
+
+  }
+
+  int? getFollowersNumber(String userid){
+    int? followers = -2;
+    _db
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(userid)
+        .get()
+        .then((doc) {
+      var followersList = List<String>.from(doc.get('followingMe') as List);
+      followers = followersList.length;
+      print('nppr' + followersList.length.toString());
+    });
+
+    return followers;
+  }
 
   Future<void> deleteUserData(String uid) async {
     await _db.collection("versions").doc("v2").collection('users').doc(uid).delete();
