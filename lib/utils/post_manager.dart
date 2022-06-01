@@ -11,9 +11,9 @@ class PostManager with ChangeNotifier {
       FirebaseFirestore.instance;
 
   final CollectionReference<Map<String, dynamic>> _postCollection =
-      _db.collection("versions").doc("v1").collection("posts");
+      _db.collection("versions").doc("v2").collection("posts");
   final CollectionReference<Map<String, dynamic>> _userCollection =
-      _db.collection("versions").doc("v1").collection("users");
+      _db.collection("versions").doc("v2").collection("users");
 
   final FileUploadService _fileUploadService = FileUploadService();
 
@@ -219,7 +219,7 @@ class PostManager with ChangeNotifier {
   Future<List<String>> getUserPostsIDs(String uid) async {
     List<String> ids = [];
 
-    await _db.collection("versions").doc("v1").collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
+    await _db.collection("versions").doc("v2").collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
       for (var doc in querySnapshot.docs) {
         var currID = doc.id;
         ids.add(currID);
