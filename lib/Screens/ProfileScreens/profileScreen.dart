@@ -7,6 +7,8 @@ import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+import 'dart:math';
 
 class ProfileScreen extends StatefulWidget {
   late String? uid;
@@ -26,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var user;
   var userData;
   String username = '';
+  int randomizedCell = -1;
   var posts;
   var posts2;
   ListView? postsCards = null;
@@ -36,6 +39,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late double height, width;
   String followButtonText = 'Follow';
   bool setup = true;
+  late int initialW, currentW, goalW;
+  List<String> quotes = ['Give it a try.','Go for it.','Why not?','It\'s worth a shot.','What are you waiting for?','What do you have to lose?','You might as well.','Just do it!','There you go!','Keep up the good work.','Keep it up.','Good job.','Hang in there.','Don\'t give up.','Keep pushing.','Keep fighting!','Stay strong.','Never give up.','Never say \'die\'.','Come on! You can do it!.','It\'s your call.','Follow your dreams.','Reach for the stars.','Do the impossible.','Believe in yourself.','The sky is the limit.'];
 
   get uid => widget.uid;
   int rating = 0, savedNum = 0;
@@ -255,6 +260,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  double calculatePercent(){
+    var tmp = goalW - initialW;
+    var tmp2 = currentW - initialW;
+    double percent = 0;
+    if(tmp != 0){
+      percent = tmp2/tmp;
+    }
+    else{
+      percent = 0.5;
+    }
+
+    var res = percent>= 0? percent : (-1)*percent;
+    return (percent <= 0 || percent >= 2) ? 0 : res;
+  }
+
+  String randomizeProgressMessage(){
+    var random = Random();
+    if(randomizedCell == -1){
+      randomizedCell = random.nextInt(quotes.length);
+    }
+    return quotes[randomizedCell];
+  }
+
+  Widget buildProgressbar(){
+    return Padding(
+      padding: EdgeInsets.only(right: width * 0.01, left: width * 0.03,top: height * 0.005, bottom: height * 0.005),
+      child: LinearPercentIndicator(
+        width: MediaQuery.of(context).size.width - 170,
+        animation: true,
+        lineHeight: 20.0,
+        animationDuration: 2000,
+        percent: calculatePercent(),
+        leading: Text('Initial Weight', style: TextStyle(fontSize: 12.0),),
+        trailing: Text('Goal Weight', style: TextStyle(fontSize: 12.0),),
+        center: Text(randomizeProgressMessage(), style: TextStyle(fontSize: 12.0)),
+        progressColor: appTheme,
+        barRadius:Radius.circular(40.0),
+      ),
+    );
+  }
+
   Widget _buildView() {
     if (userData != null) {
       profileImage = userData?.pictureUrl;
@@ -296,10 +342,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
             ),
             body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                     padding: EdgeInsets.only(
-                        top: height * 0.035, bottom: height * 0.008),
+                        top: height * 0.035),
                     child: _buildTopDisplayRow(
                       height,
                       width,
@@ -308,7 +355,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     )),
                 (!visiting || !user.isAuthenticated)
                     ? Container(
-                        padding: EdgeInsets.only(bottom: height * 0.008),
                       )
                     : (ElevatedButton(
                         child: Text(followButtonText),
@@ -345,9 +391,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             });
                           }
                         })),
-                SizedBox(
-                  height: height * 0.05,
-                ),
+                visiting? Container() : buildProgressbar(),
                 _buildTabBar(),
                 SizedBox(
                   height: height * 0.005,
@@ -462,15 +506,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (userData != null) {
+      user.updateSaved();
+      user.updateFollow();
       profileImage = userData?.pictureUrl;
       savedPosts = userData?.savedPosts;
       rating = userData?.rating;
       savedNum = userData?.saved;
+      initialW = userData?.iWeight;
+      currentW = userData?.cWeight;
+      goalW = userData?.gWeight;
       widget.followingNum = widget.followingNum ?? userData?.following;
       widget.followersNum = widget.followersNum ?? userData?.followers;
       currUid = uid ?? user.getCurrUid();
       username = userData?.name ?? 'Mclovin';
-      user.updateSaved();
     }
 
     return FutureBuilder(
@@ -478,12 +526,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-            ),
-            body: const Center(
-                child: CircularProgressIndicator.adaptive()),
-          );          return Scaffold(
             appBar: AppBar(
               centerTitle: true,
             ),
@@ -497,6 +539,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
         userData = snapshot.data;
+        FirebaseDB().updateFollow(userData, currUid!);
 
         if (widget.followingNum == null || widget.followingNum == null) {
           if (user.isAuthenticated && user.checkImAlreadyFollowing(currUid)) {

@@ -272,17 +272,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: _buildPassword(height),
               ),
               user.status == Status.Authenticating
-                  ? (Scaffold(
-                      appBar: AppBar(
-                        centerTitle: true,
-                      ),
-                      body: (Scaffold(
-                        appBar: AppBar(
-                        ),
-                        body: const Center(
-                            child: CircularProgressIndicator.adaptive()),
-                      )),
-                    ))
+                  ? const Center(
+                            child: CircularProgressIndicator.adaptive())
                   : Container(
                       child: _buildSignIn(height, width),
                     ),

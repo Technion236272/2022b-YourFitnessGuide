@@ -749,7 +749,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   children: [
                     _isLoading
                         ? const Center(
-                        child: CircularProgressIndicator.adaptive())
+                                child: CircularProgressIndicator.adaptive())
+
                         : IconButton(
                             onPressed: () async {
                               final String title = mealPlanNameController.text;
