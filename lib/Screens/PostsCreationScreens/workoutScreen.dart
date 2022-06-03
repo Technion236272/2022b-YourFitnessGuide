@@ -352,13 +352,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? (Scaffold(
-                            appBar: AppBar(
-                              centerTitle: true,
-                            ),
-                            body: const Center(
-                                child: CircularProgressIndicator.adaptive()),
-                          ))
+                        ? const Center(
+                        child: CircularProgressIndicator.adaptive())
                         : IconButton(
                             onPressed: () async {
                               for (int i = 0;

@@ -7,6 +7,7 @@ import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
+/*
 class FilterDialog extends StatefulWidget {
   bool goalOrientation;
 
@@ -56,9 +57,10 @@ class _FilterDialogState extends State<FilterDialog> {
     return alert;
   }
 }
-
+*/
 class TimelineScreen extends StatefulWidget {
   bool? isGoalOriented = false;
+  String sorting = 'createdAt';
 
   TimelineScreen({Key? key, bool? oriented = false}) : super(key: key) {
     this.isGoalOriented = oriented ?? false;
@@ -88,72 +90,145 @@ class _TimelineScreenState extends State<TimelineScreen> {
         });
   }
 
-  Future openDialog() => showDialog(
+  Future openSortDialog(double height, double width) => showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
           builder: (context, setStatee) => AlertDialog(
-                title: const Text('Filters'),
-                content: CheckboxListTile(
-                    title: const Text('Only show posts that match my goal',
-                        style: TextStyle(color: appTheme)),
-                    value: widget.isGoalOriented,
-                    activeColor: appTheme,
-                    onChanged: (value) => setStatee(() {
-                          widget.isGoalOriented = value!;
+                insetPadding: EdgeInsets.only(left: width * 0.16, right: width * 0.16,top: height * 0.30, bottom: height * 0.315),
+                title: Center(child: const Text('Sorting Options'),),
+                content: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    RadioListTile<String>(
+                        title: const Text('Most Recent'),
+                        value: 'createdAt',
+                        groupValue: widget.sorting,
+                        activeColor: appTheme,
+                        onChanged: (value) => setStatee(() {
+                          widget.sorting = value!;
+                          Navigator.of(context).pop();
+                          //userGoal = value!;
                         })),
-                actions: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              setStatee(() => widget.isGoalOriented = widget.isGoalOriented!);
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('OK',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                    color: appTheme,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
-                          )
-                        ]),
-                  )
-                ],
+                    Divider(
+                      color: Colors.grey,
+                      height: 0,
+                      thickness: 1,
+                      indent: width * 0.05,
+                      endIndent: width * 0.1,
+                    ),
+                    RadioListTile<String>(
+                        title: const Text('Most Rating'),
+                        value: 'rating',
+                        groupValue: widget.sorting,
+                        activeColor: appTheme,
+                        onChanged: (value) => setStatee(() {
+                          widget.sorting = value!;
+                          Navigator.of(context).pop();
+                          //userGoal = value!;
+                        })),
+                    Divider(
+                      color: Colors.grey,
+                      height: 0,
+                      thickness: 1,
+                      indent: width * 0.05,
+                      endIndent: width * 0.1,
+                    ),
+                    RadioListTile<String>(
+                        title: const Text('Most Comments'),
+                        value: 'commentsNum',
+                        groupValue: widget.sorting,
+                        activeColor: appTheme,
+                        onChanged: (value) => setStatee(() {
+                          widget.sorting = value!;
+                          Navigator.of(context).pop();
+                          //userGoal = value!;
+                        })),
+                  ],
+                ),
+
               )));
+
+  Future openFilterDialog() => showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+          builder: (context, setStatee) => AlertDialog(
+            title: Center(child: const Text('Filter Options'),),
+            content: CheckboxListTile(
+                title: const Text('Only show posts that match my goal',
+                    style: TextStyle(color: appTheme)),
+                value: widget.isGoalOriented,
+                activeColor: appTheme,
+                onChanged: (value) => setStatee(() {
+                  widget.isGoalOriented = value!;
+                })),
+            actions: [
+              Padding(
+                padding:
+                const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setStatee(() => widget.isGoalOriented =
+                          widget.isGoalOriented!);
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                                color: appTheme,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      )
+                    ]),
+              )
+            ],
+          )));
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     widget.isGoalOriented ??= false;
     var user = Provider.of<AuthRepository>(context);
-    FilterDialog filters =
-        FilterDialog(goalOrientation: widget.isGoalOriented ?? false);
+    //  FilterDialog filters =
+    //       FilterDialog(goalOrientation: widget.isGoalOriented ?? false);
     return Scaffold(
         appBar: AppBar(
             title: const Text('YourFitnessGuide'),
             centerTitle: false,
             actions: [
-              user.isAuthenticated
+              Padding(
+                  padding: const EdgeInsets.only(right: 2.0),
+                  child:
+                      IconButton(
+                          onPressed: () async {
+                            await openFilterDialog();
+                            setState(() {});
+                          },
+                          icon: const Icon(
+                            Icons.sort,
+                            color: Colors.white,
+                          ))
+                    ),
+              (user.isAuthenticated
                   ? Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: Row(
-                        children: [
+                      padding: const EdgeInsets.only(right: 1.0),
+                      child:
                           IconButton(
                               onPressed: () async {
-                                await openDialog();
+                                await openSortDialog(height, width);
                                 setState(() {});
                               },
                               icon: const Icon(
                                 Icons.filter_alt,
                                 color: Colors.white,
                               ))
-                        ],
-                      ))
-                  : const Padding(padding: EdgeInsets.all(0)),
+                        )
+                  : const Padding(padding: EdgeInsets.all(0))),
             ]),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,
@@ -173,7 +248,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
           ],
         ),
         body: StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
-            stream: _postManager.getAllPosts(),
+            stream: _postManager.getAllPosts(widget.sorting),
             builder: (context, snapshot) {
               return RefreshIndicator(
                   onRefresh: () async {

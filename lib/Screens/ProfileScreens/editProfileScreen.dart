@@ -210,7 +210,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ),
                                 applicationVersion: '1.1.0',
                                 applicationLegalese:
-                                    '© 2022 Google logo\n© 2022 Facebook logo\n© 2022 YourFitnessGuide logo by SIKE(stolen)',
+                                    '© 2022 Google logo\n© 2022 Facebook logo\n© 2022 YourFitnessGuide logo by Mahmoud Mahajna',
                                 children: <Widget>[
                                   InkWell(
                                       child: const Text('Privacy Policy'),
