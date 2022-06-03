@@ -1,6 +1,6 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 
 class SearchUserModel {
@@ -10,18 +10,24 @@ class SearchUserModel {
   late Image picture;
 
   SearchUserModel(
-      {required this.name, required this.uid, required this.pictureUrl}){
+      {required this.name, required this.uid, required this.pictureUrl}) {
     picture = Image.network(pictureUrl!);
   }
 }
 
 class FirebaseDB with ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  var user;
 
   Future<List<SearchUserModel>> getUsers() async {
     List<SearchUserModel> res = [];
 
-    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection("users")
+        .get()
+        .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         var currentDocument = doc.get('name');
         var currentUser = SearchUserModel(
@@ -34,6 +40,7 @@ class FirebaseDB with ChangeNotifier {
     return Future<List<SearchUserModel>>.value(res);
   }
 
+  /*
   int? getFollowingNumber(String userid)  {
     int? following = 0;
     _db
@@ -66,17 +73,41 @@ class FirebaseDB with ChangeNotifier {
     });
 
     return followers;
-  }
+  }*/
 
   Future<void> deleteUserData(String uid) async {
-    await _db.collection("versions").doc("v2").collection('users').doc(uid).delete();
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(uid)
+        .delete();
+  }
 
+  bool checkFollowing(String uid1, String uid2) {
+    var followingList = [];
+    _db
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(uid1)
+        .get()
+        .then((doc) {
+      var followingList = List<String>.from(doc.get('imFollowing') as List);
+    });
+    if (followingList.contains(uid2))
+      return true;
+    else
+      return false;
   }
 
   ///get user info from db
   Future<Map<String, dynamic>?> getUserInfo(String userUid) async {
     Map<String, dynamic>? userData;
-    await _db.collection("versions").doc("v2").collection("users")
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection("users")
         .doc(userUid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -91,11 +122,19 @@ class FirebaseDB with ChangeNotifier {
 
   Future<UserModel?> getUserModel(String userUid) async {
     UserModel? userData;
-    await _db.collection("versions").doc("v2").collection("users")
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection("users")
         .doc(userUid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> dataDocument) {
       if (dataDocument.exists) {
+        var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
+        var followingTmp =
+        List<String>.from(dataDocument.get('imFollowing') as List);
+        var followersTmp =
+        List<String>.from(dataDocument.get('followingMe') as List);
         userData = UserModel(
             name: dataDocument.get('name'),
             goal: dataDocument.get('goal'),
@@ -103,10 +142,13 @@ class FirebaseDB with ChangeNotifier {
             cWeight: dataDocument.get('current_weight'),
             gWeight: dataDocument.get('goal_weight'),
             pictureUrl: dataDocument.get('picture'),
-            following: dataDocument.get('following'),
-            followers: dataDocument.get('followers'),
             rating: dataDocument.get('rating'),
-            saved: dataDocument.get('saved'));
+            imFollowing: followingTmp,
+            followingMe: followersTmp,
+            saved: savedTmp.length,
+            following: followingTmp.length,
+            followers: followersTmp.length,
+            savedPosts: savedTmp);
       } else {
         userData = null;
       }

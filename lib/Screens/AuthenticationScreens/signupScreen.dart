@@ -14,7 +14,10 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  textField emailField = textField(fieldName: 'Email Address', centered: true,);
+  textField emailField = textField(
+    fieldName: 'Email Address',
+    centered: true,
+  );
   TextEditingController confirmController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool _strongPassword = true;
@@ -30,10 +33,10 @@ class _SignupScreenState extends State<SignupScreen> {
       children: [
         Expanded(
             child: Image.asset(
-              'images/icons/email.png',
-              height: iconSize,
-              width: iconSize,
-            )),
+          'images/icons/email.png',
+          height: iconSize,
+          width: iconSize,
+        )),
         Expanded(
           flex: 5,
           child: field,
@@ -157,8 +160,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     if (signinRes > 0) {
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/setup', (_) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/setup', (_) => false);
     } else {
       const snackBar =
           SnackBar(content: Text('There was an error logging into the app'));
@@ -213,12 +215,12 @@ class _SignupScreenState extends State<SignupScreen> {
           errorMessage = 'An error occurred: Invalid email.';
           break;
         default:
-          errorMessage = 'An error occurred while trying to sign you in, please try again later.';
+          errorMessage =
+              'An error occurred while trying to sign you in, please try again later.';
           break;
       }
       SnackBar snackBar = SnackBar(content: Text(errorMessage));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
     } else {
       const snackBar = SnackBar(
           content: Text(
@@ -266,14 +268,17 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             Container(
               child: user.status == Status.Authenticating
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                  ? (Scaffold(
+                      appBar: AppBar(),
+                      body: const Center(
+                          child: CircularProgressIndicator.adaptive()),
+                    ))
                   : ElevatedButton(
                       child: const Text("SIGN UP"),
                       style: ElevatedButton.styleFrom(
                           primary: const Color(0xff84C59E),
-                          side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
+                          side: BorderSide(
+                              width: 2.0, color: Colors.black.withOpacity(0.5)),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0)),
                           fixedSize: Size(width * 0.9, height * 0.055),

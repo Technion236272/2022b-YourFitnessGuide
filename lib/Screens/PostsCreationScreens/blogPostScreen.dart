@@ -48,7 +48,8 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: Text("Title"),
-                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  hintStyle:
+                      TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -83,7 +84,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-             /* Text(
+              /* Text(
                 "Description",
                 style: TextStyle(
                   color: appTheme,
@@ -102,7 +103,8 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: Text("Description"),
-                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  hintStyle:
+                      TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -131,9 +133,8 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
 
       final croppedFile = await myImageCropper(selectedImage.path);
 
-
       setState(() {
-        _postImageFile = File(croppedFile!.path);//File(selectedImage.path);
+        _postImageFile = File(croppedFile!.path); //File(selectedImage.path);
       });
     } on PlatformException catch (_) {
       const snackBar = SnackBar(
@@ -142,8 +143,6 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -161,8 +160,13 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? const Center(
-                            child: CircularProgressIndicator.adaptive())
+                        ? (Scaffold(
+                            appBar: AppBar(
+                              centerTitle: true,
+                            ),
+                            body: const Center(
+                                child: CircularProgressIndicator.adaptive()),
+                          ))
                         : IconButton(
                             onPressed: () async {
                               final String title = postNameController.text;
@@ -170,7 +174,8 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                                   descriptionController.text;
                               if (title == "" || description == "") {
                                 const snackBar = SnackBar(
-                                    content: Text('You must enter title and description'));
+                                    content: Text(
+                                        'You must enter title and description'));
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(snackBar);
                               } else {
@@ -190,7 +195,8 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                                   const snackBar = SnackBar(
                                       content:
                                           Text('Blog posted successfully'));
-                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
                                   Navigator.pop(context);
                                 } else {
                                   const snackBar = SnackBar(
@@ -206,10 +212,11 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                   ],
                 )),
           ]),
-      body: SingleChildScrollView(child: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.start,
-              //crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+      body: SingleChildScrollView(
+          child: Center(
+              child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                  //crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
             SizedBox(height: height * 0.012),
             Container(
                 padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
@@ -220,41 +227,39 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
             SizedBox(
               height: height * 0.02,
             ),
-                (_postImageFile!=
-                    null
-                    ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.file(
-                    _postImageFile!,
-                    height: 300,
-                    width:
-                    MediaQuery.of(context).size.width*0.9,
-                    fit: BoxFit.contain,
-                  ),
-                )  : const Padding(
-                    padding: EdgeInsets.all(0))),
-                const SizedBox(
-                  height: 4,
-                ),
+            (_postImageFile != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      _postImageFile!,
+                      height: 300,
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      fit: BoxFit.contain,
+                    ),
+                  )
+                : const Padding(padding: EdgeInsets.all(0))),
+            const SizedBox(
+              height: 4,
+            ),
             Container(
               padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
               width: 205,
               height: 80.0,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
+                  side: BorderSide(
+                      width: 2.0, color: Colors.black.withOpacity(0.5)),
                   primary: color, // background
                   onPrimary: Colors.white, // foreground
                 ),
                 onPressed: () async {
                   if (_postImageFile == null) {
                     await pickImage();
-                    if(_postImageFile!=null) {
+                    if (_postImageFile != null) {
                       color = Colors.red;
                       photoText = "Remove Image";
                     }
-                  }
-                  else {
+                  } else {
                     _postImageFile = null;
                     color = appTheme;
                     photoText = "Add Image";
@@ -264,11 +269,12 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                   });
                 },
                 child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const Icon(Icons.add_photo_alternate, color: Colors.white),
                     const SizedBox(height: 4),
-                    Text(photoText,style: const TextStyle(color: Colors.white)),
+                    Text(photoText,
+                        style: const TextStyle(color: Colors.white)),
                   ],
                 ),
               ),
@@ -276,12 +282,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
             SizedBox(
               height: height * 0.02,
             ),
-
-
-
-
           ]))),
-
       resizeToAvoidBottomInset: false,
     );
   }

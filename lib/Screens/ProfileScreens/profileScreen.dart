@@ -40,7 +40,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   get uid => widget.uid;
   int rating = 0, savedNum = 0;
 
-  Widget _buildStatline(String stat, int value) {
+  Widget _buildStatline(
+      {required String stat, required int value, String? redirection}) {
+    var statTitle =
+        Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
     return Center(
       child: Column(
         children: [
@@ -49,13 +52,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
           ),
+          redirection == null
+              ? statTitle
+              : TextButton(
+                  onPressed: () {
+                    var args = {'currID': currUid};
+                    Navigator.pushNamed(context, redirection, arguments: args);
+                  },
+                  child: statTitle),
           const SizedBox(
             height: 5,
           ),
-          Text(
-            stat,
-            style: const TextStyle(color: appTheme, fontSize: 14),
-          )
         ],
       ),
     );
@@ -78,30 +85,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
-            child: _buildStatline('Rating', rating),
+            child: _buildStatline(stat: 'Rating', value: rating, redirection: ''),
           ),
         ),
         Expanded(
           child: visiting
               ? Container()
               : Container(
-                  child: _buildStatline('Saved', savedNum),
+                  child: _buildStatline(stat: 'Saved', value: savedNum, redirection: ''),
                 ),
         ),
-        imageContainer(
+        Container(
+          padding: EdgeInsets.only(bottom: 20),
+        child: imageContainer(
           height: height,
           width: width,
           imageLink: profileImage,
           percent: 0.15,
-        ),
+        )),
         Expanded(
           child: Container(
-            child: _buildStatline('Following', widget.followingNum ?? 0),
+            child: _buildStatline(
+                stat: 'Following',
+                value: widget.followingNum ?? 0,
+                redirection: '/following'),
           ),
         ),
         Expanded(
           child: Container(
-            child: _buildStatline('Followers', widget.followersNum ?? 0),
+            child: _buildStatline(
+                stat: 'Followers',
+                value: widget.followersNum ?? 0,
+                redirection: '/followers'),
           ),
         ),
       ],
@@ -314,8 +329,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           if (followButtonText == 'Following') {
                             setState(() {
                               followButtonText = 'Follow';
-                              if(widget.followersNum != null){
-                                widget.followersNum =widget.followersNum! - 1;
+                              if (widget.followersNum != null) {
+                                widget.followersNum = widget.followersNum! - 1;
                               }
 
                               user.modifyFollow(currUid, true);
@@ -323,8 +338,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           } else {
                             setState(() {
                               followButtonText = 'Following';
-                              if(widget.followersNum != null){
-                                widget.followersNum =widget.followersNum! + 1;
+                              if (widget.followersNum != null) {
+                                widget.followersNum = widget.followersNum! + 1;
                               }
                               user.modifyFollow(currUid, false);
                             });
@@ -390,7 +405,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (!snapshot.hasData) {
           return Scaffold(
             appBar: AppBar(
-              centerTitle: true,
+              centerTitle: false,
               title: Text(username),
             ),
             body: const Center(child: CircularProgressIndicator.adaptive()),
@@ -462,8 +477,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       future: FirebaseDB().getUserModel(currUid!),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center(
-            child: CircularProgressIndicator(),
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+            ),
+            body: const Center(
+                child: CircularProgressIndicator.adaptive()),
+          );          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+            ),
+            body: const Center(
+                child: CircularProgressIndicator.adaptive()),
           );
         }
         if (snapshot.hasError) {
@@ -473,8 +498,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
         userData = snapshot.data;
 
-        if(widget.followingNum == null || widget.followingNum == null){
-          if(user.isAuthenticated && user.checkAlreadyFollowing(currUid)){
+        if (widget.followingNum == null || widget.followingNum == null) {
+          if (user.isAuthenticated && user.checkImAlreadyFollowing(currUid)) {
             followButtonText = 'Following';
           }
           widget.followersNum = userData?.followers;

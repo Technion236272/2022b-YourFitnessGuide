@@ -75,9 +75,9 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get savedPosts => _userData?.savedPosts;
 
-  List<String>? get following => _userData?.imFollowing;
+  List<String>? get followingList => _userData?.imFollowing;
 
-  List<String>? get followers => _userData?.followingMe;
+  List<String>? get followersList => _userData?.followingMe;
 
   Future<Object?> signUp(String email, String password) async {
     try {
@@ -346,7 +346,7 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
-  bool? checkAlreadyFollowing(String userid){
+  bool? checkImAlreadyFollowing(String userid){
     if(userData?.imFollowing == null){
       return false;
     }
@@ -430,6 +430,57 @@ class AuthRepository with ChangeNotifier {
     notifyListeners();
   }
 
+
+  Future<List<SearchUserModel>> getFollowing() async {
+    List<SearchUserModel> res = [];
+    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if(checkImAlreadyFollowing(doc.id)!){
+          var currentUser = SearchUserModel(
+              name: doc.get('name'),
+              uid: doc.id.toString(),
+              pictureUrl: doc.get('picture'));
+          res.add(currentUser);
+        }
+
+      });
+    });
+    print(res);
+    return Future<List<SearchUserModel>>.value(res);
+  }
+
+  Future<List<SearchUserModel>> getUsers() async {
+    List<SearchUserModel> res = [];
+
+    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currentDocument = doc.get('name');
+        var currentUser = SearchUserModel(
+            name: doc.get('name'),
+            uid: doc.id.toString(),
+            pictureUrl: doc.get('picture'));
+        res.add(currentUser);
+      });
+    });
+    return Future<List<SearchUserModel>>.value(res);
+  }
+
+  Future<List<SearchUserModel>> getFollowers() async {
+    List<SearchUserModel> res = [];
+
+    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currentDocument = doc.get('name');
+        var currentUser = SearchUserModel(
+            name: doc.get('name'),
+            uid: doc.id.toString(),
+            pictureUrl: doc.get('picture'));
+        res.add(currentUser);
+      });
+    });
+    return Future<List<SearchUserModel>>.value(res);
+  }
+
   Future signOut() async {
     _auth.signOut();
     _status = Status.Unauthenticated;
@@ -480,8 +531,8 @@ class AuthRepository with ChangeNotifier {
           gWeight: dataDocument.get('goal_weight'),
           pictureUrl: dataDocument.get('picture'),
           rating: dataDocument.get('rating'),
-          imFollowing: dataDocument.get('imFollowing'),
-          followingMe: dataDocument.get('followingMe'),
+          imFollowing: followingTmp,
+          followingMe: followersTmp,
           saved: savedTmp.length,
           following: followingTmp.length,
           followers: followersTmp.length,

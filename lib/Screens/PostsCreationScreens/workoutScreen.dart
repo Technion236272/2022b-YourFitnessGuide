@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/ImageCrop.dart';
 
-
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({Key? key}) : super(key: key);
 
@@ -48,10 +47,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       final croppedFile = await myImageCropper(selectedImage.path);
 
       setState(() {
-        _postImageFile = File(croppedFile!.path);//File(selectedImage.path);
+        _postImageFile = File(croppedFile!.path); //File(selectedImage.path);
       });
     } on PlatformException catch (_) {
-      const snackBar = SnackBar(content: Text('You need to grant permission if you want to select a photo'));
+      const snackBar = SnackBar(
+          content: Text(
+              'You need to grant permission if you want to select a photo'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -75,7 +76,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-             /* Text(
+              /* Text(
                 "Workout name",
                 style: TextStyle(
                   color: appTheme,
@@ -93,10 +94,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: false
                       ? Center(
-                    child: Text("Workout name"),
-                  )
+                          child: Text("Workout name"),
+                        )
                       : Text("Workout name"),
-                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  hintStyle:
+                      TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -150,10 +152,11 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: false
                       ? Center(
-                    child: Text("Description"),
-                  )
+                          child: Text("Description"),
+                        )
                       : Text("Description"),
-                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  hintStyle:
+                      TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
                     color: appTheme,
                     fontSize: 27,
@@ -161,7 +164,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
-
               )
             ],
           ),
@@ -309,7 +311,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         primary: appTheme,
-                        side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
+                        side: BorderSide(
+                            width: 2.0, color: Colors.black.withOpacity(0.5)),
                         shadowColor: appTheme,
                         elevation: 1,
                         shape: RoundedRectangleBorder(
@@ -349,61 +352,75 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? const Center(child: CircularProgressIndicator.adaptive())
-                        :
-                    IconButton(
-                        onPressed: () async {
-                          for (int i = 0; i < _controllerInput.length; i++) {
-                            if (_controllerInput[i].text.toString() != "") {
-                              _exercises.add(_controllerInput[i].text.toString());
-                            }
-                          }
-                          final String title = workoutNameController.text;
-                          final String description = descriptionController.text;
-                          if (loseWeight! ||
-                              gainMuscle! ||
-                              gainWeight! ||
-                              maintainHealth!) {
-                            selectedGoal = true;
-                          }
-                          if (title == "" ||
-                              description == "" ||
-                              selectedGoal == false ||
-                              _exercises.isEmpty) {
-                            const snackBar = SnackBar(content: Text('You must fill all the fields and add exercises'));
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          } else {
-                            setState(() {
-                              _isLoading = true;
-                            });
-                            bool isSubmitted = await _postManager.submitWorkout(
-                                title: title,
-                                description: description,
-                                postImage: _postImageFile,
-                                goals: _goals,
-                                exercises: _exercises);
-                            setState(() {
-                              _isLoading = false;
-                            });
+                        ? (Scaffold(
+                            appBar: AppBar(
+                              centerTitle: true,
+                            ),
+                            body: const Center(
+                                child: CircularProgressIndicator.adaptive()),
+                          ))
+                        : IconButton(
+                            onPressed: () async {
+                              for (int i = 0;
+                                  i < _controllerInput.length;
+                                  i++) {
+                                if (_controllerInput[i].text.toString() != "") {
+                                  _exercises
+                                      .add(_controllerInput[i].text.toString());
+                                }
+                              }
+                              final String title = workoutNameController.text;
+                              final String description =
+                                  descriptionController.text;
+                              if (loseWeight! ||
+                                  gainMuscle! ||
+                                  gainWeight! ||
+                                  maintainHealth!) {
+                                selectedGoal = true;
+                              }
+                              if (title == "" ||
+                                  description == "" ||
+                                  selectedGoal == false ||
+                                  _exercises.isEmpty) {
+                                const snackBar = SnackBar(
+                                    content: Text(
+                                        'You must fill all the fields and add exercises'));
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              } else {
+                                setState(() {
+                                  _isLoading = true;
+                                });
+                                bool isSubmitted =
+                                    await _postManager.submitWorkout(
+                                        title: title,
+                                        description: description,
+                                        postImage: _postImageFile,
+                                        goals: _goals,
+                                        exercises: _exercises);
+                                setState(() {
+                                  _isLoading = false;
+                                });
 
-                            if (isSubmitted) {
-                              const snackBar = SnackBar(
-                                  content: Text('Workout posted successfully'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
+                                if (isSubmitted) {
+                                  const snackBar = SnackBar(
+                                      content:
+                                          Text('Workout posted successfully'));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
 
-                              Navigator.pop(context);
-                            } else {
-                              const snackBar = SnackBar(
-                                  content:
-                                  Text('There was a problem logging you in'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                            }
-                          }
-                        },
-                        icon:
-                            const Icon(Icons.check_sharp, color: Colors.white)),
+                                  Navigator.pop(context);
+                                } else {
+                                  const snackBar = SnackBar(
+                                      content: Text(
+                                          'There was a problem logging you in'));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.check_sharp,
+                                color: Colors.white)),
                   ],
                 )),
           ]),
@@ -412,8 +429,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+        child: Column(mainAxisAlignment: MainAxisAlignment.start,
             //crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               SizedBox(
@@ -435,20 +451,17 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
                 child: _buildExercises(height, width),
               ),
-
-              (_postImageFile!=
-                  null
+              (_postImageFile != null
                   ? ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  _postImageFile!,
-                  height: 300,
-                  width:
-                  MediaQuery.of(context).size.width*0.9,
-                  fit: BoxFit.contain,
-                ),
-              )  : const Padding(
-                  padding: EdgeInsets.all(0))),
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        _postImageFile!,
+                        height: 300,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  : const Padding(padding: EdgeInsets.all(0))),
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
@@ -456,19 +469,19 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 height: 80.0,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
+                    side: BorderSide(
+                        width: 2.0, color: Colors.black.withOpacity(0.5)),
                     primary: color, // background
                     onPrimary: Colors.white, // foreground
                   ),
                   onPressed: () async {
                     if (_postImageFile == null) {
                       await pickImage();
-                      if(_postImageFile!=null) {
+                      if (_postImageFile != null) {
                         color = Colors.red;
                         photo = "Remove Image";
                       }
-                    }
-                    else {
+                    } else {
                       _postImageFile = null;
                       color = appTheme;
                       photo = "Add Image";
@@ -480,20 +493,15 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      const Icon(Icons.add_photo_alternate, color: Colors.white),
+                      const Icon(Icons.add_photo_alternate,
+                          color: Colors.white),
                       const SizedBox(
                         height: 4,
                       ),
-                      Text(photo, style: const TextStyle(color: Colors.white),),
-
-
-
-
-
-
-
-
-
+                      Text(
+                        photo,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
                 ),
