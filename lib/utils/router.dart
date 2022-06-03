@@ -12,7 +12,7 @@ import 'package:yourfitnessguide/Screens/PostsCreationScreens/BlogPostScreen.dar
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewBlogPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewWorkoutPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewMealPlanPost.dart';
-import 'package:yourfitnessguide/Screens/viewUsers.dart';
+import 'package:yourfitnessguide/Screens/ProfileScreens/viewUsers.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {

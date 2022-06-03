@@ -7,10 +7,11 @@ class SearchUserModel {
   String? name;
   String? uid;
   String? pictureUrl;
+  int? rating;
   late Image picture;
 
   SearchUserModel(
-      {required this.name, required this.uid, required this.pictureUrl}) {
+      {required this.name, required this.uid, required this.pictureUrl, this.rating}) {
     picture = Image.network(pictureUrl!);
   }
 }
@@ -33,6 +34,7 @@ class FirebaseDB with ChangeNotifier {
         var currentUser = SearchUserModel(
             name: doc.get('name'),
             uid: doc.id.toString(),
+            rating: doc.get('rating'),
             pictureUrl: doc.get('picture'));
         res.add(currentUser);
       });

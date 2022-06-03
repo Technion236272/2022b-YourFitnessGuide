@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'Screens/ProfileScreens/profileScreen.dart';
+import 'Screens/leaderboard.dart';
 import 'Screens/searchScreen.dart';
 import 'Screens/notificationsScreen.dart';
 import 'Screens/AuthenticationScreens/signinScreen.dart';
@@ -24,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _views = [
     TimelineScreen(),
     SearchScreen(),
-//    const NotificationsScreen(),
+    ViewLeaderboardScreen(),
     const LoginScreen()
   ];
 
@@ -39,11 +40,11 @@ class _HomeScreenState extends State<HomeScreen> {
     var user = Provider.of<AuthRepository>(context);
 
     if(user.isAuthenticated && (user.userData?.iWeight != 0)){
-      _views.removeAt(2);
+      _views.removeAt(3);
       _views.add(ProfileScreen(uid: user.getCurrUid(),));
     }
     else{
-      _views.removeAt(2);
+      _views.removeAt(3);
       _views.add(const LoginScreen());
     }
 
@@ -59,9 +60,9 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.search), label: 'Search'),/*
+                icon: Icon(Icons.search), label: 'Search'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.notifications), label: 'Notifications'),*/
+                icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.person), label: 'Profile')
           ],
