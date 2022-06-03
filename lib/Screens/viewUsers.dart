@@ -162,7 +162,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                         ),
                         Text(model.name!),
                       ],
-                    ),
+                    ),(!user.isAuthenticated || model.uid == user!.uid)? Container() :
                     ElevatedButton(
                         child: Text(widget.buttonsTexts[model.uid]!),
                         style: ElevatedButton.styleFrom(

@@ -306,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       rating,
                       savedNum,
                     )),
-                !visiting
+                (!visiting || !user.isAuthenticated)
                     ? Container(
                         padding: EdgeInsets.only(bottom: height * 0.008),
                       )
