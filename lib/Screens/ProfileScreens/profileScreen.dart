@@ -531,12 +531,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             body: const Center(
                 child: CircularProgressIndicator.adaptive()),
-          );          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-            ),
-            body: const Center(
-                child: CircularProgressIndicator.adaptive()),
           );
         }
         if (snapshot.hasError) {
@@ -545,6 +539,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
         userData = snapshot.data;
+        FirebaseDB().updateFollow(userData, currUid!);
 
         if (widget.followingNum == null || widget.followingNum == null) {
           if (user.isAuthenticated && user.checkImAlreadyFollowing(currUid)) {

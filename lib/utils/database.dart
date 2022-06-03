@@ -130,6 +130,59 @@ class FirebaseDB with ChangeNotifier {
     return userData;
   }
 
+  Future<void> updateFollow(UserModel _userData, String currid) async {
+    for (var i = 0; i < _userData.imFollowing!.length; i++) {
+      var tmp = await FirebaseDB().checkUserExists(_userData.imFollowing![i]);
+      if (tmp == false) {
+        removeDeletedFollowing(_userData, currid, _userData.imFollowing![i]);
+        i--;
+      }
+    }
+
+    for (var i = 0; i < _userData.followingMe!.length; i++) {
+      var tmp = await FirebaseDB().checkUserExists(_userData.followingMe![i]);
+      if (tmp == false) {
+        removeDeletedFollowed(_userData, currid, _userData.followingMe![i]);
+        i--;
+      }
+    }
+  }
+
+  Future<void> removeDeletedFollowing(
+      UserModel _userData, String curruid, String userid) async {
+    _userData.imFollowing?.remove(userid);
+    _userData.following = _userData.imFollowing!.length;
+
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(curruid)
+        .update({
+      'imFollowing': FieldValue.arrayRemove([userid]),
+      'following': _userData.following
+    });
+
+    notifyListeners();
+  }
+
+  Future<void> removeDeletedFollowed(
+      UserModel _userData, String curruid, String userid) async {
+    _userData.followingMe?.remove(userid);
+    _userData.followers = _userData.followingMe!.length;
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(curruid)
+        .update({
+      'followingMe': FieldValue.arrayRemove([userid]),
+      'followers': _userData.followers
+    });
+
+    notifyListeners();
+  }
+
   Future<UserModel?> getUserModel(String userUid) async {
     UserModel? userData;
     await _db
