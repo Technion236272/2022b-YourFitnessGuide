@@ -404,6 +404,9 @@ class AuthRepository with ChangeNotifier {
   }
 
   Future<void> updateFollow() async {
+    if(_userData == null){
+      return;
+    }
     for (var i = 0; i < _userData!.imFollowing!.length; i++) {
       var tmp = await FirebaseDB().checkUserExists(_userData!.imFollowing![i]);
       if (tmp == false) {
