@@ -160,13 +160,9 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? (Scaffold(
-                            appBar: AppBar(
-                              centerTitle: true,
-                            ),
-                            body: const Center(
-                                child: CircularProgressIndicator.adaptive()),
-                          ))
+                        ? const Center(
+                                child: CircularProgressIndicator.adaptive())
+
                         : IconButton(
                             onPressed: () async {
                               final String title = postNameController.text;

@@ -268,11 +268,8 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             Container(
               child: user.status == Status.Authenticating
-                  ? (Scaffold(
-                      appBar: AppBar(),
-                      body: const Center(
-                          child: CircularProgressIndicator.adaptive()),
-                    ))
+                  ? const Center(
+                          child: CircularProgressIndicator.adaptive())
                   : ElevatedButton(
                       child: const Text("SIGN UP"),
                       style: ElevatedButton.styleFrom(
