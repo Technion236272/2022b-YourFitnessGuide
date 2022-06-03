@@ -12,6 +12,7 @@ import 'package:yourfitnessguide/Screens/PostsCreationScreens/BlogPostScreen.dar
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewBlogPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewWorkoutPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewMealPlanPost.dart';
+import 'package:yourfitnessguide/Screens/viewUsers.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -39,7 +40,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         return MaterialPageRoute(builder: (context) => ViewBlogPostScreen(post_data: args));
       }
       return MaterialPageRoute(builder: (context) => ViewBlogPostScreen());
-    case viewWorkoutRoute:
+    case viewFollowersRoute:
+      final args = settings.arguments as Map<String, String?>;
+      return MaterialPageRoute(builder: (context) => ViewUsersScreen(origin: 'followers', currID: args['currID'],));
+    case viewFollowingRoute:
+      final args = settings.arguments as Map<String, String?>;
+      return MaterialPageRoute(builder: (context) => ViewUsersScreen(origin: 'following', currID: args['currID'],));
+      case viewWorkoutRoute:
       if(settings.arguments != null) {
         final args = settings.arguments;
         return MaterialPageRoute(builder: (context) => ViewWorkoutScreen(post_data:args));

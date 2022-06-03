@@ -144,12 +144,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <TextSpan>[
               TextSpan(
                   text: 'Not an existing user?',
-                  style: TextStyle(color: appTheme, fontSize: 16)// fontWeight: FontWeight.bold)
-              ),
+                  style: TextStyle(
+                      color: appTheme,
+                      fontSize: 16) // fontWeight: FontWeight.bold)
+                  ),
               TextSpan(
-                text: ' Click here to sign up!',
-                style: TextStyle(color: appTheme,)// fontWeight: FontWeight.bold),
-              ),
+                  text: ' Click here to sign up!',
+                  style: TextStyle(
+                    color: appTheme,
+                  ) // fontWeight: FontWeight.bold),
+                  ),
             ],
                 style: TextStyle(
                   color: appTheme,
@@ -268,9 +272,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: _buildPassword(height),
               ),
               user.status == Status.Authenticating
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                  ? (Scaffold(
+                      appBar: AppBar(
+                        centerTitle: true,
+                      ),
+                      body: (Scaffold(
+                        appBar: AppBar(
+                        ),
+                        body: const Center(
+                            child: CircularProgressIndicator.adaptive()),
+                      )),
+                    ))
                   : Container(
                       child: _buildSignIn(height, width),
                     ),

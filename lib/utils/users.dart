@@ -26,6 +26,8 @@ class UserModel {
   int saved;
   String? pictureUrl;
   List<String>? savedPosts = [];
+  List<String>? imFollowing = [];
+  List<String>? followingMe = [];
 
   UserModel(
       {this.name,
@@ -38,7 +40,9 @@ class UserModel {
       this.followers,
       this.rating,
       required this.saved,
-      this.savedPosts});
+      this.savedPosts,
+      this.imFollowing,
+      this.followingMe});
 /*
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
 
@@ -71,6 +75,10 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get savedPosts => _userData?.savedPosts;
 
+  List<String>? get followingList => _userData?.imFollowing;
+
+  List<String>? get followersList => _userData?.followingMe;
+
   Future<Object?> signUp(String email, String password) async {
     try {
       _status = Status.Authenticating;
@@ -78,9 +86,17 @@ class AuthRepository with ChangeNotifier {
       var res = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      var url = await _storage.ref('images').child('ProfilePicture.jpg').getDownloadURL();
+      var url = await _storage
+          .ref('images')
+          .child('ProfilePicture.jpg')
+          .getDownloadURL();
 
-      await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).set({
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .set({
         'name': 'Undefined Name',
         'picture': url,
         'initial_weight': null,
@@ -91,7 +107,9 @@ class AuthRepository with ChangeNotifier {
         'saved': 0,
         'following': 0,
         'followers': 0,
-        'saved_posts': []
+        'saved_posts': [],
+        'imFollowing': [],
+        'followingMe': []
       });
       _userData = UserModel(
           name: 'Undefined Name',
@@ -104,7 +122,9 @@ class AuthRepository with ChangeNotifier {
           saved: 0,
           followers: 0,
           following: 0,
-          savedPosts: []);
+          savedPosts: [],
+          imFollowing: [],
+          followingMe: []);
       return res;
     } on FirebaseAuthException catch (error) {
       _userData = null;
@@ -177,7 +197,12 @@ class AuthRepository with ChangeNotifier {
 
       final data = await FacebookAuth.i.getUserData();
 
-      await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).set({
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .set({
         'name': data['name'],
         'picture': data['picture']['data']['url'],
         'initial_weight': 0,
@@ -188,9 +213,10 @@ class AuthRepository with ChangeNotifier {
         'saved': 0,
         'following': 0,
         'followers': 0,
-        'saved_posts': []
+        'saved_posts': [],
+        'followingMe': [],
+        'imFollowing': []
       });
-
 
       _userData = UserModel(
           name: data['name'],
@@ -203,7 +229,9 @@ class AuthRepository with ChangeNotifier {
           saved: 0,
           followers: 0,
           following: 0,
-          savedPosts: []);
+          savedPosts: [],
+          imFollowing: [],
+          followingMe: []);
 
       if (redirected) {
         return 2;
@@ -254,7 +282,12 @@ class AuthRepository with ChangeNotifier {
       final name = await _auth.currentUser?.displayName;
       final picture = await _auth.currentUser?.photoURL;
 
-      await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).set({
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .set({
         'name': name,
         'picture': picture,
         'initial_weight': 0,
@@ -265,7 +298,9 @@ class AuthRepository with ChangeNotifier {
         'saved': 0,
         'following': 0,
         'followers': 0,
-        'saved_posts': []
+        'saved_posts': [],
+        'followingMe': [],
+        'imFollowing': []
       });
       _userData = UserModel(
           name: name,
@@ -278,7 +313,9 @@ class AuthRepository with ChangeNotifier {
           saved: 0,
           followers: 0,
           following: 0,
-          savedPosts: []);
+          savedPosts: [],
+          imFollowing: [],
+          followingMe: []);
 
       if (redirected) return 2;
       return 1;
@@ -309,9 +346,69 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
+  bool? checkImAlreadyFollowing(String userid){
+    if(userData?.imFollowing == null){
+      return false;
+    }
+    return userData?.imFollowing!.contains(userid);
+  }
+
+  Future<void> modifyFollow(String userid, bool delete) async {
+    if (delete) {
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .update({
+        'imFollowing': FieldValue.arrayRemove([userid]),
+        'following': FieldValue.increment(-1)
+      });
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(userid)
+          .update({
+        'followingMe': FieldValue.arrayRemove([user!.uid]),
+        'followers': FieldValue.increment(-1)
+      });
+      _userData?.imFollowing?.remove(userid);
+      _userData?.following = _userData?.imFollowing!.length;
+    } else {
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .update({
+        'imFollowing': FieldValue.arrayUnion([userid]),
+        'following': FieldValue.increment(1)
+      });
+      _userData?.following = (_userData?.following)! + 1;
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(userid)
+          .update({
+        'followingMe': FieldValue.arrayUnion([user!.uid]),
+        'followers': FieldValue.increment(1)
+      });
+      _userData?.imFollowing?.add(userid);
+      _userData?.following = _userData?.imFollowing!.length;
+    }
+    notifyListeners();
+  }
+
   Future<void> modifySaved(String postuid, bool delete) async {
     if (delete) {
-      await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).update({
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .update({
         'saved_posts': FieldValue.arrayRemove([postuid])
       });
       if (_userData!.savedPosts!.contains(postuid)) {
@@ -319,13 +416,69 @@ class AuthRepository with ChangeNotifier {
         _userData?.savedPosts?.remove(postuid);
       }
     } else {
-      await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).update({
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .update({
         'saved_posts': FieldValue.arrayUnion([postuid])
       });
       _userData?.saved++;
       _userData?.savedPosts?.add(postuid);
     }
     notifyListeners();
+  }
+
+
+  Future<List<SearchUserModel>> getFollowing() async {
+    List<SearchUserModel> res = [];
+    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if(checkImAlreadyFollowing(doc.id)!){
+          var currentUser = SearchUserModel(
+              name: doc.get('name'),
+              uid: doc.id.toString(),
+              pictureUrl: doc.get('picture'));
+          res.add(currentUser);
+        }
+
+      });
+    });
+    print(res);
+    return Future<List<SearchUserModel>>.value(res);
+  }
+
+  Future<List<SearchUserModel>> getUsers() async {
+    List<SearchUserModel> res = [];
+
+    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currentDocument = doc.get('name');
+        var currentUser = SearchUserModel(
+            name: doc.get('name'),
+            uid: doc.id.toString(),
+            pictureUrl: doc.get('picture'));
+        res.add(currentUser);
+      });
+    });
+    return Future<List<SearchUserModel>>.value(res);
+  }
+
+  Future<List<SearchUserModel>> getFollowers() async {
+    List<SearchUserModel> res = [];
+
+    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currentDocument = doc.get('name');
+        var currentUser = SearchUserModel(
+            name: doc.get('name'),
+            uid: doc.id.toString(),
+            pictureUrl: doc.get('picture'));
+        res.add(currentUser);
+      });
+    });
+    return Future<List<SearchUserModel>>.value(res);
   }
 
   Future signOut() async {
@@ -359,9 +512,17 @@ class AuthRepository with ChangeNotifier {
     try {
       if (_userData != null) return;
       print(user!.uid);
-      var dataDocument = await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).get();
-      print(dataDocument.get('name'));
+      var dataDocument = await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .get();
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
+      var followingTmp =
+          List<String>.from(dataDocument.get('imFollowing') as List);
+      var followersTmp =
+          List<String>.from(dataDocument.get('followingMe') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
           goal: dataDocument.get('goal'),
@@ -369,17 +530,28 @@ class AuthRepository with ChangeNotifier {
           cWeight: dataDocument.get('current_weight'),
           gWeight: dataDocument.get('goal_weight'),
           pictureUrl: dataDocument.get('picture'),
-          following: dataDocument.get('following'),
-          followers: dataDocument.get('followers'),
           rating: dataDocument.get('rating'),
+          imFollowing: followingTmp,
+          followingMe: followersTmp,
           saved: savedTmp.length,
+          following: followingTmp.length,
+          followers: followersTmp.length,
           savedPosts: savedTmp);
       print(savedPosts);
     } catch (_) {
       await Future.delayed(Duration(seconds: 1));
 
-      var dataDocument = await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).get();
+      var dataDocument = await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .get();
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
+      var followingTmp =
+          List<String>.from(dataDocument.get('imFollowing') as List);
+      var followersTmp =
+          List<String>.from(dataDocument.get('followingMe') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
           goal: dataDocument.get('goal'),
@@ -387,10 +559,12 @@ class AuthRepository with ChangeNotifier {
           cWeight: dataDocument.get('current_weight'),
           gWeight: dataDocument.get('goal_weight'),
           pictureUrl: dataDocument.get('picture'),
-          following: dataDocument.get('following'),
-          followers: dataDocument.get('followers'),
           rating: dataDocument.get('rating'),
+          imFollowing: followingTmp,
+          followingMe: followersTmp,
           saved: savedTmp.length,
+          following: followingTmp.length,
+          followers: followersTmp.length,
           savedPosts: savedTmp);
     }
   }
@@ -411,7 +585,12 @@ class AuthRepository with ChangeNotifier {
       _userData?.pictureUrl =
           await _storage.ref('images').child(_user!.uid).getDownloadURL();
     }
-    await _db.collection("versions").doc("v2").collection('users').doc(user!.uid).update({
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(user!.uid)
+        .update({
       'name': newName,
       'initial_weight': newInitialWeight,
       'current_weight': newCurrentWeight,

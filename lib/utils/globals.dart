@@ -15,6 +15,9 @@ const String viewProfileRoute = '/view';
 const String viewBlogRoute='/viewblog';
 const String viewWorkoutRoute='/viewworkout';
 const String viewMealPlanRoute='/viewmealplan';
+const String viewFollowingRoute='/following';
+const String viewFollowersRoute='/followers';
+
 
 const Color appTheme = const Color(0xff4CC47C);
 enum Goal { loseWeight, gainMuscle, gainWeight, maintainHealth }
