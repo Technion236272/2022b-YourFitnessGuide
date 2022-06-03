@@ -748,13 +748,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? (Scaffold(
-                            appBar: AppBar(
-                              centerTitle: true,
-                            ),
-                            body: const Center(
-                                child: CircularProgressIndicator.adaptive()),
-                          ))
+                        ? const Center(
+                        child: CircularProgressIndicator.adaptive())
                         : IconButton(
                             onPressed: () async {
                               final String title = mealPlanNameController.text;
