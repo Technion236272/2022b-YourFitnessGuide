@@ -75,6 +75,8 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get savedPosts => _userData?.savedPosts;
 
+  String get uid => user!.uid;
+
   List<String>? get followingList => _userData?.imFollowing;
 
   List<String>? get followersList => _userData?.followingMe;
