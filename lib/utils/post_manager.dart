@@ -36,6 +36,7 @@ class PostManager with ChangeNotifier {
         "image_url": pictureUrl,
         "createdAt": timeStamp,
         "user_uid": userUid,
+        'commentsNum': 0,
         "rating": 0
       }).then((_) {
         isSubmitted = true;
@@ -51,6 +52,7 @@ class PostManager with ChangeNotifier {
         "description": description,
         "createdAt": timeStamp,
         "user_uid": userUid,
+        'commentsNum': 0,
         "rating": 0
       }).then((_) {
         isSubmitted = true;
@@ -89,6 +91,7 @@ class PostManager with ChangeNotifier {
         "exercises": exercises,
         "createdAt": timeStamp,
         "user_uid": userUid,
+        'commentsNum': 0,
         "rating": 0
       }).then((_) {
         isSubmitted = true;
@@ -106,6 +109,7 @@ class PostManager with ChangeNotifier {
         "exercises": exercises,
         "createdAt": timeStamp,
         "user_uid": userUid,
+        'commentsNum': 0,
         "rating": 0
       }).then((_) {
         isSubmitted = true;
@@ -148,6 +152,7 @@ class PostManager with ChangeNotifier {
         "meals_ingredients": mealsIngredients,
         "createdAt": timeStamp,
         "user_uid": userUid,
+        'commentsNum': 0,
         "rating": 0
       }).then((_) {
         isSubmitted = true;
@@ -167,6 +172,7 @@ class PostManager with ChangeNotifier {
         "meals_ingredients": mealsIngredients,
         "createdAt": timeStamp,
         "user_uid": userUid,
+        'commentsNum': 0,
         "rating": 0
       }).then((_) {
         isSubmitted = true;
@@ -181,8 +187,8 @@ class PostManager with ChangeNotifier {
   }
 
   /// get all post from the db
-  Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts() {
-      return _postCollection.orderBy('createdAt', descending: true).snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts(String sorting) {
+      return _postCollection.orderBy(sorting, descending: true).snapshots();
   }
 
   Future<List<post>> getPosts() async {

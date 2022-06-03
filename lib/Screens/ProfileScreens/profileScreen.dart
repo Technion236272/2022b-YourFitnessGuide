@@ -444,7 +444,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved(
       {String? category}) {
     return StreamBuilder(
-      stream: PostManager().getAllPosts(),
+      stream: PostManager().getAllPosts('createdAt'),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Scaffold(
