@@ -616,7 +616,7 @@ class AuthRepository with ChangeNotifier {
           following: followingTmp.length,
           followers: followersTmp.length,
           savedPosts: savedTmp,
-      privacySettings: dataDocument.get('privacySettings'));
+      privacySettings: Map<String, bool>.from(dataDocument.get('privacySettings')));
       print(savedPosts);
     } catch (_) {
       await Future.delayed(Duration(seconds: 1));
@@ -646,7 +646,7 @@ class AuthRepository with ChangeNotifier {
           following: followingTmp.length,
           followers: followersTmp.length,
           savedPosts: savedTmp,
-          privacySettings: dataDocument.get('privacySettings'));
+          privacySettings: Map<String, bool>.from(dataDocument.get('privacySettings')));
     }
   }
 

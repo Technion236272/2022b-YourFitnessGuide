@@ -40,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String followButtonText = 'Follow';
   bool setup = true;
   late int initialW, currentW, goalW;
+  late Map<String, bool> privacySettings;
   List<String> quotes = ['Give it a try.','Go for it.','Why not?','It\'s worth a shot.','What are you waiting for?','What do you have to lose?','You might as well.','Just do it!','There you go!','Keep up the good work.','Keep it up.','Good job.','Hang in there.','Don\'t give up.','Keep pushing.','Keep fighting!','Stay strong.','Never give up.','Never say \'die\'.','Come on! You can do it!.','It\'s your call.','Follow your dreams.','Reach for the stars.','Do the impossible.','Believe in yourself.','The sky is the limit.'];
 
   get uid => widget.uid;
@@ -47,13 +48,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStatline(
       {required String stat, required int value, String? redirection}) {
+    var val = privacySettings['profile']!? 'N/A' : value.toString();
     var statTitle =
         Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
     return Center(
       child: Column(
         children: [
           Text(
-            value.toString(),
+            val,
             style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
           ),
@@ -116,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _buildStatline(
                 stat: 'Following',
                 value: widget.followingNum ?? 0,
-                redirection: '/following'),
+                redirection: (!privacySettings['following']! && !privacySettings['profile']!)? '/following' : ''),
           ),
         ),
         Expanded(
@@ -124,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _buildStatline(
                 stat: 'Followers',
                 value: widget.followersNum ?? 0,
-                redirection: '/followers'),
+                redirection: (!privacySettings['followers']! && !privacySettings['profile']!)? '/followers' : ''),
           ),
         ),
       ],
@@ -149,6 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget emptyNote(double height, double width, String text) {
+    text = privacySettings['profile']!? 'User profile is private' : text;
     return RefreshIndicator(
         child: Card(
             color: Colors.grey[200],
@@ -531,6 +534,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         widget.followersNum = widget.followersNum ?? userData?.followers;
         currUid = uid ?? user.getCurrUid();
         username = userData?.name ?? 'Mclovin';
+        privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
       }
     }
     catch(_){
@@ -564,6 +568,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           widget.followersNum = userData?.followers;
           widget.followingNum = userData?.following;
         }
+        privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
 
         return RefreshIndicator(
             child: StreamBuilder(
@@ -586,10 +591,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 posts = snapshot2;
+
                 if (posts.data!.docs.length == 0) {
                   noPosts = true;
                 } else {
                   noPosts = false;
+                }
+
+                if(privacySettings['profile']!){
+                  noPosts = true;
                 }
 
                 return _buildView();
