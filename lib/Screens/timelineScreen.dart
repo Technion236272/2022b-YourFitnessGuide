@@ -210,7 +210,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                             setState(() {});
                           },
                           icon: const Icon(
-                            Icons.sort,
+                            Icons.filter_alt,
                             color: Colors.white,
                           ))
                     ),
@@ -224,7 +224,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                 setState(() {});
                               },
                               icon: const Icon(
-                                Icons.filter_alt,
+                                Icons.sort,
                                 color: Colors.white,
                               ))
                         )
