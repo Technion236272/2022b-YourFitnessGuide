@@ -296,6 +296,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               : _goalController.text)
           : _goalController.text);
       userGoal = userGoal ?? Goal.values[userData != null ? userData.goal : 0];
+      privacySettings = userData?.privacySettings;
     } else {
       userData = null;
     }
