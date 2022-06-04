@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
+import 'Screens/ProfileScreens/editProfileScreen.dart';
 import 'Screens/ProfileScreens/profileScreen.dart';
 import 'Screens/leaderboard.dart';
 import 'Screens/searchScreen.dart';
@@ -39,13 +40,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     var user = Provider.of<AuthRepository>(context);
 
-    if(user.isAuthenticated && (user.userData?.iWeight != 0)){
+    if (user.isAuthenticated && (user.userData?.iWeight != 0)) {
       _views.removeAt(3);
-      _views.add(ProfileScreen(uid: user.getCurrUid(),));
-    }
-    else{
-      _views.removeAt(3);
-      _views.add(const LoginScreen());
+      _views.add(ProfileScreen(
+        uid: user.getCurrUid(),
+      ));
+    } else {
+      if (user.isAuthenticated) {
+        _views.removeAt(3);
+        _views.add(EditProfileScreen(firstTime: true,));
+      } else {
+        _views.removeAt(3);
+        _views.add(const LoginScreen());
+      }
     }
 
     return Scaffold(
@@ -54,23 +61,21 @@ class _HomeScreenState extends State<HomeScreen> {
           children: _views,
         ),
         bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          //fixedColor: Colors.black,
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.search), label: 'Search'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person), label: 'Profile')
-          ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Theme.of(context).iconTheme.color,
-          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: true,
-          onTap: _onItemTapped
-        ));
+            type: BottomNavigationBarType.fixed,
+            //fixedColor: Colors.black,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.search), label: 'Search'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person), label: 'Profile')
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Theme.of(context).iconTheme.color,
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: true,
+            onTap: _onItemTapped));
   }
 }
