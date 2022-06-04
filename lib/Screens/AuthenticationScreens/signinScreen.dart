@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _validateLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
     var email = emailField.controller.text;
-    emailField.controller.clear();
+    //emailField.controller.clear();
     var password = passwordController.text;
     passwordController.clear();
 
@@ -232,9 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
       }
     } catch (e) {
-      const snackBar =
-          SnackBar(content: Text('There was an error logging into the app'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      
     }
   }
 

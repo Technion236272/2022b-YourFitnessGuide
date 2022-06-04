@@ -296,11 +296,16 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                   }
                   return ListTile(
                     contentPadding: const EdgeInsets.all(0),
-                    leading: CircleAvatar(
-                      radius: 25,
-                      backgroundImage:
+                    leading: GestureDetector(
+                        onTap: () {
+                          SearchArguments arg = SearchArguments(uid: post_data["user_uid"], isUser: true);
+                          Navigator.pushNamed(context, '/profile', arguments: arg);
+                        },
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundImage:
                           NetworkImage(userSnapshot.data!['picture']!),
-                    ),
+                        )),
                     title: RichText(
                       text: TextSpan(
                         style: Theme.of(context)

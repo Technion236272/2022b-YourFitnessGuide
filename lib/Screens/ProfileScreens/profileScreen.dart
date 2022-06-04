@@ -59,12 +59,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           redirection == null
               ? statTitle
-              : TextButton(
+              : FittedBox(child: TextButton(
                   onPressed: () {
                     var args = {'currID': currUid};
                     Navigator.pushNamed(context, redirection, arguments: args);
                   },
-                  child: statTitle),
+                  child: statTitle)),
           const SizedBox(
             height: 5,
           ),
@@ -75,11 +75,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildTabHeader(String tabText) {
     return Tab(
-        child: Text(
+        child:FittedBox(child: Text(
       tabText,
       style:
           TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-    ));
+    )));
   }
 
   Widget _buildTopDisplayRow(
