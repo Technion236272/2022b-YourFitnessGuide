@@ -635,7 +635,8 @@ class AuthRepository with ChangeNotifier {
       int? newCurrentWeight,
       int? newGoalWeight,
       int? newGoal,
-      File? newPic) async {
+      File? newPic,
+      Map<String, bool> privacySettings) async {
     if (newPic != null) {
       await _storage.ref('images').child(_user!.uid).putFile(newPic);
       _userData?.pictureUrl =
@@ -652,7 +653,8 @@ class AuthRepository with ChangeNotifier {
       'current_weight': newCurrentWeight,
       'goal_weight': newGoalWeight,
       'goal': newGoal,
-      'picture': userData?.pictureUrl
+      'picture': userData?.pictureUrl,
+      'privacySettings':privacySettings
     });
     _userData?.name = newName;
     _userData?.iWeight = newInitialWeight;

@@ -27,7 +27,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _currentController = TextEditingController();
   final TextEditingController _goalController = TextEditingController();
   late Widget _imageContainer;
-
+  Map<String, bool> privacySettings = {
+    'profile': false,
+    'following': false,
+    'followers': false
+  };
   late GoalChoices choices;
   Goal? userGoal;
   String? profileImage;
@@ -73,22 +77,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildWeightField(String label, TextEditingController ctrl) {
     return Expanded(
         child: TextField(
-          keyboardType: TextInputType.number,
-          controller: ctrl,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-            labelText: label,
-            labelStyle: const TextStyle(
-              color: appTheme,
-              fontSize: 23,
-              fontWeight: FontWeight.bold,
-            ),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            hintText: "80",
-            hintStyle:
+      keyboardType: TextInputType.number,
+      controller: ctrl,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 5),
+        labelText: label,
+        labelStyle: const TextStyle(
+          color: appTheme,
+          fontSize: 23,
+          fontWeight: FontWeight.bold,
+        ),
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        hintText: "80",
+        hintStyle:
             const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-          ),
-        ));
+      ),
+    ));
   }
 
   Widget _buildWeightProgress(double height, double width) {
@@ -121,14 +125,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return;
       }
 
-
       final croppedFile = await myImageCropper(selectedImage.path);
 
-
       setState(() {
-        newImage = File(croppedFile!.path);//File(selectedImage.path);
+        newImage = File(croppedFile!.path); //File(selectedImage.path);
       });
-
     } on PlatformException catch (_) {
       const snackBar = SnackBar(
           content: Text(
@@ -137,7 +138,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  void deleteAccount(){
+  void deleteAccount() {
     Widget cancel = TextButton(
         onPressed: () {
           Navigator.of(context).pop();
@@ -151,14 +152,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           user.deleteUser();
           Navigator.pop(context);
           Navigator.pop(context);
-          setState(() {
-
-          });
+          setState(() {});
         },
         child: const Text('Confirm', style: TextStyle(color: appTheme)));
     AlertDialog alert = AlertDialog(
       title: const Text('Are you sure?'),
-      content: const Text('Deleting your account is permanent and cannot be reversed.'),
+      content: const Text(
+          'Deleting your account is permanent and cannot be reversed.'),
       actions: [cancel, confirm],
     );
     showDialog(
@@ -168,7 +168,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
   }
 
-  void saveChanges(){
+  void saveChanges() {
     int init = int.parse(_initialController.text);
     int curr = int.parse(_currentController.text);
     int goal = int.parse(_goalController.text);
@@ -176,67 +176,97 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       curr = init;
     }
 
-    if (choices.userGoal == Goal.loseWeight &&
-        (init < goal || curr < goal)) {
+    if (choices.userGoal == Goal.loseWeight && (init < goal || curr < goal)) {
       const snackBar = SnackBar(
           content: Text(
               'Invalid data: Initial weight must be bigger than goal weight.'));
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
 
-    if (choices.userGoal == Goal.gainWeight &&
-        (init > goal || curr > goal)) {
+    if (choices.userGoal == Goal.gainWeight && (init > goal || curr > goal)) {
       const snackBar = SnackBar(
           content: Text(
               'Invalid data: Goal weight must be bigger than goal weight.'));
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
 
     if (firstTime) {
       if (int.parse(_initialController.text) <= 0 ||
-          int.parse(_goalController.text) <= 0 ||int.parse(_initialController.text) >= 500 || int.parse(_goalController.text) >= 500) {
-        const snackBar = SnackBar(
-            content:
-            Text('You need to fill all the fields'));
-        ScaffoldMessenger.of(context)
-            .showSnackBar(snackBar);
+          int.parse(_goalController.text) <= 0 ||
+          int.parse(_initialController.text) >= 500 ||
+          int.parse(_goalController.text) >= 500) {
+        const snackBar =
+            SnackBar(content: Text('You need to fill all the fields'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
-        user.updateUserData(
-            nameField.controller.text,
-            init,
-            curr,
-            goal,
-            choices.userGoal?.index,
-            newImage);
-        Navigator.pushReplacementNamed(
-            context, homeRoute);
+        user.updateUserData(nameField.controller.text, init, curr, goal,
+            choices.userGoal?.index, newImage, privacySettings);
+        Navigator.pushReplacementNamed(context, homeRoute);
       }
     } else {
       if (int.parse(_initialController.text) <= 0 ||
           int.parse(_currentController.text) <= 0 ||
-          int.parse(_goalController.text) <= 0 || int.parse(_initialController.text) >= 500 || int.parse(_currentController.text) >= 500 || int.parse(_goalController.text) >= 500) {
-        const snackBar = SnackBar(
-            content:
-            Text('You need to fill all the fields'));
-        ScaffoldMessenger.of(context)
-            .showSnackBar(snackBar);
+          int.parse(_goalController.text) <= 0 ||
+          int.parse(_initialController.text) >= 500 ||
+          int.parse(_currentController.text) >= 500 ||
+          int.parse(_goalController.text) >= 500) {
+        const snackBar =
+            SnackBar(content: Text('You need to fill all the fields'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
-        user.updateUserData(
-            nameField.controller.text,
-            init,
-            curr,
-            goal,
-            choices.userGoal?.index,
-            newImage);
+        user.updateUserData(nameField.controller.text, init, curr, goal,
+            choices.userGoal?.index, newImage, privacySettings);
         Navigator.pop(context);
       }
     }
+  }
+
+  Widget _buildPrivacySettings(double height, double width) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CheckboxListTile(
+            title: const Text('Limit my followers list to only me'),
+            value: privacySettings['followers'],
+            //groupValue: userGoal,
+            activeColor: appTheme,
+            onChanged: (value) => setState(() {
+                  privacySettings['followers'] = value ?? false;
+                })),
+        Divider(
+          color: Colors.grey,
+          height: 0,
+          thickness: 1,
+          indent: width * 0.05,
+          endIndent: width * 0.1,
+        ),
+        CheckboxListTile(
+            title: const Text('Limit my following list to only me'),
+            value: privacySettings['following'],
+            activeColor: appTheme,
+            onChanged: (value) => setState(() {
+                  privacySettings['following'] = value ?? false;
+                })),
+        Divider(
+          color: Colors.grey,
+          height: 0,
+          thickness: 1,
+          indent: width * 0.05,
+          endIndent: width * 0.1,
+        ),
+        CheckboxListTile(
+            title: const Text('Limit my profile viewing to only me'),
+            value: privacySettings['profile'],
+            activeColor: appTheme,
+            onChanged: (value) => setState(() {
+                  privacySettings['profile'] = value ?? false;
+                }))
+      ],
+    );
   }
 
   @override
@@ -331,23 +361,26 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               );
                             },
-                            icon: const Icon(Icons.info_outline,color: Colors.white,)
-                    ),
+                            icon: const Icon(
+                              Icons.info_outline,
+                              color: Colors.white,
+                            )),
                     IconButton(
                         onPressed: () {
-                          firstTime? saveChanges() : deleteAccount();
+                          firstTime ? saveChanges() : deleteAccount();
                         },
-                        icon:
-                            Icon(firstTime? Icons.check : Icons.delete, color: Colors.white)),
+                        icon: Icon(firstTime ? Icons.check : Icons.delete,
+                            color: Colors.white)),
                   ],
                 )),
           ]),
-      body: SingleChildScrollView(
+      body: (SingleChildScrollView(
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).unfocus();
           },
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: height * 0.02),
               Container(
@@ -379,6 +412,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   )),
               choices,
+              firstTime? Container() : Container(
+                  padding: EdgeInsets.only(right: width * 0.45),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Privacy Settings',
+                          style: TextStyle(
+                              color: appTheme,
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  )),
+              firstTime? Container() : _buildPrivacySettings(height, width),
+              SizedBox(
+                height: height * 0.02,
+              ),
               firstTime
                   ? Container()
                   : ElevatedButton(
@@ -398,10 +447,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                       child: const Text("SAVE CHANGES"),
                     ),
+              SizedBox(
+                height: height * 0.007,
+              ),
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 }

@@ -508,13 +508,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userData != null) {
       user.updateSaved();
       user.updateFollow();
+      if(!visiting){
+        userData = user.userData;
+      }
+      print('~~~~~~~~~~~~~~~~~~~~');
+      print(userData.iWeight);
+      print('~~~~~~~~~~~~~~~~~~~~');
       profileImage = userData?.pictureUrl;
       savedPosts = userData?.savedPosts;
       rating = userData?.rating;
       savedNum = userData?.saved;
-      initialW = userData?.iWeight;
       currentW = userData?.cWeight;
       goalW = userData?.gWeight;
+      initialW = userData?.iWeight;
       widget.followingNum = widget.followingNum ?? userData?.following;
       widget.followersNum = widget.followersNum ?? userData?.followers;
       currUid = uid ?? user.getCurrUid();
