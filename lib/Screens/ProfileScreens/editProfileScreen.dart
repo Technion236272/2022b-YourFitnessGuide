@@ -233,77 +233,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     IconButton(
                         onPressed: () {
-                          int init = int.parse(_initialController.text);
-                          int curr = int.parse(_currentController.text);
-                          int goal = int.parse(_goalController.text);
-                          if (firstTime) {
-                            curr = init;
-                          }
+                          Widget cancel = TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text(
+                                'Cancel',
+                                style: TextStyle(color: appTheme),
+                              ));
+                          Widget confirm = TextButton(
+                              onPressed: () {
+                                user.deleteUser();
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                setState(() {
 
-                          if (choices.userGoal == Goal.loseWeight &&
-                              (init < goal || curr < goal)) {
-                            const snackBar = SnackBar(
-                                content: Text(
-                                    'Invalid data: Initial weight must be bigger than goal weight.'));
-
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                            return;
-                          }
-
-                          if (choices.userGoal == Goal.gainWeight &&
-                              (init > goal || curr > goal)) {
-                            const snackBar = SnackBar(
-                                content: Text(
-                                    'Invalid data: Goal weight must be bigger than goal weight.'));
-
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                            return;
-                          }
-
-                          if (firstTime) {
-                            if (int.parse(_initialController.text) <= 0 ||
-                                int.parse(_goalController.text) <= 0 ||int.parse(_initialController.text) >= 500 || int.parse(_goalController.text) >= 500) {
-                              const snackBar = SnackBar(
-                                  content:
-                                      Text('You need to fill all the fields'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                            } else {
-                              user.updateUserData(
-                                  nameField.controller.text,
-                                  init,
-                                  curr,
-                                  goal,
-                                  choices.userGoal?.index,
-                                  newImage);
-                              Navigator.pushReplacementNamed(
-                                  context, homeRoute);
-                            }
-                          } else {
-                            if (int.parse(_initialController.text) <= 0 ||
-                                int.parse(_currentController.text) <= 0 ||
-                                int.parse(_goalController.text) <= 0 || int.parse(_initialController.text) >= 500 || int.parse(_currentController.text) >= 500 || int.parse(_goalController.text) >= 500) {
-                              const snackBar = SnackBar(
-                                  content:
-                                      Text('You need to fill all the fields'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                            } else {
-                              user.updateUserData(
-                                  nameField.controller.text,
-                                  init,
-                                  curr,
-                                  goal,
-                                  choices.userGoal?.index,
-                                  newImage);
-                              Navigator.pop(context);
-                            }
-                          }
+                                });
+                              },
+                              child: const Text('Confirm', style: TextStyle(color: appTheme)));
+                          AlertDialog alert = AlertDialog(
+                            title: const Text('Are you sure?'),
+                            content: const Text('Deleting your account is permanent and cannot be reversed.'),
+                            actions: [cancel, confirm],
+                          );
+                          showDialog(
+                              context: context,
+                              builder: (_) {
+                                return alert;
+                              });
                         },
                         icon:
-                            const Icon(Icons.check_sharp, color: Colors.white)),
+                            const Icon(Icons.delete, color: Colors.white)),
                   ],
                 )),
           ]),
@@ -348,7 +308,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ? Container()
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          primary: Colors.red,
+                          primary: appTheme,
                           side: BorderSide(
                               width: 2.0, color: Colors.black.withOpacity(0.5)),
                           shape: RoundedRectangleBorder(
@@ -359,36 +319,76 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             color: Colors.white,
                           )),
                       onPressed: () async {
-                        Widget cancel = TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(color: appTheme),
-                            ));
-                        Widget confirm = TextButton(
-                            onPressed: () {
-                              user.deleteUser();
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              setState(() {
+                        int init = int.parse(_initialController.text);
+                        int curr = int.parse(_currentController.text);
+                        int goal = int.parse(_goalController.text);
+                        if (firstTime) {
+                          curr = init;
+                        }
 
-                              });
-                            },
-                            child: const Text('Confirm', style: TextStyle(color: appTheme)));
-                        AlertDialog alert = AlertDialog(
-                          title: const Text('Are you sure?'),
-                          content: const Text('Deleting your account is permanent and cannot be reversed.'),
-                          actions: [cancel, confirm],
-                        );
-                        showDialog(
-                            context: context,
-                            builder: (_) {
-                              return alert;
-                            });
+                        if (choices.userGoal == Goal.loseWeight &&
+                            (init < goal || curr < goal)) {
+                          const snackBar = SnackBar(
+                              content: Text(
+                                  'Invalid data: Initial weight must be bigger than goal weight.'));
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(snackBar);
+                          return;
+                        }
+
+                        if (choices.userGoal == Goal.gainWeight &&
+                            (init > goal || curr > goal)) {
+                          const snackBar = SnackBar(
+                              content: Text(
+                                  'Invalid data: Goal weight must be bigger than goal weight.'));
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(snackBar);
+                          return;
+                        }
+
+                        if (firstTime) {
+                          if (int.parse(_initialController.text) <= 0 ||
+                              int.parse(_goalController.text) <= 0 ||int.parse(_initialController.text) >= 500 || int.parse(_goalController.text) >= 500) {
+                            const snackBar = SnackBar(
+                                content:
+                                Text('You need to fill all the fields'));
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          } else {
+                            user.updateUserData(
+                                nameField.controller.text,
+                                init,
+                                curr,
+                                goal,
+                                choices.userGoal?.index,
+                                newImage);
+                            Navigator.pushReplacementNamed(
+                                context, homeRoute);
+                          }
+                        } else {
+                          if (int.parse(_initialController.text) <= 0 ||
+                              int.parse(_currentController.text) <= 0 ||
+                              int.parse(_goalController.text) <= 0 || int.parse(_initialController.text) >= 500 || int.parse(_currentController.text) >= 500 || int.parse(_goalController.text) >= 500) {
+                            const snackBar = SnackBar(
+                                content:
+                                Text('You need to fill all the fields'));
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                          } else {
+                            user.updateUserData(
+                                nameField.controller.text,
+                                init,
+                                curr,
+                                goal,
+                                choices.userGoal?.index,
+                                newImage);
+                            Navigator.pop(context);
+                          }
+                        }
                       },
-                      child: const Text("DELETE ACCOUNT"),
+                      child: const Text("SAVE CHANGES"),
                     ),
             ],
           ),
