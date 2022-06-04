@@ -171,9 +171,9 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _validateSignUp() async {
     FocusManager.instance.primaryFocus?.unfocus();
     var email = emailField.controller.text;
-    emailField.controller.clear();
+    //emailField.controller.clear();
     var password = passwordController.text;
-    passwordController.clear();
+    //passwordController.clear();
     var confirm = confirmController.text;
     confirmController.clear();
 
