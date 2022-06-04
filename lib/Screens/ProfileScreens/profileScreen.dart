@@ -57,12 +57,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
           ),
-          redirection == null
-              ? statTitle
+          redirection == ''
+              ? FittedBox(child: TextButton(
+              onPressed: () {
+              },
+              child: statTitle))
               : FittedBox(child: TextButton(
                   onPressed: () {
                     var args = {'currID': currUid};
-                    Navigator.pushNamed(context, redirection, arguments: args);
+                    Navigator.pushNamed(context, redirection!, arguments: args);
                   },
                   child: statTitle)),
           const SizedBox(
@@ -261,18 +264,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   double calculatePercent(){
-    var tmp = goalW - initialW;
-    var tmp2 = currentW - initialW;
-    double percent = 0;
-    if(tmp != 0){
-      percent = tmp2/tmp;
-    }
-    else{
-      percent = 0.5;
-    }
+    try {
+      var tmp = goalW - initialW;
+      var tmp2 = currentW - initialW;
+      double percent = 0;
+      if (tmp != 0) {
+        percent = tmp2 / tmp;
+      }
+      else {
+        percent = 0.5;
+      }
 
-    var res = percent>= 0? percent : (-1)*percent;
-    return (percent <= 0 || percent >= 2) ? 0 : res;
+      var res = percent >= 0 ? percent : (-1) * percent;
+      return (percent <= 0 || percent >= 2) ? 0 : res;
+    }
+    catch(_){
+      return 0;
+    }
   }
 
   String randomizeProgressMessage(){
@@ -505,26 +513,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userData = null;
     }
 
-    if (userData != null) {
-      user.updateSaved();
-      user.updateFollow();
-      if(!visiting){
-        userData = user.userData;
+    try {
+      if (userData != null) {
+        user.updateSaved();
+        user.updateFollow();
+        if (!visiting) {
+          userData = user.userData;
+        }
+        profileImage = userData?.pictureUrl;
+        savedPosts = userData?.savedPosts;
+        rating = userData?.rating;
+        savedNum = userData?.saved;
+        currentW = userData?.cWeight;
+        goalW = userData?.gWeight;
+        initialW = userData?.iWeight;
+        widget.followingNum = widget.followingNum ?? userData?.following;
+        widget.followersNum = widget.followersNum ?? userData?.followers;
+        currUid = uid ?? user.getCurrUid();
+        username = userData?.name ?? 'Mclovin';
       }
-      print('~~~~~~~~~~~~~~~~~~~~');
-      print(userData.iWeight);
-      print('~~~~~~~~~~~~~~~~~~~~');
-      profileImage = userData?.pictureUrl;
-      savedPosts = userData?.savedPosts;
-      rating = userData?.rating;
-      savedNum = userData?.saved;
-      currentW = userData?.cWeight;
-      goalW = userData?.gWeight;
-      initialW = userData?.iWeight;
-      widget.followingNum = widget.followingNum ?? userData?.following;
-      widget.followersNum = widget.followersNum ?? userData?.followers;
-      currUid = uid ?? user.getCurrUid();
-      username = userData?.name ?? 'Mclovin';
+    }
+    catch(_){
+
     }
 
     return FutureBuilder(
