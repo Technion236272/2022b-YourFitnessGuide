@@ -28,6 +28,7 @@ class UserModel {
   List<String>? savedPosts = [];
   List<String>? imFollowing = [];
   List<String>? followingMe = [];
+  Map<String, bool>? privacySettings = {};
 
   UserModel(
       {this.name,
@@ -42,7 +43,8 @@ class UserModel {
       required this.saved,
       this.savedPosts,
       this.imFollowing,
-      this.followingMe});
+      this.followingMe,
+      this.privacySettings});
 /*
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
 
@@ -81,6 +83,8 @@ class AuthRepository with ChangeNotifier {
 
   List<String>? get followersList => _userData?.followingMe;
 
+  Map<String, bool>? get privacySettings => _userData?.privacySettings;
+
   Future<Object?> signUp(String email, String password) async {
     try {
       _status = Status.Authenticating;
@@ -111,7 +115,8 @@ class AuthRepository with ChangeNotifier {
         'followers': 0,
         'saved_posts': [],
         'imFollowing': [],
-        'followingMe': []
+        'followingMe': [],
+        'privacySettings': {}
       });
       _userData = UserModel(
           name: 'Undefined Name',
@@ -126,7 +131,8 @@ class AuthRepository with ChangeNotifier {
           following: 0,
           savedPosts: [],
           imFollowing: [],
-          followingMe: []);
+          followingMe: [],
+          privacySettings: {});
       return res;
     } on FirebaseAuthException catch (error) {
       _userData = null;
@@ -217,7 +223,8 @@ class AuthRepository with ChangeNotifier {
         'followers': 0,
         'saved_posts': [],
         'followingMe': [],
-        'imFollowing': []
+        'imFollowing': [],
+        'privacySettings': {}
       });
 
       _userData = UserModel(
@@ -233,7 +240,8 @@ class AuthRepository with ChangeNotifier {
           following: 0,
           savedPosts: [],
           imFollowing: [],
-          followingMe: []);
+          followingMe: [],
+          privacySettings: {});
 
       if (redirected) {
         return 2;
@@ -302,7 +310,8 @@ class AuthRepository with ChangeNotifier {
         'followers': 0,
         'saved_posts': [],
         'followingMe': [],
-        'imFollowing': []
+        'imFollowing': [],
+        'privacySettings': {}
       });
       _userData = UserModel(
           name: name,
@@ -317,7 +326,8 @@ class AuthRepository with ChangeNotifier {
           following: 0,
           savedPosts: [],
           imFollowing: [],
-          followingMe: []);
+          followingMe: [],
+      privacySettings: {});
 
       if (redirected) return 2;
       return 1;
@@ -348,8 +358,8 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
-  bool? checkImAlreadyFollowing(String userid){
-    if(userData?.imFollowing == null){
+  bool? checkImAlreadyFollowing(String userid) {
+    if (userData?.imFollowing == null) {
       return false;
     }
     return userData?.imFollowing!.contains(userid);
@@ -404,7 +414,7 @@ class AuthRepository with ChangeNotifier {
   }
 
   Future<void> updateFollow() async {
-    if(_userData == null){
+    if (_userData == null) {
       return;
     }
     for (var i = 0; i < _userData!.imFollowing!.length; i++) {
@@ -429,14 +439,14 @@ class AuthRepository with ChangeNotifier {
     _userData?.following = _userData?.imFollowing!.length;
 
     await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
-          .doc(user!.uid)
-          .update({
-        'imFollowing': FieldValue.arrayRemove([userid]),
-        'following': _userData?.following
-      });
+        .collection("versions")
+        .doc("v2")
+        .collection('users')
+        .doc(user!.uid)
+        .update({
+      'imFollowing': FieldValue.arrayRemove([userid]),
+      'following': _userData?.following
+    });
 
     notifyListeners();
   }
@@ -457,7 +467,7 @@ class AuthRepository with ChangeNotifier {
     notifyListeners();
   }
 
-    Future<void> modifySaved(String postuid, bool delete) async {
+  Future<void> modifySaved(String postuid, bool delete) async {
     if (delete) {
       await _db
           .collection("versions")
@@ -486,19 +496,22 @@ class AuthRepository with ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<List<SearchUserModel>> getFollowing() async {
     List<SearchUserModel> res = [];
-    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection("users")
+        .get()
+        .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        if(checkImAlreadyFollowing(doc.id)!){
+        if (checkImAlreadyFollowing(doc.id)!) {
           var currentUser = SearchUserModel(
               name: doc.get('name'),
               uid: doc.id.toString(),
               pictureUrl: doc.get('picture'));
           res.add(currentUser);
         }
-
       });
     });
     print(res);
@@ -508,7 +521,12 @@ class AuthRepository with ChangeNotifier {
   Future<List<SearchUserModel>> getUsers() async {
     List<SearchUserModel> res = [];
 
-    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection("users")
+        .get()
+        .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         var currentDocument = doc.get('name');
         var currentUser = SearchUserModel(
@@ -524,7 +542,12 @@ class AuthRepository with ChangeNotifier {
   Future<List<SearchUserModel>> getFollowers() async {
     List<SearchUserModel> res = [];
 
-    await _db.collection("versions").doc("v2").collection("users").get().then((querySnapshot) {
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection("users")
+        .get()
+        .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         var currentDocument = doc.get('name');
         var currentUser = SearchUserModel(
@@ -592,7 +615,8 @@ class AuthRepository with ChangeNotifier {
           saved: savedTmp.length,
           following: followingTmp.length,
           followers: followersTmp.length,
-          savedPosts: savedTmp);
+          savedPosts: savedTmp,
+      privacySettings: Map<String, bool>.from(dataDocument.get('privacySettings')));
       print(savedPosts);
     } catch (_) {
       await Future.delayed(Duration(seconds: 1));
@@ -621,7 +645,8 @@ class AuthRepository with ChangeNotifier {
           saved: savedTmp.length,
           following: followingTmp.length,
           followers: followersTmp.length,
-          savedPosts: savedTmp);
+          savedPosts: savedTmp,
+          privacySettings: Map<String, bool>.from(dataDocument.get('privacySettings')));
     }
   }
 
@@ -635,7 +660,8 @@ class AuthRepository with ChangeNotifier {
       int? newCurrentWeight,
       int? newGoalWeight,
       int? newGoal,
-      File? newPic) async {
+      File? newPic,
+      Map<String, bool> privacySettings) async {
     if (newPic != null) {
       await _storage.ref('images').child(_user!.uid).putFile(newPic);
       _userData?.pictureUrl =
@@ -652,7 +678,8 @@ class AuthRepository with ChangeNotifier {
       'current_weight': newCurrentWeight,
       'goal_weight': newGoalWeight,
       'goal': newGoal,
-      'picture': userData?.pictureUrl
+      'picture': userData?.pictureUrl,
+      'privacySettings': privacySettings
     });
     _userData?.name = newName;
     _userData?.iWeight = newInitialWeight;

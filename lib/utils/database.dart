@@ -201,6 +201,7 @@ class FirebaseDB with ChangeNotifier {
             List<String>.from(dataDocument.get('imFollowing') as List);
         var followersTmp =
             List<String>.from(dataDocument.get('followingMe') as List);
+
         userData = UserModel(
             name: dataDocument.get('name'),
             goal: dataDocument.get('goal'),
@@ -214,7 +215,8 @@ class FirebaseDB with ChangeNotifier {
             saved: savedTmp.length,
             following: followingTmp.length,
             followers: followersTmp.length,
-            savedPosts: savedTmp);
+            savedPosts: savedTmp,
+        privacySettings: Map<String, bool>.from(dataDocument.get('privacySettings')));
       } else {
         userData = null;
       }

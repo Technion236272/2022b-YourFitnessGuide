@@ -40,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String followButtonText = 'Follow';
   bool setup = true;
   late int initialW, currentW, goalW;
+  late Map<String, bool> privacySettings;
   List<String> quotes = ['Give it a try.','Go for it.','Why not?','It\'s worth a shot.','What are you waiting for?','What do you have to lose?','You might as well.','Just do it!','There you go!','Keep up the good work.','Keep it up.','Good job.','Hang in there.','Don\'t give up.','Keep pushing.','Keep fighting!','Stay strong.','Never give up.','Never say \'die\'.','Come on! You can do it!.','It\'s your call.','Follow your dreams.','Reach for the stars.','Do the impossible.','Believe in yourself.','The sky is the limit.'];
 
   get uid => widget.uid;
@@ -47,22 +48,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStatline(
       {required String stat, required int value, String? redirection}) {
+    var val = privacySettings['profile']!? 'N/A' : value.toString();
     var statTitle =
         Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
     return Center(
       child: Column(
         children: [
           Text(
-            value.toString(),
+            val,
             style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
           ),
-          redirection == null
-              ? statTitle
+          redirection == ''
+              ? FittedBox(child: TextButton(
+              onPressed: () {
+              },
+              child: statTitle))
               : FittedBox(child: TextButton(
                   onPressed: () {
                     var args = {'currID': currUid};
-                    Navigator.pushNamed(context, redirection, arguments: args);
+                    Navigator.pushNamed(context, redirection!, arguments: args);
                   },
                   child: statTitle)),
           const SizedBox(
@@ -113,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _buildStatline(
                 stat: 'Following',
                 value: widget.followingNum ?? 0,
-                redirection: '/following'),
+                redirection: (!privacySettings['following']! && !privacySettings['profile']!)? '/following' : ''),
           ),
         ),
         Expanded(
@@ -121,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _buildStatline(
                 stat: 'Followers',
                 value: widget.followersNum ?? 0,
-                redirection: '/followers'),
+                redirection: (!privacySettings['followers']! && !privacySettings['profile']!)? '/followers' : ''),
           ),
         ),
       ],
@@ -146,6 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget emptyNote(double height, double width, String text) {
+    text = privacySettings['profile']!? 'User profile is private' : text;
     return RefreshIndicator(
         child: Card(
             color: Colors.grey[200],
@@ -261,18 +267,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   double calculatePercent(){
-    var tmp = goalW - initialW;
-    var tmp2 = currentW - initialW;
-    double percent = 0;
-    if(tmp != 0){
-      percent = tmp2/tmp;
-    }
-    else{
-      percent = 0.5;
-    }
+    try {
+      var tmp = goalW - initialW;
+      var tmp2 = currentW - initialW;
+      double percent = 0;
+      if (tmp != 0) {
+        percent = tmp2 / tmp;
+      }
+      else {
+        percent = 0.5;
+      }
 
-    var res = percent>= 0? percent : (-1)*percent;
-    return (percent <= 0 || percent >= 2) ? 0 : res;
+      var res = percent >= 0 ? percent : (-1) * percent;
+      return (percent <= 0 || percent >= 2) ? 0 : res;
+    }
+    catch(_){
+      return 0;
+    }
   }
 
   String randomizeProgressMessage(){
@@ -505,20 +516,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
       userData = null;
     }
 
-    if (userData != null) {
-      user.updateSaved();
-      user.updateFollow();
-      profileImage = userData?.pictureUrl;
-      savedPosts = userData?.savedPosts;
-      rating = userData?.rating;
-      savedNum = userData?.saved;
-      initialW = userData?.iWeight;
-      currentW = userData?.cWeight;
-      goalW = userData?.gWeight;
-      widget.followingNum = widget.followingNum ?? userData?.following;
-      widget.followersNum = widget.followersNum ?? userData?.followers;
-      currUid = uid ?? user.getCurrUid();
-      username = userData?.name ?? 'Mclovin';
+    try {
+      if (userData != null) {
+        user.updateSaved();
+        user.updateFollow();
+        if (!visiting) {
+          userData = user.userData;
+        }
+        profileImage = userData?.pictureUrl;
+        savedPosts = userData?.savedPosts;
+        rating = userData?.rating;
+        savedNum = userData?.saved;
+        currentW = userData?.cWeight;
+        goalW = userData?.gWeight;
+        initialW = userData?.iWeight;
+        widget.followingNum = widget.followingNum ?? userData?.following;
+        widget.followersNum = widget.followersNum ?? userData?.followers;
+        currUid = uid ?? user.getCurrUid();
+        username = userData?.name ?? 'Mclovin';
+        privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
+      }
+    }
+    catch(_){
+
     }
 
     return FutureBuilder(
@@ -548,6 +568,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           widget.followersNum = userData?.followers;
           widget.followingNum = userData?.following;
         }
+        privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
 
         return RefreshIndicator(
             child: StreamBuilder(
@@ -570,10 +591,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 posts = snapshot2;
+
                 if (posts.data!.docs.length == 0) {
                   noPosts = true;
                 } else {
                   noPosts = false;
+                }
+
+                if(privacySettings['profile']!){
+                  noPosts = true;
                 }
 
                 return _buildView();
