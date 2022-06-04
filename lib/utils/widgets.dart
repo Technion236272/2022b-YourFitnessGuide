@@ -363,12 +363,18 @@ class _postState extends State<post> {
                       }
                       return ListTile(
                         contentPadding: const EdgeInsets.all(0),
-                        leading: CircleAvatar(
+                        leading: GestureDetector(
+                            onTap: () {
+                              SearchArguments arg = SearchArguments(uid: widget.data?['user_uid'] ?? widget.snapshot?.data!.docs[widget.index]
+                                  .data()!['user_uid'], isUser: true);
+                              Navigator.pushNamed(context, '/profile', arguments: arg);
+                            },
+                            child: CircleAvatar(
                           radius: 30,
                           backgroundImage: widget.userPicture != null
                               ? widget.userPicture?.image
                               : (widget.data?['picture'] ?? NetworkImage(userSnapshot.data!['picture']!)),
-                        ),
+                        )),
                         title: RichText(
                           text: TextSpan(
                             style: Theme.of(context)
@@ -464,12 +470,12 @@ class _postState extends State<post> {
                       fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 5),
-                Text( widget.data != null? widget.data!['description'].substring(0, min(65, tmp.length)) +
-                    (65 < tmp.length ? '...' : ''):
+                Text( widget.data != null? widget.data!['description'].substring(0, min(500, tmp.length)) +
+                    (500 < tmp.length ? '...' : ''):
                     widget.snapshot?.data!.docs[widget.index]
                             .data()!['description']!
-                            .substring(0, min(65, tmp.length)) +
-                        (65 < tmp.length ? '...' : ''),
+                            .substring(0, min(500, tmp.length)) +
+                        (500 < tmp.length ? '...' : ''),
                     textAlign: TextAlign.left,
                     maxLines: 5),
                 const SizedBox(height: 5),
