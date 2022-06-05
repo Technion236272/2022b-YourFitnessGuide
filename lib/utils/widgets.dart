@@ -477,7 +477,7 @@ class _postState extends State<post> {
                             .substring(0, min(500, tmp.length)) +
                         (500 < tmp.length ? '...' : ''),
                     textAlign: TextAlign.left,
-                    maxLines: 5),
+                    maxLines: 7),
                 const SizedBox(height: 5),
     ((widget.data!= null && widget.data!['image_url'] != null) || widget.snapshot?.data!.docs[widget.index]
         .data()!['image_url'] !=

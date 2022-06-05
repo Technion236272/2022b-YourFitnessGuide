@@ -96,7 +96,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
               */
               TextField(
                 minLines: 1,
-                maxLines: 8,
+                maxLines: 40,
                 keyboardType: TextInputType.multiline,
                 controller: descriptionController,
                 textAlign: TextAlign.left,
@@ -279,7 +279,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
               height: height * 0.02,
             ),
           ]))),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
     );
   }
 }

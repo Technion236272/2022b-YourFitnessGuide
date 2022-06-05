@@ -179,7 +179,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
               */
               TextField(
                 minLines: 1,
-                maxLines: 8,
+                maxLines: 40,
                 keyboardType: TextInputType.multiline,
                 controller: descriptionController,
                 textAlign: TextAlign.left,
@@ -308,7 +308,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                 padding: EdgeInsets.fromLTRB(0,0,iconSize,0),
                 child: TextField(
                   minLines: 1,
-                  maxLines: 15,
+                  maxLines: 40,
                   keyboardType: TextInputType.multiline,
                   controller: mealIngredientsController,
                   textAlign: TextAlign.left,
