@@ -134,89 +134,97 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
           title: Text('${post_data["title"]}'),
           backgroundColor: appTheme,
           centerTitle: false),
-      body:
-          Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-        SizedBox(height: height * 0.012),
-        Container(
-          padding: const EdgeInsets.fromLTRB(8, 0, 40, 0),
-          child: StreamBuilder<Map<String, dynamic>?>(
-              stream: user_data,
-              builder: (context, userSnapshot) {
-                if (userSnapshot.connectionState == ConnectionState.waiting &&
-                    userSnapshot.data == null) {
-                  return const Center(child: LinearProgressIndicator());
-                }
-                if (userSnapshot.connectionState == ConnectionState.done &&
-                    userSnapshot.data == null) {
-                  return const ListTile();
-                }
-                return ListTile(
-                  contentPadding: const EdgeInsets.all(0),
-                  leading: GestureDetector(
-                      onTap: () {
-                        SearchArguments arg = SearchArguments(uid: post_data["user_uid"], isUser: true);
-                        Navigator.pushNamed(context, '/profile', arguments: arg);
-                      },
-                      child: CircleAvatar(
-                        radius: 25,
-                        backgroundImage:
-                            NetworkImage(userSnapshot.data!['picture']!),
-                      )),
-                  title: RichText(
-                    text: TextSpan(
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1!
-                          .copyWith(fontSize: 12),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: post_data['category'],
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .appBarTheme
-                                    .backgroundColor)),
-                        const TextSpan(text: ' by '),
-                        TextSpan(text: userSnapshot.data!['name']),
-                      ],
+      body: SingleChildScrollView(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+            SizedBox(height: height * 0.012),
+            Container(
+              padding: const EdgeInsets.fromLTRB(8, 0, 40, 0),
+              child: StreamBuilder<Map<String, dynamic>?>(
+                  stream: user_data,
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.connectionState ==
+                            ConnectionState.waiting &&
+                        userSnapshot.data == null) {
+                      return const Center(child: LinearProgressIndicator());
+                    }
+                    if (userSnapshot.connectionState == ConnectionState.done &&
+                        userSnapshot.data == null) {
+                      return const ListTile();
+                    }
+                    return ListTile(
+                      contentPadding: const EdgeInsets.all(0),
+                      leading: GestureDetector(
+                          onTap: () {
+                            SearchArguments arg = SearchArguments(
+                                uid: post_data["user_uid"], isUser: true);
+                            Navigator.pushNamed(context, '/profile',
+                                arguments: arg);
+                          },
+                          child: CircleAvatar(
+                            radius: 25,
+                            backgroundImage:
+                                NetworkImage(userSnapshot.data!['picture']!),
+                          )),
+                      title: RichText(
+                        text: TextSpan(
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(fontSize: 12),
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: post_data['category'],
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .appBarTheme
+                                        .backgroundColor)),
+                            const TextSpan(text: ' by '),
+                            TextSpan(text: userSnapshot.data!['name']),
+                          ],
+                        ),
+                      ),
+                      subtitle: Text(
+                          timeago.format(post_data['createdAt'].toDate(),
+                              allowFromNow: true),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText2!
+                              .copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.grey)),
+                    );
+                  }),
+            ),
+            Divider(
+              height: height * 0.00001,
+              thickness: 1,
+              color: Colors.black45,
+            ),
+            (post_data!['image_url'] != null
+                ? ClipRRect(
+                    child: Image.network(
+                      post_data!['image_url']!,
+                      //height: 400,
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.cover,
                     ),
-                  ),
-                  subtitle: Text(
-                      timeago.format(post_data['createdAt'].toDate(),
-                          allowFromNow: true),
-                      style: Theme.of(context).textTheme.bodyText2!.copyWith(
-                          fontSize: 12,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.grey)),
-                );
-              }),
-        ),
-        Divider(
-          height: height * 0.00001,
-          thickness: 1,
-          color: Colors.black45,
-        ),
-        (post_data!['image_url'] != null
-            ? ClipRRect(
-                child: Image.network(
-                  post_data!['image_url']!,
-                  //height: 400,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                ),
-              )
-            : const Padding(padding: EdgeInsets.all(0))),
-        post_data!['image_url'] != null
-            ? Divider(
-                height: height * 0.00001,
-                thickness: 1,
-                color: Colors.black45,
-              )
-            : const Padding(padding: EdgeInsets.all(0)),
-        Container(
-            padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
-            child: _buildDescription(height)),
-      ]),
+                  )
+                : const Padding(padding: EdgeInsets.all(0))),
+            post_data!['image_url'] != null
+                ? Divider(
+                    height: height * 0.00001,
+                    thickness: 1,
+                    color: Colors.black45,
+                  )
+                : const Padding(padding: EdgeInsets.all(0)),
+            Container(
+                padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
+                child: _buildDescription(height)),
+          ])),
       resizeToAvoidBottomInset: true,
     );
   }

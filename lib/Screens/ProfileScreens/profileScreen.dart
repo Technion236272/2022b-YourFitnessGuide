@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildStatline(
       {required String stat, required int value, String? redirection}) {
-    var val = privacySettings['profile']!? 'N/A' : value.toString();
+    var val = (privacySettings.containsKey('profile') && privacySettings['profile']!)? 'N/A' : value.toString();
     var statTitle =
         Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
     return Center(
@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _buildStatline(
                 stat: 'Following',
                 value: widget.followingNum ?? 0,
-                redirection: (!privacySettings['following']! && !privacySettings['profile']!)? '/following' : ''),
+                redirection: (privacySettings.containsKey('profile') && (privacySettings['following']! || privacySettings['profile']!))? '' : '/following'),
           ),
         ),
         Expanded(
@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _buildStatline(
                 stat: 'Followers',
                 value: widget.followersNum ?? 0,
-                redirection: (!privacySettings['followers']! && !privacySettings['profile']!)? '/followers' : ''),
+                redirection: (privacySettings.containsKey('profile') && (privacySettings['followers']! || privacySettings['profile']!))? '' :  '/followers'),
           ),
         ),
       ],
@@ -151,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget emptyNote(double height, double width, String text) {
-    text = privacySettings['profile']!? 'User profile is private' : text;
+    text = (privacySettings.containsKey('profile') && privacySettings['profile']!)? 'User profile is private' : text;
     return RefreshIndicator(
         child: Card(
             color: Colors.grey[200],
@@ -598,7 +598,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   noPosts = false;
                 }
 
-                if(privacySettings['profile']!){
+                if(privacySettings.containsKey('profile') && privacySettings['profile']!){
                   noPosts = true;
                 }
 
