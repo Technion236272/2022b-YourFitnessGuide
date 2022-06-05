@@ -91,7 +91,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
               */
               TextField(
                 minLines: 1,
-                maxLines: 8,
+                maxLines: 40,
                 keyboardType: TextInputType.multiline,
                 controller: descriptionController,
                 textAlign: TextAlign.left,
@@ -217,7 +217,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
             padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
             child: _buildDescription(height)),
       ]),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
     );
   }
 }
