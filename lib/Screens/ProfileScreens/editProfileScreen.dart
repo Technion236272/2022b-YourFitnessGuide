@@ -226,6 +226,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildPrivacySettings(double height, double width) {
+    if(!privacySettings.containsKey('followers')){
+      privacySettings['followers'] = false;
+    }
+    if(!privacySettings.containsKey('following')){
+      privacySettings['following'] = false;
+    }
+    if(!privacySettings.containsKey('profile')){
+      privacySettings['profile'] = false;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
