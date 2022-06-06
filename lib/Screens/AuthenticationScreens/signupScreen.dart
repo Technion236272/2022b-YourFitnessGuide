@@ -311,7 +311,7 @@ class _SignupScreenState extends State<SignupScreen> {
               height: height * 0.15,
             ),
             Image.asset(
-              'images/decorations/LoginDecoration.png',
+              'images/decorations/LoginDecoration.jpeg',
               width: width,
               height: height * 0.21,
             )
