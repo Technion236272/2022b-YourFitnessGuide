@@ -346,13 +346,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 context: context,
                                 applicationName: 'YourFitnessGuide',
                                 applicationIcon: Image.asset(
-                                  'images/decorations/LoginDecoration.png',
+                                  'images/decorations/appIcon.jpeg',
                                   height: height * 0.08,
                                   width: height * 0.08,
                                 ),
                                 applicationVersion: '1.1.0',
                                 applicationLegalese:
-                                    '© 2022 Google logo\n© 2022 Facebook logo\n© 2022 YourFitnessGuide logo by Mahmoud Mahajna',
+                                    '© 2022 Google logo\n© 2022 Facebook logo\n© 2022 YourFitnessGuide logo by Adan Abu Younis',
                                 children: <Widget>[
                                   InkWell(
                                       child: const Text('Privacy Policy'),

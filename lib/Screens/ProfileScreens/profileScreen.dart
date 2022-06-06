@@ -44,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<String> quotes = ['Give it a try.','Go for it.','Why not?','It\'s worth a shot.','What are you waiting for?','What do you have to lose?','You might as well.','Just do it!','There you go!','Keep up the good work.','Keep it up.','Good job.','Hang in there.','Don\'t give up.','Keep pushing.','Keep fighting!','Stay strong.','Never give up.','Never say \'die\'.','Come on! You can do it!.','It\'s your call.','Follow your dreams.','Reach for the stars.','Do the impossible.','Believe in yourself.','The sky is the limit.'];
 
   get uid => widget.uid;
-  int rating = 0, savedNum = 0;
+  int rating = 20, savedNum = 0;
 
   Widget _buildStatline(
       {required String stat, required int value, String? redirection}) {
@@ -315,7 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildView() {
     if (userData != null) {
       profileImage = userData?.pictureUrl;
-      rating = 0;
+      rating = 20;
       username = userData?.name ?? 'Undefined name';
     }
     return DefaultTabController(

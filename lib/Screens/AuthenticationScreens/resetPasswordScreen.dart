@@ -147,7 +147,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 height: resetHeight * 0.39,
               ),
               Image.asset(
-                'images/decorations/LoginDecoration.png',
+                'images/decorations/LoginDecoration.jpeg',
                 width: resetWidth,
                 height: resetHeight * 0.21,
               ),
