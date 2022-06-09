@@ -122,7 +122,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         value: 'rating',
                         groupValue: widget.sorting,
                         activeColor: appTheme,
-                        onChanged: (value) => setStatee(() {
+                        onChanged: (value) => setStatee(() { //todo
                           widget.sorting = value!;
                           Navigator.of(context).pop();
                           //userGoal = value!;

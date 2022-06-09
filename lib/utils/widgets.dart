@@ -424,41 +424,67 @@ class _postState extends State<post> {
                                       .snapshot?.data!.docs[widget.index].id);
                                 },*/
                                 onSelected: (value) async {
-                                  Widget cancel = TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text(
-                                        'Cancel',
-                                        style: TextStyle(color: appTheme),
-                                      ));
-                                  Widget confirm = TextButton(
-                                      onPressed: () {
-                                        widget.user.modifySaved(
-                                            widget.snapshot?.data!
-                                                .docs[widget.index].id,
-                                            true);
-                                        PostManager().deletePost(widget.snapshot
-                                            ?.data!.docs[widget.index].id);
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Confirm',
-                                          style: TextStyle(color: appTheme)));
-                                  AlertDialog alert = AlertDialog(
-                                    title: const Text('Are you sure?'),
-                                    content: const Text(
-                                        'Posts are not retrievable after deletion.'),
-                                    actions: [cancel, confirm],
-                                  );
-                                  showDialog(
-                                      context: context,
-                                      builder: (_) {
-                                        return alert;
-                                      });
+                                  if (value == 1) {
+                                    Widget cancel = TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(color: appTheme),
+                                        ));
+                                    Widget confirm = TextButton(
+                                        onPressed: () {
+                                          widget.user.modifySaved(
+                                              widget.snapshot?.data!
+                                                  .docs[widget.index].id,
+                                              true);
+                                          PostManager().deletePost(
+                                              widget.snapshot
+                                                  ?.data!.docs[widget.index]
+                                                  .id);
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: const Text('Confirm',
+                                            style: TextStyle(color: appTheme)));
+                                    AlertDialog alert = AlertDialog(
+                                      title: const Text('Are you sure?'),
+                                      content: const Text(
+                                          'Posts are not retrievable after deletion.'),
+                                      actions: [cancel, confirm],
+                                    );
+                                    showDialog(
+                                        context: context,
+                                        builder: (_) {
+                                          return alert;
+                                        });
+                                  }
+                                  else if (value==2)
+                                    {
+                                      var category= widget.snapshot?.data!.docs[widget.index].data()!['category']!;
+                                      //print (category);
+                                      if(category=="Blog") {
+                                        Navigator.pushNamed(
+                                            context, editBlogRoute,arguments: widget.snapshot?.data!.docs[widget.index]
+                                        );
+                                      }
+                                      else if ( category=="Workout")
+                                        {
+                                          Navigator.pushNamed(context, editWorkoutRoute,arguments:
+                                          widget.snapshot?.data!.docs[widget.index]);
+                                        }
+
+                                      else if (category=="Meal Plan" ) {
+                                         Navigator.pushNamed(context, editMealPlanRoute
+                                             ,arguments: widget.snapshot?.data!.docs[widget.index]);
+                                      }
+                                    }
                                 },
                                 itemBuilder: (BuildContext context) => [
                                   const PopupMenuItem(
-                                      value: 1, child: Text('Delete post'))
+                                      value: 1, child: Text('Delete post')),
+                                  const PopupMenuItem(
+                                      value: 2, child: Text('Edit post')),
                                 ],
                               ),
                       );

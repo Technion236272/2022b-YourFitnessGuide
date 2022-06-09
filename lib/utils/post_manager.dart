@@ -186,6 +186,174 @@ class PostManager with ChangeNotifier {
     return isSubmitted;
   }
 
+  Future<bool> updateBlog(
+      {required String title, required description,required timeStamp, File? postImage}) async {
+    bool isSubmitted = false;
+
+    String userUid = _firebaseAuth.currentUser!.uid;
+
+    if (postImage != null) {
+      String? pictureUrl =
+      await _fileUploadService.uploadPostFile(file: postImage);
+
+      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
+      await _postCollection.doc().set({
+        "category": 'Blog',
+        "title": title,
+        "description": description,
+        "image_url": pictureUrl,
+        "createdAt": timeStamp,
+        "user_uid": userUid,
+        'commentsNum': 0,
+        "rating": 0
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    } else {
+      await _postCollection.doc().set({
+        "category": 'Blog',
+        "title": title,
+        "description": description,
+        "createdAt": timeStamp,
+        "user_uid": userUid,
+        'commentsNum': 0,
+        "rating": 0
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    }
+    notifyListeners();
+    return isSubmitted;
+  }
+
+  Future<bool> updateWorkout(
+      {required String title,
+        required description,
+        required timeStamp,
+        File? postImage,
+        required goals,
+        required exercises}) async {
+    bool isSubmitted = false;
+
+    String userUid = _firebaseAuth.currentUser!.uid;
+
+    if (postImage != null) {
+      String? pictureUrl =
+      await _fileUploadService.uploadPostFile(file: postImage);
+
+      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
+      await _postCollection.doc().set({
+        "category": 'Workout',
+        "title": title,
+        "description": description,
+        "image_url": pictureUrl,
+        "goals": goals,
+        "exercises": exercises,
+        "createdAt": timeStamp,
+        "user_uid": userUid,
+        'commentsNum': 0,
+        "rating": 0
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    } else {
+      await _postCollection.doc().set({
+        "category": 'Workout',
+        "title": title,
+        "description": description,
+        "goals": goals,
+        "exercises": exercises,
+        "createdAt": timeStamp,
+        "user_uid": userUid,
+        'commentsNum': 0,
+        "rating": 0
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    }
+    notifyListeners();
+    return isSubmitted;
+  }
+
+  Future<bool> updateMealPlan(
+      {required String title,
+        required description,
+        required timeStamp,
+        File? postImage,
+        required goals,
+        required mealsContents,
+        required mealsName,
+        required mealsIngredients}) async {
+    bool isSubmitted = false;
+
+    String userUid = _firebaseAuth.currentUser!.uid;
+
+    if (postImage != null) {
+      String? pictureUrl =
+      await _fileUploadService.uploadPostFile(file: postImage);
+
+      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
+      await _postCollection.doc().set({
+        "category": 'Meal Plan',
+        "title": title,
+        "description": description,
+        "image_url": pictureUrl,
+        "goals": goals,
+        "meals_contents": mealsContents,
+        "meals_name": mealsName,
+        "meals_ingredients": mealsIngredients,
+        "createdAt": timeStamp,
+        "user_uid": userUid,
+        'commentsNum': 0,
+        "rating": 0
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    } else {
+      await _postCollection.doc().set({
+        "category": 'Meal Plan',
+        "title": title,
+        "description": description,
+        "goals": goals,
+        "meals_contents": mealsContents,
+        "meals_name": mealsName,
+        "meals_ingredients": mealsIngredients,
+        "createdAt": timeStamp,
+        "user_uid": userUid,
+        'commentsNum': 0,
+        "rating": 0
+      }).then((_) {
+        isSubmitted = true;
+      }).catchError((onError) {
+        isSubmitted = false;
+      }).timeout(const Duration(seconds: 20), onTimeout: () {
+        isSubmitted = false;
+      });
+    }
+    notifyListeners();
+    return isSubmitted;
+  }
+
   /// get all post from the db
   Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts(String sorting) {
       return _postCollection.orderBy(sorting, descending: true).snapshots();
