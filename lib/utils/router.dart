@@ -13,6 +13,10 @@ import 'package:yourfitnessguide/Screens/ViewPostScreens/viewBlogPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewWorkoutPost.dart';
 import 'package:yourfitnessguide/Screens/ViewPostScreens/viewMealPlanPost.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/viewUsers.dart';
+import 'package:yourfitnessguide/Screens/EditPosts/editBlogPost.dart';
+import 'package:yourfitnessguide/Screens/EditPosts/editWorkoutPost.dart';
+import 'package:yourfitnessguide/Screens/EditPosts/editMealPlanPost.dart';
+
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -64,6 +68,17 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         return MaterialPageRoute(builder: (context) => ProfileScreen(uid: args.uid));
       }
       return MaterialPageRoute(builder: (context) => ProfileScreen());
+
+    case editBlogRoute:
+      final args = settings.arguments;
+      return MaterialPageRoute(builder: (context) => EditBlogPost(post_data:args));
+    case editWorkoutRoute:
+      final args = settings.arguments;
+      return MaterialPageRoute(builder: (context) => EditWorkout(post_data:args));
+    case editMealPlanRoute:
+      final args = settings.arguments;
+      return MaterialPageRoute(builder: (context) => EditMealPlan(post_data:args));
+
     default:
       return MaterialPageRoute(builder: (context) => HomeScreen());
   }
