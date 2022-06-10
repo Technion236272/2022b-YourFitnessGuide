@@ -482,9 +482,10 @@ class _postState extends State<post> {
                                 },
                                 itemBuilder: (BuildContext context) => [
                                   const PopupMenuItem(
-                                      value: 1, child: Text('Delete post')),
-                                  const PopupMenuItem(
                                       value: 2, child: Text('Edit post')),
+                                  const PopupMenuItem(
+                                      value: 1, child: Text('Delete post')),
+
                                 ],
                               ),
                       );
