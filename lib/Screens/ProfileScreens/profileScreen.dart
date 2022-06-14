@@ -80,11 +80,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildTabHeader(String tabText) {
     return Tab(
-        child:FittedBox(child: Text(
-      tabText,
-      style:
-          TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15),
-    )));
+        child:FittedBox(
+            child: Text(tabText, style: TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15))
+        )
+    );
   }
 
   Widget _buildTopDisplayRow(
@@ -166,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Flexible(
                     child: Text(
                   text,
-                  style: TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20),
                 )),
                 Flexible(
                     child: Image.asset(
@@ -303,11 +302,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         lineHeight: 20.0,
         animationDuration: 2000,
         percent: calculatePercent(),
-        leading: Text('Initial Weight', style: TextStyle(fontSize: 12.0),),
-        trailing: Text('Goal Weight', style: TextStyle(fontSize: 12.0),),
-        center: Text(randomizeProgressMessage(), style: TextStyle(fontSize: 12.0)),
+        leading: const Text('Initial Weight', style: TextStyle(fontSize: 12.0)),
+        trailing: const Text('Goal Weight', style: TextStyle(fontSize: 12.0)),
+        center: Text(randomizeProgressMessage(), style: const TextStyle(fontSize: 12.0)),
         progressColor: appTheme,
-        barRadius:Radius.circular(40.0),
+        barRadius: const Radius.circular(40.0),
       ),
     );
   }
@@ -318,142 +317,133 @@ class _ProfileScreenState extends State<ProfileScreen> {
       rating = 20;
       username = userData?.name ?? 'Undefined name';
     }
-    return DefaultTabController(
-        length: visiting ? 3 : 4,
-        child: Scaffold(
-            appBar: AppBar(
-              centerTitle: false,
-              title: Text(username),
-              actions: visiting
-                  ? []
-                  : [
-                      Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/edit');
-                                  },
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                  )),
-                              IconButton(
-                                  onPressed: () {
-                                    user.signOut();
-                                    setState(() {});
-                                  },
-                                  icon: const Icon(
-                                    Icons.logout,
-                                    color: Colors.white,
-                                  ))
-                            ],
-                          )),
-                    ],
-            ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    padding: EdgeInsets.only(
-                        top: height * 0.035),
-                    child: _buildTopDisplayRow(
-                      height,
-                      width,
-                      rating,
-                      savedNum,
-                    )),
-                (!visiting || !user.isAuthenticated)
-                    ? Container(
-                      )
-                    : (ElevatedButton(
-                        child: Text(followButtonText),
-                        style: ElevatedButton.styleFrom(
-                            primary: const Color(0xff84C59E),
-                            shadowColor: appTheme,
-                            side: BorderSide(
-                                width: 2.0,
-                                color: Colors.black.withOpacity(0.5)),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0)),
-                            fixedSize: Size(width * 0.32, height * 0.03),
-                            textStyle: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            )),
-                        onPressed: () async {
-                          if (followButtonText == 'Following') {
-                            setState(() {
-                              followButtonText = 'Follow';
-                              if (widget.followersNum != null) {
-                                widget.followersNum = widget.followersNum! - 1;
-                              }
-
-                              user.modifyFollow(currUid, true);
-                            });
-                          } else {
-                            setState(() {
-                              followButtonText = 'Following';
-                              if (widget.followersNum != null) {
-                                widget.followersNum = widget.followersNum! + 1;
-                              }
-                              user.modifyFollow(currUid, false);
-                            });
-                          }
-                        })),
-                visiting? Container() : buildProgressbar(),
-                _buildTabBar(),
-                SizedBox(
-                  height: height * 0.005,
-                ),
-                Flexible(
-                  child: TabBarView(
-                    children: !visiting
-                        ? (noPosts
-                            ? [
-                                emptyNote(height, width,
-                                    'You have not published a post yet'),
-                                emptyNote(height, width,
-                                    'You have not published a Meal Plan yet'),
-                                emptyNote(height, width,
-                                    'You have not published a Workout yet'),
-                                savedNum == 0
-                                    ? emptyNote(height, width,
-                                        'You have not saved a post yet')
-                                    : (_buildSaved()),
-                              ]
-                            : [
-                                _buildTab(),
-                                _buildTab(category: "Meal Plan"),
-                                _buildTab(category: "Workout"),
-                                savedNum == 0
-                                    ? emptyNote(height, width,
-                                        'You have not saved a post yet')
-                                    : (_buildSaved()),
-                              ])
-                        : (noPosts
-                            ? [
-                                emptyNote(height, width,
-                                    'User has not published a post yet'),
-                                emptyNote(height, width,
-                                    'User has not published a Meal Plan yet'),
-                                emptyNote(height, width,
-                                    'User has not published a Workout yet'),
-                              ]
-                            : [
-                                _buildTab(),
-                                _buildTab(category: "Meal Plan"),
-                                _buildTab(category: "Workout"),
-                              ]),
+    return Scaffold(
+        appBar: AppBar(
+        centerTitle: false,
+        title: Text(username),
+        actions: visiting
+          ? []
+          : [
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/edit');
+                    },
+                    icon: const Icon(Icons.edit, color: Colors.white)
                   ),
-                ),
-              ],
-            )));
+                  IconButton(
+                    onPressed: () {
+                      user.signOut();
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.logout,color: Colors.white)
+                  )
+                ],
+              )
+            ),
+          ],
+        ),
+    body: DefaultTabController(
+        length: visiting ? 3 : 4,
+        child: NestedScrollView(
+          headerSliverBuilder: (context,_){
+            return [
+              SliverList(
+                delegate: SliverChildListDelegate([
+                  Container(
+                      padding: EdgeInsets.only(top: height * 0.035),
+                      child: _buildTopDisplayRow(height, width, rating, savedNum)
+                  ),
+                  (!visiting || !user.isAuthenticated)
+                      ? Container()
+                      : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: const Color(0xff84C59E),
+                          shadowColor: appTheme,
+                          side: BorderSide(
+                              width: 2.0,
+                              color: Colors.black.withOpacity(0.5)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          fixedSize: Size(width * 0.32, height * 0.03),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          )),
+                      onPressed: () async {
+                        if (followButtonText == 'Following') {
+                          setState(() {
+                            followButtonText = 'Follow';
+                            if (widget.followersNum != null) {
+                              widget.followersNum = widget.followersNum! - 1;
+                            }
+
+                            user.modifyFollow(currUid, true);
+                          });
+                        } else {
+                          setState(() {
+                            followButtonText = 'Following';
+                            if (widget.followersNum != null) {
+                              widget.followersNum = widget.followersNum! + 1;
+                            }
+                            user.modifyFollow(currUid, false);
+                          });
+                        }
+                      },
+                      child: Text(followButtonText)),
+                  visiting ? Container() : buildProgressbar(),
+                ]),
+              )
+            ];
+          },
+          body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildTabBar(),
+            SizedBox(height: height * 0.005),
+            Flexible(
+              child: TabBarView(
+                children: !visiting
+                    ? (noPosts
+                      ? [
+                        emptyNote(height, width,'You have not published a post yet'),
+                        emptyNote(height, width,'You have not published a Meal Plan yet'),
+                        emptyNote(height, width,'You have not published a Workout yet'),
+                        savedNum == 0
+                            ? emptyNote(height, width,'You have not saved a post yet')
+                            : (_buildSaved()),
+                        ]
+                      : [
+                        _buildTab(),
+                        _buildTab(category: "Meal Plan"),
+                        _buildTab(category: "Workout"),
+                        savedNum == 0
+                            ? emptyNote(height, width,'You have not saved a post yet')
+                            : (_buildSaved()),
+                      ])
+                    : (noPosts
+                      ? [
+                        emptyNote(height, width,'User has not published a post yet'),
+                        emptyNote(height, width,'User has not published a Meal Plan yet'),
+                        emptyNote(height, width,'User has not published a Workout yet'),
+                      ]
+                      : [
+                        _buildTab(),
+                        _buildTab(category: "Meal Plan"),
+                        _buildTab(category: "Workout"),
+                      ]),
+              ),
+            ),
+          ],
+        )
+        )
+        ));
   }
 
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved(
-      {String? category}) {
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved({String? category}) {
     return StreamBuilder(
       stream: PostManager().getAllPosts('createdAt'),
       builder: (context, snapshot) {
