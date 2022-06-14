@@ -48,13 +48,7 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
                           color: Colors.black.withOpacity(0.1))
                     ],
                     shape: BoxShape.circle,
-                    image: model.pictureUrl == null
-                        ? DecorationImage(
-                        fit: BoxFit.cover,
-                        image: Image.asset(
-                            'images/decorations/mclovin.png')
-                            .image)
-                        : DecorationImage(
+                    image: DecorationImage(
                         fit: BoxFit.cover,
                         image: model.picture.image))),
             SizedBox(

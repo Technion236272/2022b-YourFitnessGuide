@@ -523,7 +523,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         widget.followingNum = widget.followingNum ?? userData?.following;
         widget.followersNum = widget.followersNum ?? userData?.followers;
         currUid = uid ?? user.getCurrUid();
-        username = userData?.name ?? 'Mclovin';
+        username = userData?.name ?? '';
         privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
       }
     }
