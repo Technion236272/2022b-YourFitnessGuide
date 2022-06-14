@@ -41,7 +41,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool setup = true;
   late int initialW, currentW, goalW;
   late Map<String, bool> privacySettings;
-  List<String> quotes = ['Give it a try.','Go for it.','Why not?','It\'s worth a shot.','What are you waiting for?','What do you have to lose?','You might as well.','Just do it!','There you go!','Keep up the good work.','Keep it up.','Good job.','Hang in there.','Don\'t give up.','Keep pushing.','Keep fighting!','Stay strong.','Never give up.','Never say \'die\'.','Come on! You can do it!.','It\'s your call.','Follow your dreams.','Reach for the stars.','Do the impossible.','Believe in yourself.','The sky is the limit.'];
+  List<String> quotes = [
+    'Give it a try.','Go for it.','Why not?','It\'s worth a shot.',
+    'What are you waiting for?','What do you have to lose?','You might as well.',
+    'Just do it!','There you go!','Keep up the good work.','Keep it up.',
+    'Good job.','Hang in there.','Don\'t give up.','Keep pushing.',
+    'Keep fighting!','Stay strong.','Never give up.','Never say \'die\'.',
+    'Come on! You can do it!.','It\'s your call.','Follow your dreams.',
+    'Reach for the stars.','Do the impossible.','Believe in yourself.',
+    'The sky is the limit.'
+  ];
 
   get uid => widget.uid;
   int rating = 20, savedNum = 0;
@@ -81,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildTabHeader(String tabText) {
     return Tab(
         child:FittedBox(
-            child: Text(tabText, style: TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15))
+            child: Text(tabText, style: const TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15))
         )
     );
   }
@@ -105,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
         ),
         Container(
-          padding: EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.only(bottom: 20),
         child: imageContainer(
           height: height,
           width: width,
@@ -449,10 +458,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Scaffold(
-            appBar: AppBar(
-              centerTitle: false,
-              title: Text(username),
-            ),
+            appBar: AppBar(centerTitle: false, title: Text(username)),
             body: const Center(child: CircularProgressIndicator.adaptive()),
           );
         }
@@ -536,11 +542,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-            ),
-            body: const Center(
-                child: CircularProgressIndicator.adaptive()),
+            appBar: AppBar(centerTitle: true),
+            body: const Center(child: CircularProgressIndicator.adaptive()),
           );
         }
         if (snapshot.hasError) {
@@ -558,7 +561,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           widget.followersNum = userData?.followers;
           widget.followingNum = userData?.following;
         }
-        privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
+        privacySettings = !visiting
+            ?  {'profile': false, 'following': false, 'followers': false}
+            : userData?.privacySettings;
 
         return RefreshIndicator(
             child: StreamBuilder(
@@ -566,18 +571,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               builder: (context, snapshot2) {
                 if (!snapshot2.hasData) {
                   return Scaffold(
-                    appBar: AppBar(
-                      centerTitle: false,
-                      title: Text(username),
-                    ),
-                    body: const Center(
-                        child: CircularProgressIndicator.adaptive()),
+                    appBar: AppBar(centerTitle: false, title: Text(username),),
+                    body: const Center(child: CircularProgressIndicator.adaptive()),
                   );
                 }
                 if (snapshot2.hasError) {
                   Navigator.pop(context);
-                  const snackBar =
-                      SnackBar(content: Text('Something went wrong'));
+                  const snackBar = SnackBar(content: Text('Something went wrong'));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 posts = snapshot2;

@@ -95,7 +95,6 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
 
   Widget buildFollowButton(String uid) {
     return ElevatedButton(
-        child: Text(widget.buttonsTexts[uid]!),
         style: ElevatedButton.styleFrom(
             primary: const Color(0xff84C59E),
             shadowColor: appTheme,
@@ -119,7 +118,8 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
               //user.modifyFollow(currUid, false);
             });
           }
-        });
+        },
+        child: Text(widget.buttonsTexts[uid]!));
   }
 
   Widget buildUser(SearchUserModel model) {
@@ -156,34 +156,36 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                         ),
                         Text(model.name!),
                       ],
-                    ),(!user.isAuthenticated || model.uid == user!.uid)? Container() :
-                    ElevatedButton(
-                        child: Text(widget.buttonsTexts[model.uid]!),
-                        style: ElevatedButton.styleFrom(
-                            primary: const Color(0xff84C59E),
-                            shadowColor: appTheme,
-                            side: BorderSide(
-                                width: 2.0, color: Colors.black.withOpacity(0.5)),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0)),
-                            fixedSize: Size(width * 0.32, height * 0.03),
-                            textStyle: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            )),
-                        onPressed: () async {
-                          if (widget.buttonsTexts[model.uid] == 'Following') {
-                            setState2(() {
-                              widget.buttonsTexts[model.uid!] = 'Follow';
-                              user.modifyFollow(model.uid!, true);
-                            });
-                          } else {
-                            setState2(() {
-                              widget.buttonsTexts[model.uid!] = 'Following';
-                              user.modifyFollow(model.uid!, false);
-                            });
-                          }
-                        })
+                    ),
+                    (!user.isAuthenticated || model.uid == user!.uid)
+                        ? Container()
+                        : ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: const Color(0xff84C59E),
+                                shadowColor: appTheme,
+                                side: BorderSide(
+                                    width: 2.0, color: Colors.black.withOpacity(0.5)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)),
+                                fixedSize: Size(width * 0.32, height * 0.03),
+                                textStyle: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.white,
+                                )),
+                            onPressed: () async {
+                              if (widget.buttonsTexts[model.uid] == 'Following') {
+                                setState2(() {
+                                  widget.buttonsTexts[model.uid!] = 'Follow';
+                                  user.modifyFollow(model.uid!, true);
+                                });
+                              } else {
+                                setState2(() {
+                                  widget.buttonsTexts[model.uid!] = 'Following';
+                                  user.modifyFollow(model.uid!, false);
+                                });
+                              }
+                            },
+                            child: Text(widget.buttonsTexts[model.uid]!))
                   ],
                 ),
                 SizedBox(height: height * 0.02),
@@ -217,7 +219,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
           if (!userSnapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
-                title: following ? const Text('Following') : Text('Followers'),
+                title: following ? const Text('Following') : const Text('Followers'),
               ),
               body: const Center(child: CircularProgressIndicator.adaptive()),
             );
@@ -238,7 +240,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                     appBar: AppBar(
                       title: following
                           ? const Text('Following')
-                          : Text('Followers'),
+                          : const Text('Followers'),
                     ),
                     body: const Center(
                         child: CircularProgressIndicator.adaptive()),
@@ -256,14 +258,14 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                   appBar: AppBar(
                     centerTitle: false,
                     title:
-                        following ? const Text('Following') : Text('Followers'),
+                        following ? const Text('Following') : const Text('Followers'),
                   ),
                   body: Column(
                     children: [
                       search(
                         searchHint: following
-                            ? 'Search users you\'re following'
-                            : 'Search users following you',
+                            ? 'Search following'
+                            : 'Search followers',
                         onChanged: searchUser,
                       ),
                       Divider(
@@ -275,16 +277,16 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                       ),
                       Expanded(
                           child: ListView.builder(
-                        itemCount: users.length,
-                        itemBuilder: (context, index) {
-                          final currUser = users[index];
-                          if (!followList!.contains(currUser.uid)) {
-                            return Container();
-                          }
-                          bool? alreadyFollowing = user.checkImAlreadyFollowing(currUser.uid!);
-                          widget.buttonsTexts.addAll({currUser.uid!: alreadyFollowing!? 'Following':'Follow'});
-                          return buildUser(currUser);
-                        },
+                            itemCount: users.length,
+                            itemBuilder: (context, index) {
+                              final currUser = users[index];
+                              if (!followList!.contains(currUser.uid)) {
+                                return Container();
+                              }
+                              bool? alreadyFollowing = user.checkImAlreadyFollowing(currUser.uid!);
+                              widget.buttonsTexts.addAll({currUser.uid!: alreadyFollowing!? 'Following':'Follow'});
+                              return buildUser(currUser);
+                            },
                       ))
                     ],
                   ),
