@@ -95,7 +95,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
       builder: (context) => StatefulBuilder(
           builder: (context, setStatee) => AlertDialog(
                 insetPadding: EdgeInsets.only(left: width * 0.16, right: width * 0.16,top: height * 0.30, bottom: height * 0.315),
-                title: Center(child: const Text('Sorting Options'),),
+                title: const Center(child: Text('Sorting Options')),
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -147,13 +147,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
                   ],
                 ),
 
-              )));
+              ))
+  );
 
   Future openFilterDialog() => showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
           builder: (context, setStatee) => AlertDialog(
-            title: Center(child: const Text('Filter Options'),),
+            title: const Center(child: Text('Filter Options'),),
             content: CheckboxListTile(
                 title: const Text('Only show posts that match my goal',
                     style: TextStyle(color: appTheme)),
@@ -258,13 +259,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     itemCount:
                         snapshot.data == null ? 0 : snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      if (snapshot.connectionState == ConnectionState.waiting &&
-                          snapshot.data == null) {
-                        return const Center(
-                            child: CircularProgressIndicator.adaptive());
+                      if (snapshot.connectionState == ConnectionState.waiting && snapshot.data == null) {
+                        return const Center(child: CircularProgressIndicator.adaptive());
                       }
-                      if (snapshot.connectionState == ConnectionState.done &&
-                          snapshot.data == null) {
+                      if (snapshot.connectionState == ConnectionState.done && snapshot.data == null) {
                         return const Center(child: Text('No data available'));
                       }
                       return post(
