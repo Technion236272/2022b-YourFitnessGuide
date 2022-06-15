@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/services/file_upload_service.dart';
-import 'package:yourfitnessguide/utils/widgets.dart';
+import 'package:yourfitnessguide/utils/post.dart';
 
 import 'comments_manager.dart';
 

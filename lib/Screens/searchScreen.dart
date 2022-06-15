@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/database.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
-import 'package:yourfitnessguide/utils/widgets.dart';
+import 'package:yourfitnessguide/utils/post.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);

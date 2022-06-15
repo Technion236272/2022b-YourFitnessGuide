@@ -5,59 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
-import 'package:yourfitnessguide/utils/widgets.dart';
+import 'package:yourfitnessguide/utils/post.dart';
 
-/*
-class FilterDialog extends StatefulWidget {
-  bool goalOrientation;
-
-  FilterDialog({Key? key, required this.goalOrientation}) : super(key: key);
-
-  get goalOriented => goalOrientation;
-
-  @override
-  State<FilterDialog> createState() => _FilterDialogState();
-}
-
-class _FilterDialogState extends State<FilterDialog> {
-  @override
-  Widget build(BuildContext context) {
-    Widget filter1 = CheckboxListTile(
-        title: const Text('Only show posts that match my goal',
-            style: TextStyle(color: appTheme)),
-        value: widget.goalOrientation,
-        activeColor: appTheme,
-        onChanged: (value) => setState(() {
-              widget.goalOrientation = value!;
-            }));
-    Widget okButton = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                      color: appTheme,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold)),
-            )
-          ]),
-    );
-    AlertDialog alert = AlertDialog(
-      title: const Text('Filters'),
-      content: filter1,
-      actions: [okButton],
-    );
-    return alert;
-  }
-}
-*/
 class TimelineScreen extends StatefulWidget {
   bool? isGoalOriented = false;
   String sorting = 'createdAt';

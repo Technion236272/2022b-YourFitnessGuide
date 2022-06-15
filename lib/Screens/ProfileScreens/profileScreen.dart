@@ -7,6 +7,7 @@ import 'package:yourfitnessguide/utils/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
+import 'package:yourfitnessguide/utils/post.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'dart:math';
 
