@@ -199,7 +199,7 @@ class post extends StatefulWidget {
   late String? title = null;
   late String? screen = null;
   late String? uid = null;
-  late Map<String,dynamic>? data = null;
+  late Map<String, dynamic>? data = null;
   bool hide = true;
   var user;
   bool isSaved = false;
@@ -210,11 +210,14 @@ class post extends StatefulWidget {
       this.index,
       this.snapshot,
       required this.screen,
-      this.goalFiltered, this.uid, this.data})
+      this.goalFiltered,
+      this.uid,
+      this.data})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
-            .getUserInfo(data?['user_uid'] ?? snapshot?.data!.docs[index].data()!['user_uid'])
+            .getUserInfo(data?['user_uid'] ??
+                snapshot?.data!.docs[index].data()!['user_uid'])
             .asStream(),
         builder: (context, userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting &&
@@ -226,15 +229,18 @@ class post extends StatefulWidget {
             completed = false;
             return const ListTile();
           }
-          userPicture = Image.network(data?['picture'] ?? userSnapshot.data!['picture']!);
-          category = data?['category'] ?? snapshot?.data!.docs[index].data()!['category'];
+          userPicture =
+              Image.network(data?['picture'] ?? userSnapshot.data!['picture']!);
+          category = data?['category'] ??
+              snapshot?.data!.docs[index].data()!['category'];
           username = data?['name'] ?? userSnapshot.data!['name'];
           title = data?['title'] ?? userSnapshot.data!['title']!;
           rating = data?['rating'] ?? userSnapshot.data!['rating'];
-          date = data != null? (data?['createdAt'].toDate()
-              ) : (snapshot?.data!.docs[index].data()!['createdAt'] != null
-              ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
-              : DateTime.now());
+          date = data != null
+              ? (data?['createdAt'].toDate())
+              : (snapshot?.data!.docs[index].data()!['createdAt'] != null
+                  ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
+                  : DateTime.now());
 
           return const ListTile();
         });
@@ -247,49 +253,83 @@ class post extends StatefulWidget {
 class _postState extends State<post> {
   final _postManager = PostManager();
 
+  Widget _buildCommentButton()
+  {
+    String? userId;
+    String? postId;
+    return IconButton(
+        onPressed: () {
+
+            postId = widget.snapshot?.data!.docs[widget.index].id;
+            if (widget.user.getCurrUid() != null) {
+              userId = widget.user.getCurrUid();
+            }
+            if (postId == null || userId == null) {
+              userId = "not relevant";
+            }
+
+            if ( userId == "not relevant" )
+                 {
+              Future.delayed(const Duration(milliseconds: 1200), () {
+                Navigator.pushNamed(context, commentsRoute, arguments: {
+                  'postId': postId,
+                  'userId': userId,
+                });
+
+              });
+            }
+            else {
+              Navigator.pushNamed(context, commentsRoute, arguments: {
+                'postId': postId,
+                'userId': userId,
+              });
+            }
+          },
+        icon: Icon(Icons.chat_bubble, color: Colors.grey));
+  }
   Widget _buildPostIcon(IconData ic) {
     return IconButton(
         onPressed: () {
-          const snackBar = SnackBar(content: Text('Not implemented yet'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            const snackBar = SnackBar(content: Text('Not implemented yet'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
         },
         icon: Icon(ic, color: Colors.grey));
   }
 
-  Widget _buildSaveButton(){
+  Widget _buildSaveButton() {
     return IconButton(
-          onPressed: () {
-            if (widget.user.isAuthenticated) {
-              widget.isSaved = !widget.isSaved;
-              setState(() {});
-              if (!widget.isSaved) {
-                const _snackBar = SnackBar(
-                    content: Text('Deleting post from saved'));
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(_snackBar);
-                widget.user.modifySaved( widget.data != null? widget.data!['uid']:
-                    widget.snapshot?.data!.docs[widget.index].id,
-                    true);
-              } else {
-                const _snackBar =
-                SnackBar(content: Text('Saving post'));
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(_snackBar);
-                widget.user.modifySaved( widget.data != null?
-                  widget.data!['uid']:
-                    widget.snapshot?.data!.docs[widget.index].id,
-                    false);
-              }
+        onPressed: () {
+          if (widget.user.isAuthenticated) {
+            widget.isSaved = !widget.isSaved;
+            setState(() {});
+            if (!widget.isSaved) {
+              const _snackBar =
+                  SnackBar(content: Text('Deleting post from saved'));
+              ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+              widget.user.modifySaved(
+                  widget.data != null
+                      ? widget.data!['uid']
+                      : widget.snapshot?.data!.docs[widget.index].id,
+                  true);
+            } else {
+              const _snackBar = SnackBar(content: Text('Saving post'));
+              ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+              widget.user.modifySaved(
+                  widget.data != null
+                      ? widget.data!['uid']
+                      : widget.snapshot?.data!.docs[widget.index].id,
+                  false);
             }
-           else {
+          } else {
             const snackBar =
                 SnackBar(content: Text('You need to sign in to save posts'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon:  Icon(Icons.bookmark,
+        icon: Icon(Icons.bookmark,
             color: widget.isSaved ? appTheme : Colors.grey));
   }
+
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
@@ -297,8 +337,12 @@ class _postState extends State<post> {
       var saved = widget.user.savedPosts;
       widget.isSaved = saved == null
           ? false
-          : saved.contains(widget.data != null? widget.data!['uid']: widget.snapshot?.data!.docs[widget.index].id);
-      var cat = widget.data != null? widget.data!['category']: widget.snapshot?.data!.docs[widget.index].data()!['category'];
+          : saved.contains(widget.data != null
+              ? widget.data!['uid']
+              : widget.snapshot?.data!.docs[widget.index].id);
+      var cat = widget.data != null
+          ? widget.data!['category']
+          : widget.snapshot?.data!.docs[widget.index].data()!['category'];
       if (widget.goalFiltered != null &&
           widget.goalFiltered! &&
           cat == 'Blog') {
@@ -306,35 +350,43 @@ class _postState extends State<post> {
       }
 
       if (widget.goalFiltered != null && widget.goalFiltered!) {
-        var postGoals = widget.data != null? widget.data!['goals']:
-            widget.snapshot?.data!.docs[widget.index].data()!['goals'];
+        var postGoals = widget.data != null
+            ? widget.data!['goals']
+            : widget.snapshot?.data!.docs[widget.index].data()!['goals'];
         if (cat == "Blog") {
           Container();
         }
 
-          var userGoal = widget.user.userData.goal;
-          if (!postGoals[userGoal]!) {
-            return Container();
-          }
-
+        var userGoal = widget.user.userData.goal;
+        if (!postGoals[userGoal]!) {
+          return Container();
+        }
       }
     }
 
-    var tmp = (widget.data?['description'] ?? widget.snapshot?.data!.docs[widget.index].data()!['description'])
+    var tmp = (widget.data?['description'] ??
+            widget.snapshot?.data!.docs[widget.index].data()!['description'])
         as String;
 
     return InkWell(
       onTap: () {
-        var cat = widget.data?['category'] ?? widget.snapshot?.data!.docs[widget.index].data()!['category'];
+        var cat = widget.data?['category'] ??
+            widget.snapshot?.data!.docs[widget.index].data()!['category'];
         if (cat == 'Blog') {
           Navigator.pushNamed(context, viewBlogRoute,
-              arguments: widget.data != null? widget.data : widget.snapshot?.data!.docs[widget.index].data()!);
+              arguments: widget.data != null
+                  ? widget.data
+                  : widget.snapshot?.data!.docs[widget.index].data()!);
         } else if (cat == 'Workout') {
           Navigator.pushNamed(context, viewWorkoutRoute,
-              arguments: widget.data != null? widget.data : widget.snapshot?.data!.docs[widget.index].data()!);
+              arguments: widget.data != null
+                  ? widget.data
+                  : widget.snapshot?.data!.docs[widget.index].data()!);
         } else {
           Navigator.pushNamed(context, viewMealPlanRoute,
-              arguments: widget.data != null? widget.data :widget.snapshot?.data!.docs[widget.index].data()!);
+              arguments: widget.data != null
+                  ? widget.data
+                  : widget.snapshot?.data!.docs[widget.index].data()!);
         }
       },
       child: Card(
@@ -347,8 +399,9 @@ class _postState extends State<post> {
                 /// user pic + name + 3 dots
                 StreamBuilder<Map<String, dynamic>?>(
                     stream: _postManager
-                        .getUserInfo(widget.data?['user_uid'] ?? widget.snapshot?.data!.docs[widget.index]
-                            .data()!['user_uid'])
+                        .getUserInfo(widget.data?['user_uid'] ??
+                            widget.snapshot?.data!.docs[widget.index]
+                                .data()!['user_uid'])
                         .asStream(),
                     builder: (context, userSnapshot) {
                       if (userSnapshot.connectionState ==
@@ -361,20 +414,27 @@ class _postState extends State<post> {
                           userSnapshot.data == null) {
                         return const ListTile();
                       }
+
                       return ListTile(
                         contentPadding: const EdgeInsets.all(0),
                         leading: GestureDetector(
                             onTap: () {
-                              SearchArguments arg = SearchArguments(uid: widget.data?['user_uid'] ?? widget.snapshot?.data!.docs[widget.index]
-                                  .data()!['user_uid'], isUser: true);
-                              Navigator.pushNamed(context, '/profile', arguments: arg);
+                              SearchArguments arg = SearchArguments(
+                                  uid: widget.data?['user_uid'] ??
+                                      widget.snapshot?.data!.docs[widget.index]
+                                          .data()!['user_uid'],
+                                  isUser: true);
+                              Navigator.pushNamed(context, '/profile',
+                                  arguments: arg);
                             },
                             child: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: widget.userPicture != null
-                              ? widget.userPicture?.image
-                              : (widget.data?['picture'] ?? NetworkImage(userSnapshot.data!['picture']!)),
-                        )),
+                              radius: 30,
+                              backgroundImage: widget.userPicture != null
+                                  ? widget.userPicture?.image
+                                  : (widget.data?['picture'] ??
+                                      NetworkImage(
+                                          userSnapshot.data!['picture']!)),
+                            )),
                         title: RichText(
                           text: TextSpan(
                             style: Theme.of(context)
@@ -385,17 +445,19 @@ class _postState extends State<post> {
                               TextSpan(
                                   text: widget.category != null
                                       ? widget.category
-                                      : (widget.data?['category'] ?? widget
-                                          .snapshot?.data!.docs[widget.index]
-                                          .data()!['category']),
-
+                                      : (widget.data?['category'] ??
+                                          widget.snapshot?.data!
+                                              .docs[widget.index]
+                                              .data()!['category']),
                                   style: TextStyle(
                                       //fontWeight: FontWeight.bold,
                                       color: Theme.of(context)
                                           .appBarTheme
                                           .backgroundColor)),
                               const TextSpan(text: ' by '),
-                              TextSpan(text: widget.data?['name'] ?? userSnapshot.data!['name']),
+                              TextSpan(
+                                  text: widget.data?['name'] ??
+                                      userSnapshot.data!['name']),
                             ],
                           ),
                         ),
@@ -404,9 +466,17 @@ class _postState extends State<post> {
                                 ? timeago.format(widget.date!,
                                     allowFromNow: true)
                                 : timeago.format(
-                                widget.data != null? (widget.data?['createdAt'].toDate()) : (widget.snapshot?.data!.docs[widget.index].data()!['createdAt'] != null
-                                    ? widget.snapshot?.data!.docs[widget.index].data()!['createdAt'].toDate()
-                                    : DateTime.now()),
+                                    widget.data != null
+                                        ? (widget.data?['createdAt'].toDate())
+                                        : (widget.snapshot?.data!
+                                                    .docs[widget.index]
+                                                    .data()!['createdAt'] !=
+                                                null
+                                            ? widget.snapshot?.data!
+                                                .docs[widget.index]
+                                                .data()!['createdAt']
+                                                .toDate()
+                                            : DateTime.now()),
                                     allowFromNow: true),
                             style: Theme.of(context)
                                 .textTheme
@@ -439,10 +509,11 @@ class _postState extends State<post> {
                                               widget.snapshot?.data!
                                                   .docs[widget.index].id,
                                               true);
-                                          PostManager().deletePost(
-                                              widget.snapshot
-                                                  ?.data!.docs[widget.index]
-                                                  .id);
+                                          PostManager().deletePost(widget
+                                              .snapshot
+                                              ?.data!
+                                              .docs[widget.index]
+                                              .id);
                                           Navigator.of(context).pop();
                                         },
                                         child: const Text('Confirm',
@@ -458,27 +529,28 @@ class _postState extends State<post> {
                                         builder: (_) {
                                           return alert;
                                         });
-                                  }
-                                  else if (value==2)
-                                    {
-                                      var category= widget.snapshot?.data!.docs[widget.index].data()!['category']!;
-                                      //print (category);
-                                      if(category=="Blog") {
-                                        Navigator.pushNamed(
-                                            context, editBlogRoute,arguments: widget.snapshot?.data!.docs[widget.index]
-                                        );
-                                      }
-                                      else if ( category=="Workout")
-                                        {
-                                          Navigator.pushNamed(context, editWorkoutRoute,arguments:
-                                          widget.snapshot?.data!.docs[widget.index]);
-                                        }
-
-                                      else if (category=="Meal Plan" ) {
-                                         Navigator.pushNamed(context, editMealPlanRoute
-                                             ,arguments: widget.snapshot?.data!.docs[widget.index]);
-                                      }
+                                  } else if (value == 2) {
+                                    var category = widget
+                                        .snapshot?.data!.docs[widget.index]
+                                        .data()!['category']!;
+                                    //print (category);
+                                    if (category == "Blog") {
+                                      Navigator.pushNamed(
+                                          context, editBlogRoute,
+                                          arguments: widget.snapshot?.data!
+                                              .docs[widget.index]);
+                                    } else if (category == "Workout") {
+                                      Navigator.pushNamed(
+                                          context, editWorkoutRoute,
+                                          arguments: widget.snapshot?.data!
+                                              .docs[widget.index]);
+                                    } else if (category == "Meal Plan") {
+                                      Navigator.pushNamed(
+                                          context, editMealPlanRoute,
+                                          arguments: widget.snapshot?.data!
+                                              .docs[widget.index]);
                                     }
+                                  }
                                 },
                                 itemBuilder: (BuildContext context) => [
                                   const PopupMenuItem(
@@ -489,30 +561,39 @@ class _postState extends State<post> {
                               ),
                       );
                     }),
-                Text( widget.data?['title'] ??
-                    widget.snapshot?.data!.docs[widget.index].data()!['title']!,
+                Text(
+                  widget.data?['title'] ??
+                      widget.snapshot?.data!.docs[widget.index]
+                          .data()!['title']!,
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 5),
-                Text( widget.data != null? widget.data!['description'].substring(0, min(500, tmp.length)) +
-                    (500 < tmp.length ? '...' : ''):
-                    widget.snapshot?.data!.docs[widget.index]
-                            .data()!['description']!
-                            .substring(0, min(500, tmp.length)) +
-                        (500 < tmp.length ? '...' : ''),
+                Text(
+                    widget.data != null
+                        ? widget.data!['description']
+                                .substring(0, min(500, tmp.length)) +
+                            (500 < tmp.length ? '...' : '')
+                        : widget.snapshot?.data!.docs[widget.index]
+                                .data()!['description']!
+                                .substring(0, min(500, tmp.length)) +
+                            (500 < tmp.length ? '...' : ''),
                     textAlign: TextAlign.left,
                     maxLines: 7),
                 const SizedBox(height: 5),
-    ((widget.data!= null && widget.data!['image_url'] != null) || widget.snapshot?.data!.docs[widget.index]
-        .data()!['image_url'] !=
-    null)
+                ((widget.data != null && widget.data!['image_url'] != null) ||
+                        widget.snapshot?.data!.docs[widget.index]
+                                .data()!['image_url'] !=
+                            null)
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.network( widget.data != null? widget.data!['image_url']  : (widget.data?['image_url'] ??
-                            widget.snapshot?.data!.docs[widget.index]
-                              .data()!['image_url']!),
+                        child: Image.network(
+                          widget.data != null
+                              ? widget.data!['image_url']
+                              : (widget.data?['image_url'] ??
+                                  widget.snapshot?.data!.docs[widget.index]
+                                      .data()!['image_url']!),
                           //height: 200,
 
                           width: MediaQuery.of(context).size.width,
@@ -524,12 +605,12 @@ class _postState extends State<post> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-
                       children: [
                         _buildPostIcon(Icons.arrow_upward),
                         Text(
-                          (widget.data?['rating'] ?? widget.snapshot?.data.docs[widget.index]
-                                  .data()['rating'])!
+                          (widget.data?['rating'] ??
+                                  widget.snapshot?.data.docs[widget.index]
+                                      .data()['rating'])!
                               .toString(),
                           style: TextStyle(
                               fontSize: 18,
@@ -539,11 +620,10 @@ class _postState extends State<post> {
                         _buildPostIcon(Icons.arrow_downward),
                       ],
                     ),
-                    _buildPostIcon(Icons.chat_bubble),
+                    _buildCommentButton(),
                     _buildSaveButton(),
                   ],
                 )
-
               ],
             ),
           )),

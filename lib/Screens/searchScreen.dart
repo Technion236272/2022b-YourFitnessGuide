@@ -298,7 +298,7 @@ class _SearchScreenState extends State<SearchScreen> {
         return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
       });
     });
-    print(PostManager().getPostByID('vL85d9242g3ViA6ts11E'));
+   // print(PostManager().getPostByID('vL85d9242g3ViA6ts11E'));
 
 
     return DefaultTabController(
