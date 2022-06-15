@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/services/file_upload_service.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
+import 'comments_manager.dart';
+
 class PostManager with ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final FirebaseFirestore _db =
@@ -16,7 +18,7 @@ class PostManager with ChangeNotifier {
       _db.collection("versions").doc("v2").collection("users");
 
   final FileUploadService _fileUploadService = FileUploadService();
-
+  final CommentsManager _commentsManager = CommentsManager();
   Future<bool> submitBlog(
       {required String title, required description, File? postImage}) async {
     bool isSubmitted = false;
@@ -404,6 +406,7 @@ class PostManager with ChangeNotifier {
 
   Future<void> deletePost(String postUid) async {
     _postCollection.doc(postUid).delete();
+    _commentsManager.deleteComments(postUid);
     notifyListeners();
   }
 
@@ -432,4 +435,6 @@ class PostManager with ChangeNotifier {
     notifyListeners();
     return userData;
   }
+
+
 }
