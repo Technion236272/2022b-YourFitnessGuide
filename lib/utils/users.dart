@@ -415,7 +415,7 @@ class AuthRepository with ChangeNotifier {
   }
 
   /// Modifies vote, whether its upvotes or downvotes.
-  Future<void> modifyVote(String postId, String voteType, bool val) async {
+  Future<void> modifyVote(String postId, String postOwnerId, String voteType, bool val) async {
     //print("Modifying vote WAIT");
     if(val) {
       await _db
@@ -445,9 +445,9 @@ class AuthRepository with ChangeNotifier {
           .collection("versions")
           .doc("v2")
           .collection("users")
-          .doc(user!.uid)
+          .doc(postOwnerId)
           .update({'rating': FieldValue.increment(1)});
-      _userData?.rating += 1;
+      //_userData?.rating += 1;
     }
     else{
       await _db
@@ -460,9 +460,9 @@ class AuthRepository with ChangeNotifier {
           .collection("versions")
           .doc("v2")
           .collection("users")
-          .doc(user!.uid)
+          .doc(postOwnerId)
           .update({'rating': FieldValue.increment(-1)});
-      _userData?.rating += -1;
+      //_userData?.rating += -1;
     }
     notifyListeners();
     notifyListeners();

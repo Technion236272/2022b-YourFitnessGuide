@@ -108,6 +108,7 @@ class _postState extends State<post> {
 
   Widget _buildUpvoteButton(){
     String? postId = widget.snapshot?.data!.docs[widget.index].id;
+    String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
     String? userId = widget.user.getCurrUid();
 
     List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
@@ -122,10 +123,10 @@ class _postState extends State<post> {
             isUpvoted = !isUpvoted;
             if (isUpvoted && isDownvoted) {
               isDownvoted = false;
-              widget.user.modifyVote(postId, 'downvotes', isDownvoted);
+              widget.user.modifyVote(postId, postOwnerId, 'downvotes', isDownvoted);
             }
             setState(() {});
-            widget.user.modifyVote(postId, 'upvotes', isUpvoted);
+            widget.user.modifyVote(postId, postOwnerId, 'upvotes', isUpvoted);
           }
           else{
             const snackBar = SnackBar(content: Text('You need to sign in to upvote posts'));
@@ -138,6 +139,7 @@ class _postState extends State<post> {
 
   Widget _buildDownvoteButton(){
     String? postId = widget.snapshot?.data!.docs[widget.index].id;
+    String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
     String? userId = widget.user.getCurrUid();
 
     List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
@@ -152,10 +154,10 @@ class _postState extends State<post> {
             isDownvoted = !isDownvoted;
             if (isDownvoted && isUpvoted) {
               isUpvoted = false;
-              widget.user.modifyVote(postId, 'upvotes', isUpvoted);
+              widget.user.modifyVote(postId, postOwnerId, 'upvotes', isUpvoted);
             }
             setState(() {});
-            widget.user.modifyVote(postId, 'downvotes', isDownvoted);
+            widget.user.modifyVote(postId, postOwnerId, 'downvotes', isDownvoted);
           }
           else{
             const snackBar = SnackBar(content: Text('You need to sign in to downvote posts'));
