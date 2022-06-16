@@ -53,13 +53,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
-          title: Text('Post Comments'),
+          title: const Text('Post Comments'),
         ),
         body: Column(children: [
           Expanded(child: buildComments()),
           //  Divider(),
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(30.0),
                   bottomRight: Radius.circular(30.0),
@@ -72,7 +72,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
               child: ListTile(
                   title: TextFormField(
                     controller: commentController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: InputBorder.none,
                       hintText: "Write a comment ...",
                       hintStyle: TextStyle(
@@ -84,33 +84,26 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       ),
                     ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(200.0),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200.0)),
                   trailing: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         primary: appTheme,
-                        side: BorderSide(
-                            width: 2.0, color: Colors.black.withOpacity(0.5)),
+                        side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                         shadowColor: appTheme,
                         elevation: 1,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20.0)),
                         fixedSize: Size(width * 0.2, height * 0.04),
-                        textStyle: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                        )),
+                        textStyle: const TextStyle(fontSize: 14, color: Colors.white)
+                    ),
                     onPressed: () {
                       if (commentController.text.toString().isEmpty) {
-                        const snackBar =
-                            SnackBar(content: Text('You must enter a comment'));
+                        const snackBar = SnackBar(content: Text('You must enter a comment'));
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else {
                         addComment();
                         _commentsManager.addCommmentsNum(postId);
                       }
-                      //print("add a comment");
                     },
                     child: const Text("Post"),
                   )),
@@ -120,8 +113,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   }
 
   addComment() async {
-    await _commentsManager.addComment(
-        postId, userId, commentController.text.toString());
+    await _commentsManager.addComment(postId, userId, commentController.text.toString());
     commentController.clear();
   }
 
@@ -131,21 +123,21 @@ class _CommentsScreenState extends State<CommentsScreen> {
         if (!snapshot.hasData) {
           return Container(
               alignment: Alignment.center,
-              margin: EdgeInsets.only(top: 10),
-              child: CircularProgressIndicator.adaptive(
+              margin: const EdgeInsets.only(top: 10),
+              child: const CircularProgressIndicator.adaptive(
                 value: 0.8,
               ));
         }
         List<Comment> comments = [];
 
-        snapshot?.data!.docs.forEach((doc) async {
+        snapshot.data!.docs.forEach((doc) async {
           var tmp = await FirebaseDB().checkUserExists(doc['userId']);
           if (tmp == false) {
             _commentsManager.deleteUserComment(postId, doc['userId']);
           }
         });
 
-        snapshot?.data!.docs.forEach((doc) {
+        snapshot.data!.docs.forEach((doc) {
           if (doc['timestamp'] != null) {
             comments.add(Comment.fromDocument(doc));
           }
@@ -205,10 +197,10 @@ class Comment extends StatelessWidget {
               children: [
                 ListTile(
                     title: Container(
-                        margin: EdgeInsets.only(top: 12),
+                        margin: const EdgeInsets.only(top: 12),
                         child: Text(
                           snapshot.data!['name']!,
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         )),
                     leading: GestureDetector(
                       onTap: () {
@@ -224,12 +216,12 @@ class Comment extends StatelessWidget {
                       ),
                     ),
                     subtitle: Container(
-                        margin: EdgeInsets.only(top: 2),
+                        margin: const EdgeInsets.only(top: 2),
                         child: Column(
                           //mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(comment, style: TextStyle(fontSize: 18)),
+                            Text(comment, style: const TextStyle(fontSize: 18)),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -238,7 +230,7 @@ class Comment extends StatelessWidget {
                                 ]),
                           ],
                         ))),
-                Divider(
+                const Divider(
                   thickness: 1,
                 ),
               ],

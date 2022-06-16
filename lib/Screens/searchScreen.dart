@@ -49,13 +49,13 @@ class _searchState extends State<search> {
           icon: const Icon(Icons.search, color: appTheme),
           suffixIcon: searchUserController.text.isNotEmpty
               ? GestureDetector(
-            child: const Icon(Icons.close, color: appTheme),
-            onTap: () {
-              searchUserController.clear();
-              widget.onChanged('');
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-          )
+                child: const Icon(Icons.close, color: appTheme),
+                onTap: () {
+                  searchUserController.clear();
+                  widget.onChanged('');
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
+              )
               : null,
           hintText: widget.searchHint,
           border: InputBorder.none,

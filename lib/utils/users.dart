@@ -20,7 +20,7 @@ class UserModel {
   int? iWeight;
   int? gWeight;
   int? cWeight;
-  int? rating;
+  int rating;
   int? following;
   int? followers;
   int saved;
@@ -28,6 +28,7 @@ class UserModel {
   List<String>? savedPosts = [];
   List<String>? imFollowing = [];
   List<String>? followingMe = [];
+  List<String>? likes = [];//Map<String, int>? likes = {}; ///From post id to -> -1: Downvoted, 1: Upvoted
   Map<String, bool>? privacySettings = {};
 
   UserModel(
@@ -39,7 +40,7 @@ class UserModel {
       this.pictureUrl,
       this.following,
       this.followers,
-      this.rating,
+      required this.rating,
       required this.saved,
       this.savedPosts,
       this.imFollowing,
@@ -67,23 +68,45 @@ class AuthRepository with ChangeNotifier {
     _onAuthStateChanged(_user);
   }
 
+
+  /// Getters
   Status get status => _status;
-
   User? get user => _user;
-
   UserModel? get userData => _userData;
-
   bool get isAuthenticated => status == Status.Authenticated;
-
   List<String>? get savedPosts => _userData?.savedPosts;
-
   String get uid => user!.uid;
-
   List<String>? get followingList => _userData?.imFollowing;
-
   List<String>? get followersList => _userData?.followingMe;
-
   Map<String, bool>? get privacySettings => _userData?.privacySettings;
+
+  Future<void> _onAuthStateChanged(User? firebaseUser) async {
+    if (firebaseUser == null) {
+      _user = null;
+      _status = Status.Unauthenticated;
+      await unsetUserData();
+    } else {
+      _user = firebaseUser;
+      _status = Status.Authenticated;
+      await setUserData();
+    }
+    notifyListeners();
+  }
+
+  /// Sign in, Sign up, Sign out + forgot password
+  Future<bool> signIn(String email, String password) async {
+    try {
+      _status = Status.Authenticating;
+      notifyListeners();
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      return true;
+    } catch (e) {
+      _userData = null;
+      _status = Status.Unauthenticated;
+      notifyListeners();
+      return false;
+    }
+  }
 
   Future<Object?> signUp(String email, String password) async {
     try {
@@ -156,20 +179,6 @@ class AuthRepository with ChangeNotifier {
       _status = Status.Unauthenticated;
       notifyListeners();
       return null;
-    }
-  }
-
-  Future<bool> signIn(String email, String password) async {
-    try {
-      _status = Status.Authenticating;
-      notifyListeners();
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
-      return true;
-    } catch (e) {
-      _userData = null;
-      _status = Status.Unauthenticated;
-      notifyListeners();
-      return false;
     }
   }
 
@@ -339,6 +348,13 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
+  Future signOut() async {
+    _auth.signOut();
+    _status = Status.Unauthenticated;
+    notifyListeners();
+    return Future.delayed(Duration.zero);
+  }
+
   Future<bool> resetPassword(String email) async {
     try {
       _auth.sendPasswordResetEmail(email: email);
@@ -348,6 +364,8 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
+
+  /// Save posts functions
   Future<void> updateSaved() async {
     for (var i = 0; i < savedPosts!.length; i++) {
       var tmp = await PostManager().checkPostsExists(savedPosts![i]);
@@ -358,11 +376,96 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
+  Future<void> modifySaved(String postuid, bool delete) async {
+    if (delete) {
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .update({
+        'saved_posts': FieldValue.arrayRemove([postuid])
+      });
+      if (_userData!.savedPosts!.contains(postuid)) {
+        _userData?.saved--;
+        _userData?.savedPosts?.remove(postuid);
+      }
+    } else {
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection('users')
+          .doc(user!.uid)
+          .update({
+        'saved_posts': FieldValue.arrayUnion([postuid])
+      });
+      _userData?.saved++;
+      _userData?.savedPosts?.add(postuid);
+    }
+    notifyListeners();
+  }
+
+
+  /// Follow users functions
   bool? checkImAlreadyFollowing(String userid) {
     if (userData?.imFollowing == null) {
       return false;
     }
     return userData?.imFollowing!.contains(userid);
+  }
+
+  /// Modifies vote, whether its upvotes or downvotes.
+  Future<void> modifyVote(String postId, String voteType, bool val) async {
+    //print("Modifying vote WAIT");
+    if(val) {
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection("posts")
+          .doc(postId)
+          .update({voteType: FieldValue.arrayUnion([user!.uid])});
+    }
+    else{
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection("posts")
+          .doc(postId)
+          .update({voteType: FieldValue.arrayRemove([user!.uid])});
+    }
+    notifyListeners();
+    if((val == true && voteType == 'upvotes') || (val == false && voteType == 'downvotes')){
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection("posts")
+          .doc(postId)
+          .update({'rating': FieldValue.increment(1)});
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection("users")
+          .doc(user!.uid)
+          .update({'rating': FieldValue.increment(1)});
+      _userData?.rating += 1;
+    }
+    else{
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection("posts")
+          .doc(postId)
+          .update({'rating': FieldValue.increment(-1)});
+      await _db
+          .collection("versions")
+          .doc("v2")
+          .collection("users")
+          .doc(user!.uid)
+          .update({'rating': FieldValue.increment(-1)});
+      _userData?.rating += -1;
+    }
+    notifyListeners();
+    notifyListeners();
   }
 
   Future<void> modifyFollow(String userid, bool delete) async {
@@ -467,35 +570,6 @@ class AuthRepository with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> modifySaved(String postuid, bool delete) async {
-    if (delete) {
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
-          .doc(user!.uid)
-          .update({
-        'saved_posts': FieldValue.arrayRemove([postuid])
-      });
-      if (_userData!.savedPosts!.contains(postuid)) {
-        _userData?.saved--;
-        _userData?.savedPosts?.remove(postuid);
-      }
-    } else {
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
-          .doc(user!.uid)
-          .update({
-        'saved_posts': FieldValue.arrayUnion([postuid])
-      });
-      _userData?.saved++;
-      _userData?.savedPosts?.add(postuid);
-    }
-    notifyListeners();
-  }
-
   Future<List<SearchUserModel>> getFollowing() async {
     List<SearchUserModel> res = [];
     await _db
@@ -515,27 +589,6 @@ class AuthRepository with ChangeNotifier {
       });
     });
     print(res);
-    return Future<List<SearchUserModel>>.value(res);
-  }
-
-  Future<List<SearchUserModel>> getUsers() async {
-    List<SearchUserModel> res = [];
-
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection("users")
-        .get()
-        .then((querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        var currentDocument = doc.get('name');
-        var currentUser = SearchUserModel(
-            name: doc.get('name'),
-            uid: doc.id.toString(),
-            pictureUrl: doc.get('picture'));
-        res.add(currentUser);
-      });
-    });
     return Future<List<SearchUserModel>>.value(res);
   }
 
@@ -560,13 +613,30 @@ class AuthRepository with ChangeNotifier {
     return Future<List<SearchUserModel>>.value(res);
   }
 
-  Future signOut() async {
-    _auth.signOut();
-    _status = Status.Unauthenticated;
-    notifyListeners();
-    return Future.delayed(Duration.zero);
+
+  /// I think for search?
+  Future<List<SearchUserModel>> getUsers() async {
+    List<SearchUserModel> res = [];
+
+    await _db
+        .collection("versions")
+        .doc("v2")
+        .collection("users")
+        .get()
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        var currentDocument = doc.get('name');
+        var currentUser = SearchUserModel(
+            name: doc.get('name'),
+            uid: doc.id.toString(),
+            pictureUrl: doc.get('picture'));
+        res.add(currentUser);
+      });
+    });
+    return Future<List<SearchUserModel>>.value(res);
   }
 
+  ///todo remove this use user.uid
   String? getCurrUid() {
     return _auth.currentUser?.uid;
   }
@@ -587,6 +657,7 @@ class AuthRepository with ChangeNotifier {
     return Future.delayed(Duration.zero);
   }
 
+  /// User data functions
   Future<void> setUserData() async {
     try {
       if (_userData != null) return;
@@ -686,19 +757,6 @@ class AuthRepository with ChangeNotifier {
     _userData?.cWeight = newCurrentWeight;
     _userData?.gWeight = newGoalWeight;
     _userData?.goal = newGoal;
-    notifyListeners();
-  }
-
-  Future<void> _onAuthStateChanged(User? firebaseUser) async {
-    if (firebaseUser == null) {
-      _user = null;
-      _status = Status.Unauthenticated;
-      await unsetUserData();
-    } else {
-      _user = firebaseUser;
-      _status = Status.Authenticated;
-      await setUserData();
-    }
     notifyListeners();
   }
 }

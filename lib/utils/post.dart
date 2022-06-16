@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -26,11 +25,7 @@ class post extends StatefulWidget {
   bool? goalFiltered = false;
   //late Map? likes = null;
 
-  post({Key? key,
-    this.index,
-    this.snapshot,
-    required this.screen,
-    this.goalFiltered, this.uid, this.data})
+  post({Key? key, this.index, this.snapshot, required this.screen, this.goalFiltered, this.uid, this.data})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
@@ -69,20 +64,21 @@ class _postState extends State<post> {
   ////Map likes;
   //int likeCount;
   bool isUpvoted = false;
+  bool isDownvoted = false;
   bool isSaved = false;
   final _postManager = PostManager();
 
-  Widget _buildCommentButton()
-  {
+  Widget _buildCommentButton() {
     String? userId;
     String? postId;
     return IconButton(
         onPressed: () {
 
-          postId =  widget.data != null
-                ? widget.data!['uid']
-                : widget.snapshot?.data!.docs[widget.index].id;
-          
+
+          postId = widget.data != null
+              ? widget.data!['uid']
+              : widget.snapshot?.data!.docs[widget.index].id;
+
           if (widget.user.getCurrUid() != null) {
             userId = widget.user.getCurrUid();
           }
@@ -107,27 +103,68 @@ class _postState extends State<post> {
             });
           }
         },
-        icon: Icon(Icons.chat_bubble, color: Colors.grey));
+        icon: const Icon(Icons.chat_bubble, color: Colors.grey));
   }
 
-  Widget _buildPostIcon(IconData ic) {
+  Widget _buildUpvoteButton(){
+    String? postId = widget.snapshot?.data!.docs[widget.index].id;
+    String? userId = widget.user.getCurrUid();
+
+    List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
+    isUpvoted = upvotesList?.contains(userId) ?? false;
+
+    List? downvotesList = widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
+    isDownvoted = downvotesList?.contains(userId) ?? false;
+
     return IconButton(
         onPressed: () {
-          const snackBar = SnackBar(content: Text('Not implemented yet'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          if (widget.user.isAuthenticated) {
+            isUpvoted = !isUpvoted;
+            if (isUpvoted && isDownvoted) {
+              isDownvoted = false;
+              widget.user.modifyVote(postId, 'downvotes', isDownvoted);
+            }
+            setState(() {});
+            widget.user.modifyVote(postId, 'upvotes', isUpvoted);
+          }
+          else{
+            const snackBar = SnackBar(content: Text('You need to sign in to upvote posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
         },
-        icon: Icon(ic, color: Colors.grey));
-  }
-
-
-  /*Widget _buildUpvoteButton(){
-    return IconButton(
-        onPressed: () {
-
-        },
-        icon: Icon(Icons.arrow_upward)
+        icon: Icon(Icons.arrow_upward, color: isUpvoted ? Colors.green : Colors.grey)// todo change
     );
-  }*/
+  }
+
+  Widget _buildDownvoteButton(){
+    String? postId = widget.snapshot?.data!.docs[widget.index].id;
+    String? userId = widget.user.getCurrUid();
+
+    List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
+    isUpvoted = upvotesList?.contains(userId) ?? false;
+
+    List? downvotesList = widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
+    isDownvoted = downvotesList?.contains(userId) ?? false;
+
+    return IconButton(
+        onPressed: () {
+          if (widget.user.isAuthenticated) {
+            isDownvoted = !isDownvoted;
+            if (isDownvoted && isUpvoted) {
+              isUpvoted = false;
+              widget.user.modifyVote(postId, 'upvotes', isUpvoted);
+            }
+            setState(() {});
+            widget.user.modifyVote(postId, 'downvotes', isDownvoted);
+          }
+          else{
+            const snackBar = SnackBar(content: Text('You need to sign in to downvote posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.arrow_downward, color: isDownvoted ? Colors.green : Colors.grey)
+    );
+  }
 
   Widget _buildSaveButton(){
     return IconButton(
@@ -156,7 +193,8 @@ class _postState extends State<post> {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon: Icon(Icons.bookmark, color: isSaved ? appTheme : Colors.grey));
+        icon: Icon(Icons.bookmark, color: isSaved ? appTheme : Colors.grey)
+    );
   }
 
   @override
@@ -198,8 +236,7 @@ class _postState extends State<post> {
     }
 
     var tmp = (widget.data?['description']
-        ?? widget.snapshot?.data!.docs[widget.index].data()!['description']
-    ) as String;
+        ?? widget.snapshot?.data!.docs[widget.index].data()!['description']) as String;
 
     return InkWell(
       onTap: () {
@@ -379,25 +416,21 @@ class _postState extends State<post> {
                   children: [
                     Row(
                       children: [
-                        //_buildUpvoteButton(),
-                        _buildPostIcon(Icons.arrow_upward),
+                        _buildUpvoteButton(),
                         Text(
-                          (widget.data?['rating']
-                              ?? widget.snapshot?.data.docs[widget.index].data()['rating']
-                          ).toString(),
+                          (widget.data?['rating'] ?? widget.snapshot?.data.docs[widget.index].data()['rating']).toString(),
                           style: TextStyle(
                               fontSize: 18,
                               color: Colors.black.withOpacity(0.9),
                               fontWeight: FontWeight.bold),
                         ),
-                        _buildPostIcon(Icons.arrow_downward),
+                        _buildDownvoteButton(),
                       ],
                     ),
                     _buildCommentButton(),
                     _buildSaveButton(),
                   ],
                 )
-
               ],
             ),
           )),

@@ -93,7 +93,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
     });
   }
 
-  Widget buildFollowButton(String uid) {
+  /*Widget buildFollowButton(String uid) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
             primary: const Color(0xff84C59E),
@@ -120,7 +120,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
           }
         },
         child: Text(widget.buttonsTexts[uid]!));
-  }
+  }*/
 
   Widget buildUser(SearchUserModel model) {
     return StatefulBuilder(builder: (context,setState2) {
