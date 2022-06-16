@@ -33,11 +33,8 @@ class CommentsManager with ChangeNotifier {
         .collection('comments')
         .where('userId', isEqualTo: userId).get();
     for (var doc in query.docs) {
-      {
-     doc.reference.delete();
-    };
+      doc.reference.delete();
     }
-
     notifyListeners();
   }
   Future<void> deleteComments(String postUid) async {
@@ -46,10 +43,7 @@ class CommentsManager with ChangeNotifier {
         .collection('comments')
         .get();
     for (var doc in query.docs) {
-      {
         doc.reference.delete();
-
-      };
     }
     notifyListeners();
   }
@@ -65,7 +59,7 @@ class CommentsManager with ChangeNotifier {
         .snapshots();
   }
 
-  Future<void> addCommmentsNum(String postid) async {
+  Future<void> addCommentsNum(String postid) async {
 
     await _db
         .collection("versions")

@@ -58,57 +58,56 @@ class _CommentsScreenState extends State<CommentsScreen> {
         body: Column(children: [
           Expanded(child: buildComments()),
           //  Divider(),
-          Container(
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30.0),
-                  bottomRight: Radius.circular(30.0),
-                  topRight: Radius.circular(30.0),
-                  topLeft: Radius.circular(30.0)),
-              color: Colors.white,
-            ),
-            child: Visibility(
-              visible: user.isAuthenticated,
-              child: ListTile(
-                  title: TextFormField(
-                    controller: commentController,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "Write a comment ...",
-                      hintStyle: TextStyle(
-                          height: 1, fontSize: 13, color: Colors.grey),
-                      labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
+          Visibility(
+            visible: user.isAuthenticated,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                  color: Colors.white,
+                ),
+                child: ListTile(
+                      title: TextFormField(
+                        controller: commentController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: "Write a comment ...",
+                          hintStyle: TextStyle(height: 1, fontSize: 15, color: Colors.grey),
+                          labelStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
                       ),
-                    ),
+                      //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200.0)),
+                      trailing: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: appTheme,
+                            side: const BorderSide(color: Colors.grey),
+                            //shadowColor: Colors.black, //appTheme,
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                            fixedSize: Size(width * 0.2, height * 0.04),
+                            textStyle: const TextStyle(fontSize: 14, color: Colors.white)
+                        ),
+                        onPressed: () {
+                          if (commentController.text.toString().isEmpty) {
+                            const snackBar = SnackBar(content: Text('You must enter a comment'));
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          } else {
+                            addComment();
+                            _commentsManager.addCommentsNum(postId);
+                          }
+                        },
+                        child: const Text("Post"),
+                      )
                   ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200.0)),
-                  trailing: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: appTheme,
-                        side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
-                        shadowColor: appTheme,
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0)),
-                        fixedSize: Size(width * 0.2, height * 0.04),
-                        textStyle: const TextStyle(fontSize: 14, color: Colors.white)
-                    ),
-                    onPressed: () {
-                      if (commentController.text.toString().isEmpty) {
-                        const snackBar = SnackBar(content: Text('You must enter a comment'));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      } else {
-                        addComment();
-                        _commentsManager.addCommmentsNum(postId);
-                      }
-                    },
-                    child: const Text("Post"),
-                  )),
+                ),
             ),
-          ),
+          )
         ]));
   }
 
@@ -124,9 +123,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
           return Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.only(top: 10),
-              child: const CircularProgressIndicator.adaptive(
-                value: 0.8,
-              ));
+              child: const CircularProgressIndicator.adaptive(value: 0.8)
+          );
         }
         List<Comment> comments = [];
 

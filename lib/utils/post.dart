@@ -73,8 +73,6 @@ class _postState extends State<post> {
     String? postId;
     return IconButton(
         onPressed: () {
-
-
           postId = widget.data != null
               ? widget.data!['uid']
               : widget.snapshot?.data!.docs[widget.index].id;
@@ -86,8 +84,7 @@ class _postState extends State<post> {
             userId = "not relevant";
           }
 
-          if ( userId == "not relevant" )
-          {
+          if ( userId == "not relevant" ) {
             Future.delayed(const Duration(milliseconds: 1200), () {
               Navigator.pushNamed(context, commentsRoute, arguments: {
                 'postId': postId,
@@ -103,7 +100,8 @@ class _postState extends State<post> {
             });
           }
         },
-        icon: const Icon(Icons.chat_bubble, color: Colors.grey));
+        icon: const Icon(Icons.chat_bubble, color: Colors.grey)
+    );
   }
 
   Widget _buildUpvoteButton(){
