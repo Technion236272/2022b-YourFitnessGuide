@@ -74,6 +74,7 @@ class _postState extends State<post> {
     return IconButton(
         onPressed: () {
 
+
           postId = widget.data != null
               ? widget.data!['uid']
               : widget.snapshot?.data!.docs[widget.index].id;
