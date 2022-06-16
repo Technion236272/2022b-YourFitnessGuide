@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/database.dart';
@@ -13,7 +12,7 @@ import 'dart:math';
 
 class ProfileScreen extends StatefulWidget {
   late String? uid;
-  int? followingNum = null, followersNum = null;
+  int? followingNum = null, followersNum = null, ratingNum = null;
 
   ProfileScreen({Key? key, this.uid}) : super(key: key);
 
@@ -56,30 +55,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   get uid => widget.uid;
   int rating = 20, savedNum = 0;
 
-  Widget _buildStatline(
-      {required String stat, required int value, String? redirection}) {
+  Widget _buildStatline({required String stat, required int value, String? redirection}) {
     var val = (privacySettings.containsKey('profile') && privacySettings['profile']!)? 'N/A' : value.toString();
-    var statTitle =
-        Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
+    var statTitle = Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
     return Center(
       child: Column(
         children: [
           Text(
             val,
-            style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
+            style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
           ),
           redirection == ''
-              ? FittedBox(child: TextButton(
-              onPressed: () {
-              },
-              child: statTitle))
-              : FittedBox(child: TextButton(
+              ? FittedBox(
+                child: TextButton(
+                  onPressed: () {},
+                  child: statTitle
+                )
+              )
+              : FittedBox(
+                child: TextButton(
                   onPressed: () {
                     var args = {'currID': currUid};
                     Navigator.pushNamed(context, redirection!, arguments: args);
                   },
-                  child: statTitle)),
+                  child: statTitle)
+              ),
           const SizedBox(
             height: 5,
           ),
@@ -104,7 +104,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
-            child: _buildStatline(stat: 'Rating', value: rating, redirection: ''),
+            child: _buildStatline(
+                stat: 'Rating',
+                value: widget.ratingNum ?? 0,
+                redirection: ''
+            ),
           ),
         ),
         Expanded(
@@ -390,7 +394,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             if (widget.followersNum != null) {
                               widget.followersNum = widget.followersNum! - 1;
                             }
-
                             user.modifyFollow(currUid, true);
                           });
                         } else {
@@ -529,6 +532,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         initialW = userData?.iWeight;
         widget.followingNum = widget.followingNum ?? userData?.following;
         widget.followersNum = widget.followersNum ?? userData?.followers;
+        widget.ratingNum = widget.ratingNum ?? userData?.rating;
         currUid = uid ?? user.getCurrUid();
         username = userData?.name ?? '';
         privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
@@ -555,12 +559,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         userData = snapshot.data;
         FirebaseDB().updateFollow(userData, currUid!);
 
-        if (widget.followingNum == null || widget.followingNum == null) {
+        if (widget.followingNum == null || widget.followingNum == null || widget.ratingNum == null) {
           if (user.isAuthenticated && user.checkImAlreadyFollowing(currUid)) {
             followButtonText = 'Following';
           }
           widget.followersNum = userData?.followers;
           widget.followingNum = userData?.following;
+          widget.ratingNum = userData?.rating;
         }
         privacySettings = !visiting
             ?  {'profile': false, 'following': false, 'followers': false}
