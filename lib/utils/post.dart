@@ -202,6 +202,7 @@ class _postState extends State<post> {
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
+
     if (widget.user.isAuthenticated) {
       /// Update isSaved, isUpvoted, isDownvoted
       var saved = widget.user.savedPosts;

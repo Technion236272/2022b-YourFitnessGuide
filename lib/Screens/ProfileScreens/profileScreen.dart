@@ -53,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   ];
 
   get uid => widget.uid;
-  int rating = 20, savedNum = 0;
+  int savedNum = 0;
 
   Widget _buildStatline({required String stat, required int value, String? redirection}) {
     var val = (privacySettings.containsKey('profile') && privacySettings['profile']!)? 'N/A' : value.toString();
@@ -96,8 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildTopDisplayRow(
-      double height, double width, int rating, int savedNum) {
+  Widget _buildTopDisplayRow(double height, double width, int savedNum) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -106,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             alignment: Alignment.centerRight,
             child: _buildStatline(
                 stat: 'Rating',
-                value: widget.ratingNum ?? 0,
+                value: userData?.rating ?? 0, //todo try widget.ratingNum ?? 0,
                 redirection: ''
             ),
           ),
@@ -328,7 +327,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildView() {
     if (userData != null) {
       profileImage = userData?.pictureUrl;
-      rating = 20;
       username = userData?.name ?? 'Undefined name';
     }
     return Scaffold(
@@ -369,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 delegate: SliverChildListDelegate([
                   Container(
                       padding: EdgeInsets.only(top: height * 0.035),
-                      child: _buildTopDisplayRow(height, width, rating, savedNum)
+                      child: _buildTopDisplayRow(height, width, savedNum)
                   ),
                   (!visiting || !user.isAuthenticated)
                       ? Container()
@@ -499,7 +497,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     user = Provider.of<AuthRepository>(context);
-
     if (uid != null) {
       if (user.isAuthenticated && user.getCurrUid() == uid) {
         userData = user.userData;
@@ -525,14 +522,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }
         profileImage = userData?.pictureUrl;
         savedPosts = userData?.savedPosts;
-        rating = userData?.rating;
         savedNum = userData?.saved;
         currentW = userData?.cWeight;
         goalW = userData?.gWeight;
         initialW = userData?.iWeight;
         widget.followingNum = widget.followingNum ?? userData?.following;
         widget.followersNum = widget.followersNum ?? userData?.followers;
-        widget.ratingNum = widget.ratingNum ?? userData?.rating;
+        widget.ratingNum = userData?.rating;
         currUid = uid ?? user.getCurrUid();
         username = userData?.name ?? '';
         privacySettings = !visiting?  {'profile': false, 'following': false, 'followers': false}   : userData?.privacySettings;
@@ -541,6 +537,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     catch(_){
 
     }
+
+    print('-----------------------------------------');
+    print(userData?.rating);
+    print('-----------------------------------------');
 
     return FutureBuilder(
       future: FirebaseDB().getUserModel(currUid!),
