@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
@@ -38,7 +37,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentController = TextEditingController();
   final String postId;
   final String userId;
-  final PostManager _postManager = PostManager();
   final CommentsManager _commentsManager = CommentsManager();
 
   _CommentsScreenState({
@@ -115,40 +113,40 @@ class _CommentsScreenState extends State<CommentsScreen> {
                           fontWeight: FontWeight.normal,
                         ),
                       ),
-                    ),
-                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200.0)),
-                    trailing: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: appTheme,
-                          side: const BorderSide(color: Colors.grey),
-                          //shadowColor: Colors.black, //appTheme,
-                          elevation: 1,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          fixedSize: Size(width * 0.2, height * 0.04),
-                          textStyle: const TextStyle(
-                              fontSize: 14, color: Colors.white)),
-                      onPressed: () {
-                        if (commentController.text.toString().isEmpty) {
-                          const snackBar = SnackBar(
-                              content: Text('You must enter a comment'));
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        } else {
-                          addComment();
-                          _commentsManager.addCommentsNum(postId);
-                        }
-                      },
-                      child: const Text("Post"),
-                    )),
+
               ),
+                      //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200.0)),
+                      trailing: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: appTheme,
+                            side: const BorderSide(color: Colors.grey),
+                            //shadowColor: Colors.black, //appTheme,
+                            elevation: 1,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                            fixedSize: Size(width * 0.2, height * 0.04),
+                            textStyle: const TextStyle(fontSize: 14, color: Colors.white)
+                        ),
+                        onPressed: () {
+                          if (commentController.text.toString().isEmpty) {
+                            const snackBar = SnackBar(content: Text('You must enter a comment'));
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          } else {
+                            addComment();
+                          }
+                        },
+                        child: const Text("Post"),
+                      )
+                  ),
+                ),
             ),
           )
         ]));
   }
 
-  void addComment() async {
-    await _commentsManager.addComment(
-        postId, userId, commentController.text.toString());
+
+  addComment() async {
+    await _commentsManager.addComment(postId, userId, commentController.text.toString());
+    _commentsManager.addCommentsNum(postId);
     commentController.clear();
   }
 

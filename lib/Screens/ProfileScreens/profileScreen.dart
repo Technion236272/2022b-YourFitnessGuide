@@ -113,18 +113,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Expanded(
           child: visiting
               ? Container()
-              : Container(
-                  child: _buildStatline(stat: 'Saved', value: savedNum, redirection: ''),
-                ),
+              : _buildStatline(stat: 'Saved', value: savedNum, redirection: '')
         ),
         Container(
           padding: const EdgeInsets.only(bottom: 20),
-        child: imageContainer(
-          height: height,
-          width: width,
-          imageLink: profileImage,
-          percent: 0.15,
-        )),
+          child: imageContainer(
+            height: height,
+            width: width,
+            imageLink: profileImage,
+            percent: 0.15,
+          )
+        ),
         Expanded(
           child: Container(
             child: _buildStatline(

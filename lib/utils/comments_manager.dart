@@ -60,16 +60,12 @@ class CommentsManager with ChangeNotifier {
   }
 
   Future<void> addCommentsNum(String postid) async {
-
     await _db
         .collection("versions")
         .doc("v2")
         .collection('posts')
         .doc(postid)
-        .update({
-      'commentsNum': FieldValue.increment(1)
-    });
-
+        .update({'commentsNum': FieldValue.increment(1)});
     notifyListeners();
   }
   Future<void> updateCommentsNum(String postid) async {
@@ -78,22 +74,15 @@ class CommentsManager with ChangeNotifier {
         .doc(postid)
         .collection('comments')
         .get();
-    for (var doc in query.docs) {
-      {
+    for (var _ in query.docs) {
        length++;
-
-      };
     }
-    //print(length);
     await _db
         .collection("versions")
         .doc("v2")
         .collection('posts')
         .doc(postid)
-        .update({
-      'commentsNum': length
-    });
-
+        .update({'commentsNum': length});
     notifyListeners();
   }
 }
