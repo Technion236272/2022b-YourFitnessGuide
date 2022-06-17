@@ -96,6 +96,7 @@ flutter:
     - images/icons/food.png
     - images/logos/facebook.png
     - images/logos/google.png
+    - images/decorations/binoculars.png
     -
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

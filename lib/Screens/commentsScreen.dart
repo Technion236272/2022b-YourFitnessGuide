@@ -12,6 +12,7 @@ import '../utils/users.dart';
 class CommentsScreen extends StatefulWidget {
   final String postId;
   final String userId;
+
   /*
   CommentsScreen (
   {
@@ -39,10 +40,42 @@ class _CommentsScreenState extends State<CommentsScreen> {
   final String userId;
   final PostManager _postManager = PostManager();
   final CommentsManager _commentsManager = CommentsManager();
+
   _CommentsScreenState({
     required this.postId,
     required this.userId,
   });
+
+  Widget emptyNote(double height, double width) {
+    var text = 'Post doesn\'t have comments yet';
+    return RefreshIndicator(
+        child: Card(
+            color: Colors.grey[200],
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  height: height * 0.01,
+                ),
+                Flexible(
+                    child: Text(
+                  text,
+                  style: const TextStyle(fontSize: 20),
+                )),
+                Flexible(
+                    child: Image.asset(
+                  'images/decorations/binoculars.png',
+                  width: width * 0.3,
+                  height: height * 0.3,
+                ))
+              ],
+            ))),
+        onRefresh: () async {
+          setState(() {});
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +89,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
           title: const Text('Post Comments'),
         ),
         body: Column(children: [
-          Expanded(child: buildComments()),
+          Expanded(child: buildComments(height, width)),
           //  Divider(),
           Visibility(
             visible: user.isAuthenticated,
@@ -69,62 +102,65 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   color: Colors.white,
                 ),
                 child: ListTile(
-                      title: TextFormField(
-                        controller: commentController,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Write a comment ...",
-                          hintStyle: TextStyle(height: 1, fontSize: 15, color: Colors.grey),
-                          labelStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.normal,
-                          ),
+                    title: TextFormField(
+                      controller: commentController,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Write a comment ...",
+                        hintStyle: TextStyle(
+                            height: 1, fontSize: 15, color: Colors.grey),
+                        labelStyle: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
-                      //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200.0)),
-                      trailing: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            primary: appTheme,
-                            side: const BorderSide(color: Colors.grey),
-                            //shadowColor: Colors.black, //appTheme,
-                            elevation: 1,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-                            fixedSize: Size(width * 0.2, height * 0.04),
-                            textStyle: const TextStyle(fontSize: 14, color: Colors.white)
-                        ),
-                        onPressed: () {
-                          if (commentController.text.toString().isEmpty) {
-                            const snackBar = SnackBar(content: Text('You must enter a comment'));
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          } else {
-                            addComment();
-                            _commentsManager.addCommentsNum(postId);
-                          }
-                        },
-                        child: const Text("Post"),
-                      )
-                  ),
-                ),
+                    ),
+                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(200.0)),
+                    trailing: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: appTheme,
+                          side: const BorderSide(color: Colors.grey),
+                          //shadowColor: Colors.black, //appTheme,
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          fixedSize: Size(width * 0.2, height * 0.04),
+                          textStyle: const TextStyle(
+                              fontSize: 14, color: Colors.white)),
+                      onPressed: () {
+                        if (commentController.text.toString().isEmpty) {
+                          const snackBar = SnackBar(
+                              content: Text('You must enter a comment'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else {
+                          addComment();
+                          _commentsManager.addCommentsNum(postId);
+                        }
+                      },
+                      child: const Text("Post"),
+                    )),
+              ),
             ),
           )
         ]));
   }
 
-  addComment() async {
-    await _commentsManager.addComment(postId, userId, commentController.text.toString());
+  void addComment() async {
+    await _commentsManager.addComment(
+        postId, userId, commentController.text.toString());
     commentController.clear();
   }
 
-  buildComments() {
+  Widget buildComments(double height, double width) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>?>>(
+      stream: _commentsManager.getComments(postId),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.only(top: 10),
-              child: const CircularProgressIndicator.adaptive(value: 0.8)
-          );
+              child: const CircularProgressIndicator.adaptive(value: 0.8));
         }
         List<Comment> comments = [];
 
@@ -141,11 +177,14 @@ class _CommentsScreenState extends State<CommentsScreen> {
           }
         });
         _commentsManager.updateCommentsNum(postId);
+
+        if (comments.isEmpty) {
+          return emptyNote(height, width);
+        }
         return ListView(
           children: comments,
         );
       },
-      stream: _commentsManager.getComments(postId),
     );
   }
 }
@@ -155,6 +194,7 @@ class Comment extends StatelessWidget {
   final String comment;
   final Timestamp? timestamp;
   final PostManager _postManager = PostManager();
+
   Comment({
     required this.userId,
     required this.comment,
