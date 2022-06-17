@@ -91,9 +91,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildTabHeader(String tabText) {
     return Tab(
         child:FittedBox(
-            child: Text(tabText, style: const TextStyle(fontWeight: FontWeight.bold, color: appTheme, fontSize: 15))
-        )
-    );
+            child: Text(
+                tabText,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: appTheme,
+                    fontSize: 15
+                ))));
   }
 
   Widget _buildTopDisplayRow(double height, double width, int savedNum) {
@@ -146,17 +150,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildTabBar() {
     return TabBar(
-      tabs: !visiting
+      tabs: visiting
           ? [
               _buildTabHeader('All posts'),
               _buildTabHeader('Meals'),
               _buildTabHeader('Workouts'),
-              _buildTabHeader('Saved'),
             ]
           : [
               _buildTabHeader('All posts'),
               _buildTabHeader('Meals'),
               _buildTabHeader('Workouts'),
+              _buildTabHeader('Saved'),
             ],
     );
   }
@@ -168,25 +172,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.grey[200],
             child: Center(
                 child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  height: height * 0.01,
-                ),
-                Flexible(
-                    child: Text(
-                  text,
-                  style: const TextStyle(fontSize: 20),
-                )),
-                Flexible(
-                    child: Image.asset(
-                  'images/decorations/404.png',
-                  width: width * 0.3,
-                  height: height * 0.3,
-                ))
-              ],
-            ))),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                      SizedBox(
+                        height: height * 0.01,
+                      ),
+                      Flexible(
+                          child: Text(
+                            text,
+                            style: const TextStyle(fontSize: 20),
+                          )
+                      ),
+                      Flexible(
+                          child: Image.asset(
+                            'images/decorations/404.png',
+                            width: width * 0.3,
+                            height: height * 0.3,
+                          )
+                      )
+                  ],
+                )
+            )
+        ),
         onRefresh: () async {
           setState(() {});
         });
@@ -207,15 +215,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (category != null) {
+      var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
       if (category == 'Meal Plan' && !mealsFound) {
-        var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
-        return emptyNote(
-            height, width, pronoun + 'published a ' + category + ' yet');
+        return emptyNote(height, width, pronoun + 'published a ' + category + ' yet');
       } else if (category == 'Workout' && !workoutsFound) {
-        var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
-
-        return emptyNote(
-            height, width, pronoun + 'published a ' + category + ' yet');
+        return emptyNote(height, width, pronoun + 'published a ' + category + ' yet');
       }
     }
 
@@ -223,12 +227,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       //separatorBuilder: (context, index) => const Divider(),
       itemCount: posts.data == null ? 0 : posts.data!.docs.length,
       itemBuilder: (context, index) {
-        if (posts.connectionState == ConnectionState.waiting &&
-            posts.data == null) {
+        if (posts.connectionState == ConnectionState.waiting && posts.data == null) {
           return const Center(child: CircularProgressIndicator.adaptive());
         }
-        if (posts.connectionState == ConnectionState.done &&
-            posts.data == null) {
+        if (posts.connectionState == ConnectionState.done && posts.data == null) {
           return const Center(child: Text('No data available'));
         }
 
@@ -371,38 +373,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   (!visiting || !user.isAuthenticated)
                       ? Container()
                       : ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          primary: const Color(0xff84C59E),
-                          shadowColor: appTheme,
-                          side: BorderSide(
-                              width: 2.0,
-                              color: Colors.black.withOpacity(0.5)),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          fixedSize: Size(width * 0.32, height * 0.03),
-                          textStyle: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          )),
-                      onPressed: () async {
-                        if (followButtonText == 'Following') {
-                          setState(() {
-                            followButtonText = 'Follow';
-                            if (widget.followersNum != null) {
-                              widget.followersNum = widget.followersNum! - 1;
-                            }
-                            user.modifyFollow(currUid, true);
-                          });
-                        } else {
-                          setState(() {
-                            followButtonText = 'Following';
-                            if (widget.followersNum != null) {
-                              widget.followersNum = widget.followersNum! + 1;
-                            }
-                            user.modifyFollow(currUid, false);
-                          });
-                        }
-                      },
+                        style: ElevatedButton.styleFrom(
+                            primary: const Color(0xff84C59E),
+                            shadowColor: appTheme,
+                            side: BorderSide(
+                                width: 2.0,
+                                color: Colors.black.withOpacity(0.5)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                            fixedSize: Size(width * 0.32, height * 0.03),
+                            textStyle: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            )),
+                        onPressed: () async {
+                          if (followButtonText == 'Following') {
+                            setState(() {
+                              followButtonText = 'Follow';
+                              if (widget.followersNum != null) {
+                                widget.followersNum = widget.followersNum! - 1;
+                              }
+                              user.modifyFollow(currUid, true);
+                            });
+                          } else {
+                            setState(() {
+                              followButtonText = 'Following';
+                              if (widget.followersNum != null) {
+                                widget.followersNum = widget.followersNum! + 1;
+                              }
+                              user.modifyFollow(currUid, false);
+                            });
+                          }
+                        },
                       child: Text(followButtonText)),
                   visiting ? Container() : buildProgressbar(),
                 ]),
@@ -410,44 +412,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ];
           },
           body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildTabBar(),
-            SizedBox(height: height * 0.005),
-            Flexible(
-              child: TabBarView(
-                children: !visiting
-                    ? (noPosts
-                      ? [
-                        emptyNote(height, width,'You have not published a post yet'),
-                        emptyNote(height, width,'You have not published a Meal Plan yet'),
-                        emptyNote(height, width,'You have not published a Workout yet'),
-                        savedNum == 0
-                            ? emptyNote(height, width,'You have not saved a post yet')
-                            : (_buildSaved()),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildTabBar(),
+              SizedBox(height: height * 0.005),
+              Flexible(
+                child: TabBarView(
+                  children: !visiting
+                      ? (noPosts
+                        ? [
+                          emptyNote(height, width,'You have not published a post yet'),
+                          emptyNote(height, width,'You have not published a Meal Plan yet'),
+                          emptyNote(height, width,'You have not published a Workout yet'),
+                          savedNum == 0
+                              ? emptyNote(height, width,'You have not saved a post yet')
+                              : (_buildSaved()),
+                          ]
+                        : [
+                          _buildTab(),
+                          _buildTab(category: "Meal Plan"),
+                          _buildTab(category: "Workout"),
+                          savedNum == 0
+                              ? emptyNote(height, width,'You have not saved a post yet')
+                              : (_buildSaved()),
+                        ])
+                      : (noPosts
+                        ? [
+                          emptyNote(height, width,'User has not published a post yet'),
+                          emptyNote(height, width,'User has not published a Meal Plan yet'),
+                          emptyNote(height, width,'User has not published a Workout yet'),
                         ]
-                      : [
-                        _buildTab(),
-                        _buildTab(category: "Meal Plan"),
-                        _buildTab(category: "Workout"),
-                        savedNum == 0
-                            ? emptyNote(height, width,'You have not saved a post yet')
-                            : (_buildSaved()),
-                      ])
-                    : (noPosts
-                      ? [
-                        emptyNote(height, width,'User has not published a post yet'),
-                        emptyNote(height, width,'User has not published a Meal Plan yet'),
-                        emptyNote(height, width,'User has not published a Workout yet'),
-                      ]
-                      : [
-                        _buildTab(),
-                        _buildTab(category: "Meal Plan"),
-                        _buildTab(category: "Workout"),
-                      ]),
+                        : [
+                          _buildTab(),
+                          _buildTab(category: "Meal Plan"),
+                          _buildTab(category: "Workout"),
+                        ]),
+                ),
               ),
-            ),
-          ],
+            ],
         )
         )
         ));
@@ -537,10 +539,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     }
 
-    print('-----------------------------------------');
-    print(userData?.rating);
-    print('-----------------------------------------');
-
     return FutureBuilder(
       future: FirebaseDB().getUserModel(currUid!),
       builder: (context, snapshot) {
@@ -566,9 +564,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           widget.followingNum = userData?.following;
           widget.ratingNum = userData?.rating;
         }
-        privacySettings = !visiting
-            ?  {'profile': false, 'following': false, 'followers': false}
-            : userData?.privacySettings;
+        privacySettings =
+          visiting
+            ? userData?.privacySettings
+            : {'profile': false, 'following': false, 'followers': false};
 
         return RefreshIndicator(
             child: StreamBuilder(

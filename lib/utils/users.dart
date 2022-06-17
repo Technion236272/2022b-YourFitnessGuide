@@ -690,7 +690,7 @@ class AuthRepository with ChangeNotifier {
       privacySettings: Map<String, bool>.from(dataDocument.get('privacySettings')));
       print(savedPosts);
     } catch (_) {
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
 
       var dataDocument = await _db
           .collection("versions")

@@ -30,7 +30,6 @@ class FirebaseDB with ChangeNotifier {
         .get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        var currentDocument = doc.get('name');
         var currentUser = SearchUserModel(
             name: doc.get('name'),
             uid: doc.id.toString(),
@@ -195,13 +194,9 @@ class FirebaseDB with ChangeNotifier {
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> dataDocument) {
       if (dataDocument.exists) {
-        var savedTmp =
-            List<String>.from(dataDocument.get('saved_posts') as List);
-        var followingTmp =
-            List<String>.from(dataDocument.get('imFollowing') as List);
-        var followersTmp =
-            List<String>.from(dataDocument.get('followingMe') as List);
-
+        var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
+        var followingTmp = List<String>.from(dataDocument.get('imFollowing') as List);
+        var followersTmp =  List<String>.from(dataDocument.get('followingMe') as List);
         userData = UserModel(
             name: dataDocument.get('name'),
             goal: dataDocument.get('goal'),
