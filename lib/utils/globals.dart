@@ -15,7 +15,7 @@ final CollectionReference<Map<String, dynamic>> userCollection =
 final CollectionReference<Map<String, dynamic>> postCollection =
     database.collection("versions").doc("v2").collection("posts");
 final CollectionReference<Map<String, dynamic>> commentsCollection =
-    database.collection("versions").doc("v2").collection("posts");
+    database.collection("versions").doc("v2").collection("comments");
 final CollectionReference<Map<String, dynamic>> notificationsCollection =
     database.collection("versions").doc("v2").collection('notifications');
 
