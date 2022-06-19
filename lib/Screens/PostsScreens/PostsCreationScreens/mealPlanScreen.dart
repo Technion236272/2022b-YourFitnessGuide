@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'dart:io';
-import 'package:yourfitnessguide/utils/ImageCrop.dart';
+import 'package:yourfitnessguide/services/image_crop.dart';
 
 class MealPlanScreen extends StatefulWidget {
   const MealPlanScreen({Key? key}) : super(key: key);

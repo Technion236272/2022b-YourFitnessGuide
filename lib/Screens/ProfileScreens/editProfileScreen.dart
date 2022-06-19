@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:yourfitnessguide/utils/ImageCrop.dart';
+import 'package:yourfitnessguide/services/image_crop.dart';
 
 class EditProfileScreen extends StatefulWidget {
   late bool firstTime;

@@ -428,7 +428,7 @@ class PostManager with ChangeNotifier {
     String? username;
     await getUserInfo(userId).then((data) {
       profilePic = data!['picture'];
-      username = data!['name'];
+      username = data['name'];
     });
     return {
       'picture': profilePic,

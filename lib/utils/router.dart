@@ -6,16 +6,16 @@ import 'package:yourfitnessguide/Screens/AuthenticationScreens/resetPasswordScre
 import 'package:yourfitnessguide/Screens/ProfileScreens/editProfileScreen.dart';
 import 'package:yourfitnessguide/home.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
-import 'package:yourfitnessguide/Screens/PostsCreationScreens/mealPlanScreen.dart';
-import 'package:yourfitnessguide/Screens/PostsCreationScreens/workoutScreen.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsCreationScreens/mealPlanScreen.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsCreationScreens/workoutScreen.dart';
 import 'package:yourfitnessguide/Screens/PostsCreationScreens/BlogPostScreen.dart';
-import 'package:yourfitnessguide/Screens/ViewPostScreens/viewBlogPost.dart';
-import 'package:yourfitnessguide/Screens/ViewPostScreens/viewWorkoutPost.dart';
-import 'package:yourfitnessguide/Screens/ViewPostScreens/viewMealPlanPost.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsViewingScreens/viewBlogPost.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsViewingScreens/viewWorkoutPost.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsViewingScreens/viewMealPlanPost.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/viewUsers.dart';
-import 'package:yourfitnessguide/Screens/EditPosts/editBlogPost.dart';
-import 'package:yourfitnessguide/Screens/EditPosts/editWorkoutPost.dart';
-import 'package:yourfitnessguide/Screens/EditPosts/editMealPlanPost.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editBlogPost.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editWorkoutPost.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editMealPlanPost.dart';
 import 'package:yourfitnessguide/Screens/commentsScreen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {

@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'dart:io';
-import 'package:yourfitnessguide/utils/ImageCrop.dart';
+import 'package:yourfitnessguide/services/image_crop.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
