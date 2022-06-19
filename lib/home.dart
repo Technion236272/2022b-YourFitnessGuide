@@ -1,16 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'Screens/ProfileScreens/editProfileScreen.dart';
 import 'Screens/ProfileScreens/profileScreen.dart';
-import 'Screens/leaderboard.dart';
+import 'Screens/leaderboardScreen.dart';
 import 'Screens/searchScreen.dart';
 import 'Screens/notificationsScreen.dart';
 import 'Screens/AuthenticationScreens/signinScreen.dart';
-import 'Screens/AuthenticationScreens/signupScreen.dart';
 import 'Screens/timelineScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,8 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _views = [
     TimelineScreen(),
-    SearchScreen(),
-    ViewLeaderboardScreen(),
+    const SearchScreen(),
+    const LeaderboardScreen(),
+    /*const NotificationsScreen(),*/
     const LoginScreen()
   ];
 
@@ -40,42 +37,38 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     var user = Provider.of<AuthRepository>(context);
 
+    /// Removing last to get relevant screen:
+    /// Profile, Edit Profile or Login
+    _views.removeLast();
     if (user.isAuthenticated && (user.userData?.iWeight != 0)) {
-      _views.removeAt(3);
-      _views.add(ProfileScreen(
-        uid: user.uid,
-      ));
+      _views.add(ProfileScreen(uid: user.uid));
     } else {
       if (user.isAuthenticated) {
-        _views.removeAt(3);
-        _views.add(EditProfileScreen(firstTime: true,));
+        _views.add(EditProfileScreen(firstTime: true));
       } else {
-        _views.removeAt(3);
         _views.add(const LoginScreen());
       }
     }
 
     return Scaffold(
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: _views,
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
+        body: IndexedStack(index: _selectedIndex, children: _views),
+        bottomNavigationBar:
+          BottomNavigationBar(
+            //type: BottomNavigationBarType.fixed,
             //fixedColor: Colors.black,
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.search), label: 'Search'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.person), label: 'Profile')
+              BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+              BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
+              /*BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),*/
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
             ],
             currentIndex: _selectedIndex,
             selectedItemColor: Theme.of(context).iconTheme.color,
             unselectedItemColor: Colors.grey,
             showUnselectedLabels: true,
-            onTap: _onItemTapped));
+            onTap: _onItemTapped
+        )
+    );
   }
 }

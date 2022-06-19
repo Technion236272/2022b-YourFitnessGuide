@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/ImageCrop.dart';
 
 class BlogPostScreen extends StatefulWidget {

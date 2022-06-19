@@ -5,14 +5,14 @@ import 'package:yourfitnessguide/utils/database.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 
-class ViewLeaderboardScreen extends StatefulWidget {
-  const ViewLeaderboardScreen({Key? key}) : super(key: key);
+class LeaderboardScreen extends StatefulWidget {
+  const LeaderboardScreen({Key? key}) : super(key: key);
 
   @override
-  _ViewLeaderboardScreenState createState() => _ViewLeaderboardScreenState();
+  State<LeaderboardScreen> createState() => _LeaderboardScreenState();
 }
 
-class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
+class _LeaderboardScreenState extends State<LeaderboardScreen> {
   var user;
   List<SearchUserModel> allUsers = [];
   late double height, width;
@@ -51,32 +51,30 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
                     image: DecorationImage(
                         fit: BoxFit.cover,
                         image: model.picture.image))),
-            SizedBox(
-              width: 8,
-            ),
+            const SizedBox(width: 8),
             Text(model.name!)
           ],
         ),
         leading: Text(
           "#${index + 1}",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         trailing: Text(
-            'Rating - ' + model.rating.toString(),
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            'Rating - ${model.rating}',
+            style: const TextStyle(fontWeight: FontWeight.bold)),
       );
 
   Widget _buildUpperStat() {
     return Container(
       padding: EdgeInsets.only(top: height * 0.03),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: appTheme,
           borderRadius: BorderRadius.only(
               bottomRight: Radius.circular(20),
               bottomLeft: Radius.circular(20))),
       child: Column(
         children: [
-          Text(
+          const Text(
             'My Ranking',
             style: TextStyle(
                 fontSize: 22, color: Colors.white, fontWeight: FontWeight.w500),
@@ -84,7 +82,7 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
           SizedBox(
             height: height * 0.006,
           ),
-          Divider(
+          const Divider(
             thickness: 1,
             indent: 20,
             endIndent: 20,
@@ -99,13 +97,13 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
                 children: [
                   Text(
                     myRating.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 42,
                       color: Colors.white,
                       fontWeight: FontWeight.w300,
                     ),
                   ),
-                  Text('Rating',
+                  const Text('Rating',
                       style: TextStyle(
                         fontSize: 19,
                         color: Colors.white,
@@ -115,13 +113,13 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
               ),
               Column(
                 children: [
-                  Text('#' + myRanking.toString(),
-                      style: TextStyle(
+                  Text('#$myRanking',
+                      style: const TextStyle(
                         fontSize: 42,
                         color: Colors.white,
                         fontWeight: FontWeight.w300,
                       )),
-                  Text("Rank",
+                  const Text("Rank",
                       style: TextStyle(
                         fontSize: 19,
                         color: Colors.white,
@@ -142,7 +140,7 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
   Widget _buildUpperPlaceholder() {
     return Container(
       padding: EdgeInsets.only(top: height * 0.03),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: appTheme,
           borderRadius: BorderRadius.only(
               bottomRight: Radius.circular(20),
@@ -150,17 +148,15 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(child: Text(
+          const Center(child: Text(
             'Login to see how you rank',
-            style: TextStyle(
-                fontSize: 22, color: Colors.white, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.w500),
           )),
-          Center(child: Text(
+          const Center(child: Text(
             'against others',
-            style: TextStyle(
-                fontSize: 22, color: Colors.white, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.w500),
           )),
-          SizedBox(height: height * 0.02,)
+          SizedBox(height: height * 0.02)
         ],
       ),
     );
@@ -169,7 +165,7 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
   Widget _buildView() {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Leaderboard'),
+        title: const Text('Leaderboard'),
       ),
       body: Column(
         children: [
@@ -182,7 +178,7 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
                 itemBuilder: (context, index) {
                   return buildUser(allUsers[index], index);
                 },
-                separatorBuilder: (context, index) => Divider(
+                separatorBuilder: (context, index) => const Divider(
                       thickness: 1,
                       color: Colors.grey,
                       indent: 10,
@@ -208,7 +204,7 @@ class _ViewLeaderboardScreenState extends State<ViewLeaderboardScreen> {
           if (!snapshot.hasData) {
             return Scaffold(
               appBar: AppBar(
-                title: Text('Leaderboard'),
+                title: const Text('Leaderboard'),
               ),
               body: const Center(child: CircularProgressIndicator.adaptive()),
             );

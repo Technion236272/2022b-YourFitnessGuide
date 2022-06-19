@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
-import 'package:yourfitnessguide/utils/comments_manager.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/comments_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../utils/database.dart';
 import '../utils/users.dart';
@@ -12,17 +12,6 @@ class CommentsScreen extends StatefulWidget {
   final String postId;
   final String userId;
 
-  /*
-  CommentsScreen (
-  {
-    required this.postId,
-    required this.userId,
-    required this.image_url,
-
-}
-      );
-
-   */
   const CommentsScreen({Key? key, required this.postId, required this.userId})
       : super(key: key);
 
@@ -146,7 +135,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
   addComment() async {
     await _commentsManager.addComment(postId, userId, commentController.text.toString());
-    _commentsManager.addCommentsNum(postId);
+    _commentsManager.incrementCommentsNum(postId);
     commentController.clear();
   }
 
@@ -165,7 +154,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         snapshot.data!.docs.forEach((doc) async {
           var tmp = await FirebaseDB().checkUserExists(doc['userId']);
           if (tmp == false) {
-            _commentsManager.deleteUserComment(postId, doc['userId']);
+            _commentsManager.deleteUserComments(postId, doc['userId']);
           }
         });
 
@@ -191,7 +180,6 @@ class Comment extends StatelessWidget {
   final String userId;
   final String comment;
   final Timestamp? timestamp;
-  final PostManager _postManager = PostManager();
 
   Comment({
     required this.userId,
@@ -206,50 +194,37 @@ class Comment extends StatelessWidget {
         timestamp: doc['timestamp']);
   }
 
-  Future<Map<String, String?>?> getUserData() async {
-    String? profilePic;
-    String? username;
-    var user_data = _postManager.getUserInfo(userId);
-    await user_data.then((data) {
-      profilePic = data!['picture'];
-      username = data['name'];
-    });
-    //print(profilePic);
-    return {
-      'image_url': profilePic,
-      'name': username,
-    };
-  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getUserData(),
+        future: PostManager().getUserPicAndName(userId),
         builder: (context, AsyncSnapshot<Map<String, String?>?> snapshot) {
           if (snapshot.hasData &&
               snapshot.data!['name'] != null &&
-              snapshot.data!['image_url'] != null) {
+              snapshot.data!['picture'] != null) {
             return Column(
               children: [
                 ListTile(
-                    title: Container(
-                        margin: const EdgeInsets.only(top: 12),
-                        child: Text(
-                          snapshot.data!['name']!,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        )),
+                    title: GestureDetector(
+                      onTap: () {
+                        SearchArguments arg = SearchArguments(uid: userId, isUser: true);
+                        Navigator.pushNamed(context, '/profile', arguments: arg);
+                      },
+                      child: Container(
+                          margin: const EdgeInsets.only(top: 12),
+                          child: Text(
+                            snapshot.data!['name']!,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          )
+                      )
+                    ),
                     leading: GestureDetector(
                       onTap: () {
-                        SearchArguments arg =
-                            SearchArguments(uid: userId, isUser: true);
-                        Navigator.pushNamed(context, '/profile',
-                            arguments: arg);
+                        SearchArguments arg = SearchArguments(uid: userId, isUser: true);
+                        Navigator.pushNamed(context, '/profile', arguments: arg);
                       },
-                      child: CircleAvatar(
-                        radius: 25,
-                        backgroundImage:
-                            NetworkImage(snapshot.data!['image_url']!),
-                      ),
+                      child: CircleAvatar(radius: 25, backgroundImage: NetworkImage(snapshot.data!['picture']!)),
                     ),
                     subtitle: Container(
                         margin: const EdgeInsets.only(top: 2),
@@ -265,10 +240,9 @@ class Comment extends StatelessWidget {
                                   Text(timeago.format(timestamp!.toDate()))
                                 ]),
                           ],
-                        ))),
-                const Divider(
-                  thickness: 1,
+                        ))
                 ),
+                const Divider(thickness: 1),
               ],
             );
           } else {

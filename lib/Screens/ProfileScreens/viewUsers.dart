@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/database.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 

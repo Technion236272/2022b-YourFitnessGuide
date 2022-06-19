@@ -2,11 +2,13 @@ import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'globals.dart';
 
-class post extends StatefulWidget {
+
+
+class Post extends StatefulWidget {
   AsyncSnapshot? snapshot;
   late int? index;
   bool owner = false;
@@ -25,7 +27,7 @@ class post extends StatefulWidget {
   bool? goalFiltered = false;
   //late Map? likes = null;
 
-  post({Key? key, this.index, this.snapshot, required this.screen, this.goalFiltered, this.uid, this.data})
+  Post({Key? key, this.index, this.snapshot, required this.screen, this.goalFiltered, this.uid, this.data})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
@@ -39,10 +41,10 @@ class post extends StatefulWidget {
             return const ListTile();
           }
           userPicture = Image.network(data?['picture'] ?? userSnapshot.data!['picture']!);
-          category = data?['category'] ?? snapshot?.data!.docs[index].data()!['category'];
-          username = data?['name'] ?? userSnapshot.data!['name'];
-          title = data?['title'] ?? userSnapshot.data!['title']!;
-          rating = data?['rating'] ?? userSnapshot.data!['rating'];
+          category    = data?['category'] ?? snapshot?.data!.docs[index].data()!['category'];
+          username    = data?['name'] ?? userSnapshot.data!['name'];
+          title       = data?['title'] ?? userSnapshot.data!['title']!;
+          rating      = data?['rating'] ?? userSnapshot.data!['rating'];
           date =
             data != null
               ? (data?['createdAt'].toDate())
@@ -57,10 +59,12 @@ class post extends StatefulWidget {
   }
 
   @override
-  State<post> createState() => _postState();
+  State<Post> createState() => _PostState();
+
+
 }
 
-class _postState extends State<post> {
+class _PostState extends State<Post> {
   ////Map likes;
   //int likeCount;
   bool isUpvoted = false;
@@ -77,8 +81,8 @@ class _postState extends State<post> {
               ? widget.data!['uid']
               : widget.snapshot?.data!.docs[widget.index].id;
 
-          if (widget.user.getCurrUid() != null) {
-            userId = widget.user.getCurrUid();
+          if (getCurrUid() != null) {
+            userId = getCurrUid();
           }
           if (postId == null || userId == null) {
             userId = "not relevant";
@@ -105,9 +109,9 @@ class _postState extends State<post> {
   }
 
   Widget _buildUpvoteButton(){
-    String? postId = widget.snapshot?.data!.docs[widget.index].id;
-    String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
-    String? userId = widget.user.getCurrUid();
+    String? userId = getCurrUid();
+    String? postId = widget.snapshot?.data!.docs[widget.index].id!;
+    String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid']!;
 
     List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
     isUpvoted = upvotesList?.contains(userId) ?? false;
@@ -125,20 +129,70 @@ class _postState extends State<post> {
             }
             setState(() {});
             widget.user.modifyVote(postId, postOwnerId, 'upvotes', isUpvoted);
+
+            /// Notification
+            ///
+            if(isUpvoted) {
+              //addUpvoteToNotification(postOwnerId!, postId!);
+            }
+            else{
+              //removeUpvoteToNotification(postOwnerId!, postId!);
+            }
           }
           else{
             const snackBar = SnackBar(content: Text('You need to sign in to upvote posts'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon: Icon(Icons.arrow_upward, color: isUpvoted ? Colors.green : Colors.grey)// todo change
+        //icon: Icon(Icons.arrow_upward, color: isUpvoted ? Colors.green : Colors.grey)// todo change
+        icon: Icon(Icons.thumb_up, color: isUpvoted ? Colors.green : Colors.grey)// todo change
     );
   }
+
+  /*
+  addUpvoteToNotification(String ownerId, String postId) {
+    /// Since we are going to be updating the same document referenced by the:
+    /// 1. owner id
+    /// 2. the post id
+    /// this is going to be overwritten everytime a like is made to that post
+    /// TODO: If we want to change it, it is easy; simply:
+    /// change the .doc(postId).set({...}) to .add({...})
+    bool isNotPostOwner = getCurrUid() != ownerId;
+    if (isNotPostOwner) {
+      notificationsCollection
+          .doc(ownerId)
+          .collection("feedItems")
+          .add({
+        "type": "like",
+        "userId": widget.user.uid,
+        "postId": postId,
+        "timestamp": timestamp,
+      });
+    }
+  }
+
+  removeUpvoteToNotification(String ownerId, String postId) {
+    bool isNotPostOwner = widget.user.uid != ownerId;
+    if (isNotPostOwner) {
+      notificationsCollection
+          .doc(ownerId)
+          .collection("feedItems")
+          .doc(postId)
+          .get()
+          .then((doc) {
+        if (doc.exists) {
+          doc.reference.delete();
+        }
+      });
+    }
+  }
+  */
+
 
   Widget _buildDownvoteButton(){
     String? postId = widget.snapshot?.data!.docs[widget.index].id;
     String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
-    String? userId = widget.user.getCurrUid();
+    String? userId = getCurrUid();
 
     List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
     isUpvoted = upvotesList?.contains(userId) ?? false;
@@ -162,7 +216,8 @@ class _postState extends State<post> {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon: Icon(Icons.arrow_downward, color: isDownvoted ? Colors.green : Colors.grey)
+        //icon: Icon(Icons.arrow_downward, color: isDownvoted ? Colors.green : Colors.grey)
+        icon: Icon(Icons.thumb_down, color: isDownvoted ? Colors.green : Colors.grey)
     );
   }
 

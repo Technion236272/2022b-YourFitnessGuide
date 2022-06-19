@@ -3,7 +3,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/post.dart';
 
@@ -214,7 +214,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       if (snapshot.connectionState == ConnectionState.done && snapshot.data == null) {
                         return const Center(child: Text('No data available'));
                       }
-                      return post(
+                      return Post(
                         index: index,
                         snapshot: snapshot,
                         screen: "timeline",

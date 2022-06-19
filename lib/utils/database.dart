@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/users.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 
 class SearchUserModel {
   String? name;
@@ -17,16 +17,10 @@ class SearchUserModel {
 }
 
 class FirebaseDB with ChangeNotifier {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  var user;
 
   Future<List<SearchUserModel>> getUsers() async {
     List<SearchUserModel> res = [];
-
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection("users")
+    await userCollection
         .get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
@@ -77,20 +71,14 @@ class FirebaseDB with ChangeNotifier {
   }*/
 
   Future<void> deleteUserData(String uid) async {
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    await userCollection
         .doc(uid)
         .delete();
   }
 
   bool checkFollowing(String uid1, String uid2) {
     var followingList = [];
-    _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    userCollection
         .doc(uid1)
         .get()
         .then((doc) {
@@ -103,10 +91,7 @@ class FirebaseDB with ChangeNotifier {
   }
 
   Future<bool> checkUserExists(String userUid) async {
-    var tmp = await _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    var tmp = await userCollection
         .doc(userUid)
         .get();
     return tmp.exists;
@@ -115,10 +100,7 @@ class FirebaseDB with ChangeNotifier {
   ///get user info from db
   Future<Map<String, dynamic>?> getUserInfo(String userUid) async {
     Map<String, dynamic>? userData;
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection("users")
+    await userCollection
         .doc(userUid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -154,10 +136,7 @@ class FirebaseDB with ChangeNotifier {
     _userData.imFollowing?.remove(userid);
     _userData.following = _userData.imFollowing!.length;
 
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    await userCollection
         .doc(curruid)
         .update({
       'imFollowing': FieldValue.arrayRemove([userid]),
@@ -171,10 +150,7 @@ class FirebaseDB with ChangeNotifier {
       UserModel _userData, String curruid, String userid) async {
     _userData.followingMe?.remove(userid);
     _userData.followers = _userData.followingMe!.length;
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    await userCollection
         .doc(curruid)
         .update({
       'followingMe': FieldValue.arrayRemove([userid]),
@@ -186,10 +162,7 @@ class FirebaseDB with ChangeNotifier {
 
   Future<UserModel?> getUserModel(String userUid) async {
     UserModel? userData;
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection("users")
+    await userCollection
         .doc(userUid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> dataDocument) {

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:flutter/services.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ViewMealPlanScreen extends StatefulWidget {

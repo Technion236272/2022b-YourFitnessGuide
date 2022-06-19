@@ -269,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     vertical: height * 0.012, horizontal: width * 0.1),
                 child: _buildPassword(height),
               ),
-              user.status == Status.Authenticating
+              user.status == Status.authenticating
                   ? const Center(
                             child: CircularProgressIndicator.adaptive())
                   : Container(

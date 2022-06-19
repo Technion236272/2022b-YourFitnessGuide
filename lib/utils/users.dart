@@ -1,18 +1,17 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
-import 'dart:io';
+import 'package:yourfitnessguide/managers/post_manager.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
+import 'package:yourfitnessguide/utils/database.dart';
 
-import 'database.dart';
+enum Status { uninitialized, authenticated, authenticating, unauthenticated }
 
-enum Status { Uninitialized, Authenticated, Authenticating, Unauthenticated }
-
-enum SignUpErrors { Mail_Already_Exists, InvalidEmail, WeakPassword }
+enum SignUpErrors { mailAlreadyExists, invalidEmail, weakPassword }
 
 class UserModel {
   String? name;
@@ -55,16 +54,13 @@ class UserModel {
 }
 
 class AuthRepository with ChangeNotifier {
-  FirebaseAuth _auth;
   User? _user;
-  Status _status = Status.Uninitialized;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
-  FirebaseStorage _storage = FirebaseStorage.instance;
+  Status _status = Status.uninitialized;
   UserModel? _userData;
 
-  AuthRepository.instance() : _auth = FirebaseAuth.instance {
-    _auth.authStateChanges().listen(_onAuthStateChanged);
-    _user = _auth.currentUser;
+  AuthRepository.instance() {
+    firebaseAuth.authStateChanges().listen(_onAuthStateChanged);
+    _user = firebaseAuth.currentUser;
     _onAuthStateChanged(_user);
   }
 
@@ -73,21 +69,23 @@ class AuthRepository with ChangeNotifier {
   Status get status => _status;
   User? get user => _user;
   UserModel? get userData => _userData;
-  bool get isAuthenticated => status == Status.Authenticated;
+  bool get isAuthenticated => status == Status.authenticated;
   List<String>? get savedPosts => _userData?.savedPosts;
   String get uid => user!.uid;
   List<String>? get followingList => _userData?.imFollowing;
   List<String>? get followersList => _userData?.followingMe;
   Map<String, bool>? get privacySettings => _userData?.privacySettings;
+  String? get pictureUrl => _userData?.pictureUrl;
+  String? get name => _userData?.name;
 
   Future<void> _onAuthStateChanged(User? firebaseUser) async {
     if (firebaseUser == null) {
       _user = null;
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       await unsetUserData();
     } else {
       _user = firebaseUser;
-      _status = Status.Authenticated;
+      _status = Status.authenticated;
       await setUserData();
     }
     notifyListeners();
@@ -96,13 +94,13 @@ class AuthRepository with ChangeNotifier {
   /// Sign in, Sign up, Sign out + forgot password
   Future<bool> signIn(String email, String password) async {
     try {
-      _status = Status.Authenticating;
+      _status = Status.authenticating;
       notifyListeners();
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
       return true;
     } catch (e) {
       _userData = null;
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       notifyListeners();
       return false;
     }
@@ -110,20 +108,17 @@ class AuthRepository with ChangeNotifier {
 
   Future<Object?> signUp(String email, String password) async {
     try {
-      _status = Status.Authenticating;
+      _status = Status.authenticating;
       notifyListeners();
-      var res = await _auth.createUserWithEmailAndPassword(
+      var res = await firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      var url = await _storage
+      var url = await storage
           .ref('images')
           .child('ProfilePicture.jpg')
           .getDownloadURL();
 
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(user!.uid)
           .set({
         'name': 'Undefined Name',
@@ -160,7 +155,7 @@ class AuthRepository with ChangeNotifier {
     } on FirebaseAuthException catch (error) {
       _userData = null;
       print(error);
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       notifyListeners();
 
       var errorCode = error.code;
@@ -176,7 +171,7 @@ class AuthRepository with ChangeNotifier {
       }
     } catch (error) {
       print(error);
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       notifyListeners();
       return null;
     }
@@ -188,7 +183,7 @@ class AuthRepository with ChangeNotifier {
       final facebookLoginResult = await FacebookAuth.i.login();
       token = facebookLoginResult.accessToken!.token;
       final OAuthCredential cred = FacebookAuthProvider.credential(token);
-      var res = await _auth.signInWithCredential(cred);
+      var res = await firebaseAuth.signInWithCredential(cred);
       if (res.additionalUserInfo!.isNewUser) {
         return signUpWithFacebook(true);
       }
@@ -196,7 +191,7 @@ class AuthRepository with ChangeNotifier {
     } catch (e) {
       print(e);
       _userData = null;
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       notifyListeners();
       return 0;
     }
@@ -209,15 +204,12 @@ class AuthRepository with ChangeNotifier {
         final facebookLoginResult = await FacebookAuth.i.login();
         token = facebookLoginResult.accessToken!.token;
         final OAuthCredential cred = FacebookAuthProvider.credential(token);
-        await _auth.signInWithCredential(cred);
+        await firebaseAuth.signInWithCredential(cred);
       }
 
       final data = await FacebookAuth.i.getUserData();
 
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(user!.uid)
           .set({
         'name': data['name'],
@@ -258,7 +250,7 @@ class AuthRepository with ChangeNotifier {
       return 1;
     } catch (e) {
       _userData = null;
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       notifyListeners();
       return 0;
     }
@@ -272,7 +264,7 @@ class AuthRepository with ChangeNotifier {
           await googleSignInAccount?.authentication;
       final cred = GoogleAuthProvider.credential(
           accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
-      var res = await _auth.signInWithCredential(cred);
+      var res = await firebaseAuth.signInWithCredential(cred);
       if (res.additionalUserInfo!.isNewUser) {
         return signUpWithGoogle(true);
       }
@@ -280,7 +272,7 @@ class AuthRepository with ChangeNotifier {
       return 1;
     } catch (e) {
       _userData = null;
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       notifyListeners();
       return 0;
     }
@@ -295,16 +287,13 @@ class AuthRepository with ChangeNotifier {
             await googleSignInAccount?.authentication;
         final credit = GoogleAuthProvider.credential(
             accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
-        await _auth.signInWithCredential(credit);
+        await firebaseAuth.signInWithCredential(credit);
       }
 
-      final name = await _auth.currentUser?.displayName;
-      final picture = await _auth.currentUser?.photoURL;
+      final name = firebaseAuth.currentUser?.displayName;
+      final picture = firebaseAuth.currentUser?.photoURL;
 
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(user!.uid)
           .set({
         'name': name,
@@ -342,22 +331,22 @@ class AuthRepository with ChangeNotifier {
       return 1;
     } catch (e) {
       _userData = null;
-      _status = Status.Unauthenticated;
+      _status = Status.unauthenticated;
       notifyListeners();
       return 0;
     }
   }
 
   Future signOut() async {
-    _auth.signOut();
-    _status = Status.Unauthenticated;
+    firebaseAuth.signOut();
+    _status = Status.unauthenticated;
     notifyListeners();
     return Future.delayed(Duration.zero);
   }
 
   Future<bool> resetPassword(String email) async {
     try {
-      _auth.sendPasswordResetEmail(email: email);
+      firebaseAuth.sendPasswordResetEmail(email: email);
       return true;
     } catch (_) {
       return false;
@@ -378,10 +367,7 @@ class AuthRepository with ChangeNotifier {
 
   Future<void> modifySaved(String postuid, bool delete) async {
     if (delete) {
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(user!.uid)
           .update({
         'saved_posts': FieldValue.arrayRemove([postuid])
@@ -391,10 +377,7 @@ class AuthRepository with ChangeNotifier {
         _userData?.savedPosts?.remove(postuid);
       }
     } else {
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(user!.uid)
           .update({
         'saved_posts': FieldValue.arrayUnion([postuid])
@@ -418,48 +401,30 @@ class AuthRepository with ChangeNotifier {
   Future<void> modifyVote(String postId, String postOwnerId, String voteType, bool val) async {
     //print("Modifying vote WAIT");
     if(val) {
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection("posts")
+      await postCollection
           .doc(postId)
           .update({voteType: FieldValue.arrayUnion([user!.uid])});
     }
     else{
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection("posts")
+      await postCollection
           .doc(postId)
           .update({voteType: FieldValue.arrayRemove([user!.uid])});
     }
     notifyListeners();
     if((val == true && voteType == 'upvotes') || (val == false && voteType == 'downvotes')){
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection("posts")
+      await postCollection
           .doc(postId)
           .update({'rating': FieldValue.increment(1)});
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection("users")
+      await userCollection
           .doc(postOwnerId)
           .update({'rating': FieldValue.increment(1)});
       //_userData?.rating += 1;
     }
     else{
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection("posts")
+      await postCollection
           .doc(postId)
           .update({'rating': FieldValue.increment(-1)});
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection("users")
+      await userCollection
           .doc(postOwnerId)
           .update({'rating': FieldValue.increment(-1)});
       //_userData?.rating += -1;
@@ -470,19 +435,13 @@ class AuthRepository with ChangeNotifier {
 
   Future<void> modifyFollow(String userid, bool delete) async {
     if (delete) {
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(user!.uid)
           .update({
         'imFollowing': FieldValue.arrayRemove([userid]),
         'following': FieldValue.increment(-1)
       });
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(userid)
           .update({
         'followingMe': FieldValue.arrayRemove([user!.uid]),
@@ -491,20 +450,14 @@ class AuthRepository with ChangeNotifier {
       _userData?.imFollowing?.remove(userid);
       _userData?.following = _userData?.imFollowing!.length;
     } else {
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(user!.uid)
           .update({
         'imFollowing': FieldValue.arrayUnion([userid]),
         'following': FieldValue.increment(1)
       });
       _userData?.following = (_userData?.following)! + 1;
-      await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      await userCollection
           .doc(userid)
           .update({
         'followingMe': FieldValue.arrayUnion([user!.uid]),
@@ -541,10 +494,7 @@ class AuthRepository with ChangeNotifier {
     _userData?.imFollowing?.remove(userid);
     _userData?.following = _userData?.imFollowing!.length;
 
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    await userCollection
         .doc(user!.uid)
         .update({
       'imFollowing': FieldValue.arrayRemove([userid]),
@@ -557,10 +507,7 @@ class AuthRepository with ChangeNotifier {
   Future<void> removeDeletedFollowed(String userid) async {
     _userData?.followingMe?.remove(userid);
     _userData?.followers = _userData?.followingMe!.length;
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    await userCollection
         .doc(user!.uid)
         .update({
       'followingMe': FieldValue.arrayRemove([userid]),
@@ -572,10 +519,7 @@ class AuthRepository with ChangeNotifier {
 
   Future<List<SearchUserModel>> getFollowing() async {
     List<SearchUserModel> res = [];
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection("users")
+    await userCollection
         .get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
@@ -595,10 +539,7 @@ class AuthRepository with ChangeNotifier {
   Future<List<SearchUserModel>> getFollowers() async {
     List<SearchUserModel> res = [];
 
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection("users")
+    await userCollection
         .get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
@@ -618,10 +559,7 @@ class AuthRepository with ChangeNotifier {
   Future<List<SearchUserModel>> getUsers() async {
     List<SearchUserModel> res = [];
 
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection("users")
+    await userCollection
         .get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
@@ -636,22 +574,19 @@ class AuthRepository with ChangeNotifier {
     return Future<List<SearchUserModel>>.value(res);
   }
 
-  ///todo remove this use user.uid
-  String? getCurrUid() {
-    return _auth.currentUser?.uid;
-  }
+
 
   Future deleteUser() async {
-    var uid = _auth.currentUser?.uid;
+    var uid = firebaseAuth.currentUser?.uid;
     var ids = await PostManager().getUserPostsIDs(uid!);
     for (int i = 0; i < ids.length; i++) {
       PostManager().deletePost(ids[i]);
     }
 
-    _auth.currentUser?.delete();
+    firebaseAuth.currentUser?.delete();
     FirebaseDB().deleteUserData(uid);
     _user = null;
-    _status = Status.Unauthenticated;
+    _status = Status.unauthenticated;
     await unsetUserData();
     notifyListeners();
     return Future.delayed(Duration.zero);
@@ -662,10 +597,7 @@ class AuthRepository with ChangeNotifier {
     try {
       if (_userData != null) return;
       //updateSaved();
-      var dataDocument = await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      var dataDocument = await userCollection
           .doc(user!.uid)
           .get();
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
@@ -692,10 +624,7 @@ class AuthRepository with ChangeNotifier {
     } catch (_) {
       await Future.delayed(const Duration(seconds: 1));
 
-      var dataDocument = await _db
-          .collection("versions")
-          .doc("v2")
-          .collection('users')
+      var dataDocument = await userCollection
           .doc(user!.uid)
           .get();
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
@@ -734,14 +663,10 @@ class AuthRepository with ChangeNotifier {
       File? newPic,
       Map<String, bool> privacySettings) async {
     if (newPic != null) {
-      await _storage.ref('images').child(_user!.uid).putFile(newPic);
-      _userData?.pictureUrl =
-          await _storage.ref('images').child(_user!.uid).getDownloadURL();
+      await storage.ref('images').child(_user!.uid).putFile(newPic);
+      _userData?.pictureUrl = await storage.ref('images').child(_user!.uid).getDownloadURL();
     }
-    await _db
-        .collection("versions")
-        .doc("v2")
-        .collection('users')
+    await userCollection
         .doc(user!.uid)
         .update({
       'name': newName,
@@ -760,3 +685,5 @@ class AuthRepository with ChangeNotifier {
     notifyListeners();
   }
 }
+
+

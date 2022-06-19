@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/database.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/post.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
-
-  @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
-
-class search extends StatefulWidget {
+class SearchBar extends StatefulWidget {
   final String searchHint;
   final ValueChanged<String> onChanged;
 
 
-  const search({required this.searchHint,required this.onChanged, Key? key}) : super(key: key);
+  const SearchBar({required this.searchHint,required this.onChanged, Key? key}) : super(key: key);
 
   @override
-  State<search> createState() => _searchState();
+  State<SearchBar> createState() => _SearchBarState();
 }
 
-class _searchState extends State<search> {
+class _SearchBarState extends State<SearchBar> {
   final searchUserController = TextEditingController();
 
 
@@ -49,13 +42,13 @@ class _searchState extends State<search> {
           icon: const Icon(Icons.search, color: appTheme),
           suffixIcon: searchUserController.text.isNotEmpty
               ? GestureDetector(
-                child: const Icon(Icons.close, color: appTheme),
-                onTap: () {
-                  searchUserController.clear();
-                  widget.onChanged('');
-                  FocusScope.of(context).requestFocus(FocusNode());
-                },
-              )
+            child: const Icon(Icons.close, color: appTheme),
+            onTap: () {
+              searchUserController.clear();
+              widget.onChanged('');
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+          )
               : null,
           hintText: widget.searchHint,
           border: InputBorder.none,
@@ -65,19 +58,28 @@ class _searchState extends State<search> {
   }
 }
 
+
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SearchScreen> createState() => _SearchScreenState();
+}
+
+
 class _SearchScreenState extends State<SearchScreen> {
   double height = 10;
   double width = 10;
   List<SearchUserModel> allUsers = [];
   List<SearchUserModel> users = [];
-  List<post> allPosts = [];
-  List<post> posts = [];
-  List<post> allMeals = [];
-  List<post> allBlogs = [];
-  List<post> blogs = [];
-  List<post> meals = [];
-  List<post> allWorkouts = [];
-  List<post> workouts = [];
+  List<Post> allPosts = [];
+  List<Post> posts = [];
+  List<Post> allMeals = [];
+  List<Post> allBlogs = [];
+  List<Post> blogs = [];
+  List<Post> meals = [];
+  List<Post> allWorkouts = [];
+  List<Post> workouts = [];
 
   String query = '';
   final searchUserController = TextEditingController();
@@ -117,6 +119,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   }
 
+  /*
   Widget _buildSearch(String Title) {
 
     return Container(
@@ -134,10 +137,10 @@ class _SearchScreenState extends State<SearchScreen> {
           setState(() {});
         },
         decoration: InputDecoration(
-          icon: Icon(Icons.search, color: appTheme),
+          icon: const Icon(Icons.search, color: appTheme),
           suffixIcon: searchUserController.text.isNotEmpty
               ? GestureDetector(
-            child: Icon(Icons.close, color: appTheme),
+            child: const Icon(Icons.close, color: appTheme),
             onTap: () {
               searchUserController.clear();
               FocusScope.of(context).requestFocus(FocusNode());
@@ -150,6 +153,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
+*/
 
   Widget buildUser(SearchUserModel model) => ListTile(
       onTap: () {
@@ -175,9 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         image: DecorationImage(
                             fit: BoxFit.cover,
                             image: model.picture.image))),
-                SizedBox(
-                  width: width * 0.02,
-                ),
+                SizedBox(width: width * 0.02),
                 Text(model.name!)
               ],
             ),
@@ -337,7 +339,7 @@ class _SearchScreenState extends State<SearchScreen> {
               children: [
                 Column(
                   children: [
-                    search(searchHint: 'Search users', onChanged: searchUser,),
+                    SearchBar(searchHint: 'Search users', onChanged: searchUser,),
                     Divider(
                       color: Colors.grey,
                       height: 0,
@@ -357,7 +359,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 Column(
                   children: [
-                    search(searchHint: 'Search Blog Posts', onChanged: searchBlog),
+                    SearchBar(searchHint: 'Search Blog Posts', onChanged: searchBlog),
                     Divider(
                       color: Colors.grey,
                       height: 0,
@@ -377,7 +379,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 Column(
                   children: [
-                    search(searchHint: 'Search Meals posts', onChanged: searchMeal),
+                    SearchBar(searchHint: 'Search Meals posts', onChanged: searchMeal),
                     Divider(
                       color: Colors.grey,
                       height: 0,
@@ -396,7 +398,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ],
                 ),
                 Column(children: [
-                  search(searchHint: 'Search Workouts Posts', onChanged: searchWorkout),
+                  SearchBar(searchHint: 'Search Workouts Posts', onChanged: searchWorkout),
                   Divider(
                     color: Colors.grey,
                     height: 0,

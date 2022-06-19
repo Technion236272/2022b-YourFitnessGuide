@@ -1,4 +1,33 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+
+final DateTime timestamp = DateTime.now();
+final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+final FirebaseFirestore database = FirebaseFirestore.instance;
+final FirebaseStorage storage = FirebaseStorage.instance;
+
+/// Collections
+final CollectionReference<Map<String, dynamic>> userCollection =
+    database.collection("versions").doc("v2").collection("users");
+final CollectionReference<Map<String, dynamic>> postCollection =
+    database.collection("versions").doc("v2").collection("posts");
+final CollectionReference<Map<String, dynamic>> commentsCollection =
+    database.collection("versions").doc("v2").collection("posts");
+final CollectionReference<Map<String, dynamic>> notificationsCollection =
+    database.collection("versions").doc("v2").collection('notifications');
+
+/// Returns current user id
+String? getCurrUid() {
+  return firebaseAuth.currentUser?.uid;
+}
+
+/// Managers
+// final CommentsManager _commentsManager = CommentsManager();
+
+
 const String loginRoute = '/login';
 const String signupRoute = '/signup';
 const String resetPasswordRoute = '/reset';
@@ -21,6 +50,7 @@ const String editBlogRoute='/editblog';
 const String editWorkoutRoute='/editworkout';
 const String editMealPlanRoute='/editmealplan';
 const String commentsRoute='/comments';
+
 
 const Color appTheme = const Color(0xff4CC47C);
 enum Goal { loseWeight, gainMuscle, gainWeight, maintainHealth }

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/database.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
@@ -265,13 +265,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (currCat != category) {
             return Container();
           }
-          return post(
+          return Post(
             snapshot: posts,
             index: index,
             screen: visiting ? 'timeline' : 'profile',
           );
         }
-        return post(
+        return Post(
           snapshot: posts,
           index: index,
           screen: visiting ? 'timeline' : 'profile',
@@ -405,26 +405,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                         primary: followButtonText == 'Following'? Colors.white : const Color(0xff84C59E),
-                                        side: BorderSide(
-                                            width: 2.0,
-                                            color:
-                                                Colors.black.withOpacity(0.5)),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0)),
-                                        fixedSize:
-                                            Size(width * 0.32, height * 0.03),
-                                        textStyle: const TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white,
-                                        )),
+                                        side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+                                        fixedSize: Size(width * 0.32, height * 0.03),
+                                        textStyle: const TextStyle(fontSize: 20, color: Colors.white)
+                                    ),
                                     onPressed: () async {
                                       if (followButtonText == 'Following') {
                                         setState(() {
                                           followButtonText = 'Follow';
                                           if (widget.followersNum != null) {
-                                            widget.followersNum =
-                                                widget.followersNum! - 1;
+                                            widget.followersNum = widget.followersNum! - 1;
                                           }
                                           user.modifyFollow(currUid, true);
                                         });
@@ -432,8 +423,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         setState(() {
                                           followButtonText = 'Following';
                                           if (widget.followersNum != null) {
-                                            widget.followersNum =
-                                                widget.followersNum! + 1;
+                                            widget.followersNum = widget.followersNum! + 1;
                                           }
                                           user.modifyFollow(currUid, false);
                                         });
@@ -455,15 +445,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: !visiting
                             ? (noPosts
                                 ? [
-                                    emptyNote(height, width,
-                                        'You have not published a post yet'),
-                                    emptyNote(height, width,
-                                        'You have not published a Meal Plan yet'),
-                                    emptyNote(height, width,
-                                        'You have not published a Workout yet'),
+                                    emptyNote(height, width, 'You have not published a post yet'),
+                                    emptyNote(height, width, 'You have not published a Meal Plan yet'),
+                                    emptyNote(height, width, 'You have not published a Workout yet'),
                                     savedNum == 0
-                                        ? emptyNote(height, width,
-                                            'You have not saved a post yet')
+                                        ? emptyNote(height, width,'You have not saved a post yet')
                                         : (_buildSaved()),
                                   ]
                                 : [
@@ -471,18 +457,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     _buildTab(category: "Meal Plan"),
                                     _buildTab(category: "Workout"),
                                     savedNum == 0
-                                        ? emptyNote(height, width,
-                                            'You have not saved a post yet')
+                                        ? emptyNote(height, width, 'You have not saved a post yet')
                                         : (_buildSaved()),
                                   ])
                             : (noPosts
                                 ? [
-                                    emptyNote(height, width,
-                                        'User has not published a post yet'),
-                                    emptyNote(height, width,
-                                        'User has not published a Meal Plan yet'),
-                                    emptyNote(height, width,
-                                        'User has not published a Workout yet'),
+                                    emptyNote(height, width, 'User has not published a post yet'),
+                                    emptyNote(height, width, 'User has not published a Meal Plan yet'),
+                                    emptyNote(height, width, 'User has not published a Workout yet'),
                                   ]
                                 : [
                                     _buildTab(),
@@ -518,7 +500,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 itemBuilder: (context, index) {
                   var currPost = posts2?.data!.docs[index].id;
                   if (savedPosts != null && savedPosts!.contains(currPost)) {
-                    return post(
+                    return Post(
                       snapshot: posts2,
                       index: index,
                       screen: 'timeline',
@@ -540,7 +522,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     width = MediaQuery.of(context).size.width;
     user = Provider.of<AuthRepository>(context);
     if (uid != null) {
-      if (user.isAuthenticated && user.getCurrUid() == uid) {
+      if (user.isAuthenticated && user.uid == uid) {
         userData = user.userData;
         visiting = false;
         currUid = uid;
@@ -571,7 +553,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         widget.followingNum = widget.followingNum ?? userData?.following;
         widget.followersNum = widget.followersNum ?? userData?.followers;
         widget.ratingNum = userData?.rating;
-        currUid = uid ?? user.getCurrUid();
+        currUid = uid ?? user.uid;
         username = userData?.name ?? '';
         privacySettings = !visiting
             ? {'profile': false, 'following': false, 'followers': false}

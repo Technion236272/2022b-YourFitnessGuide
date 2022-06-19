@@ -267,7 +267,7 @@ class _SignupScreenState extends State<SignupScreen> {
               child: _buildPassword(height, true),
             ),
             Container(
-              child: user.status == Status.Authenticating
+              child: user.status == Status.authenticating
                   ? const Center(
                           child: CircularProgressIndicator.adaptive())
                   : ElevatedButton(

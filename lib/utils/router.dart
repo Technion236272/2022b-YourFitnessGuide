@@ -21,44 +21,30 @@ import 'package:yourfitnessguide/Screens/commentsScreen.dart';
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
     case loginRoute:
-      return MaterialPageRoute(builder: (context) => LoginScreen());
+      return MaterialPageRoute(builder: (context) => const LoginScreen());
     case signupRoute:
-      return MaterialPageRoute(builder: (context) => SignupScreen());
+      return MaterialPageRoute(builder: (context) => const SignupScreen());
     case resetPasswordRoute:
-      return MaterialPageRoute(builder: (context) => ResetPasswordScreen());
+      return MaterialPageRoute(builder: (context) => const ResetPasswordScreen());
     case commentsRoute:
       if (settings.arguments != null) {
         final args = settings.arguments as Map;
-        //print( args['image_url']);
-        return MaterialPageRoute(
-            builder: (context) => CommentsScreen(
-                  postId: args['postId'],
-                  userId: args['userId'],
-                ));
+        return MaterialPageRoute(builder: (context) => CommentsScreen(postId: args['postId'], userId: args['userId']));
       }
-      return MaterialPageRoute(
-          builder: (context) => CommentsScreen(
-                postId: "aa",
-                userId: "aa",
-              ));
+      return MaterialPageRoute(builder: (context) => const CommentsScreen(postId: "aa", userId: "aa"));
     case homeRoute:
-      return MaterialPageRoute(builder: (context) => HomeScreen());
+      return MaterialPageRoute(builder: (context) => const HomeScreen());
     case blogPostRoute:
-      return MaterialPageRoute(builder: (context) => BlogPostScreen());
+      return MaterialPageRoute(builder: (context) => const BlogPostScreen());
     case workoutPostRoute:
-      return MaterialPageRoute(builder: (context) => WorkoutScreen());
+      return MaterialPageRoute(builder: (context) => const WorkoutScreen());
     case editProfileRoute:
-      return MaterialPageRoute(
-          builder: (context) => EditProfileScreen(
-                firstTime: false,
-              ));
+      return MaterialPageRoute(builder: (context) => EditProfileScreen(firstTime: false));
     case setupProfileRoute:
       return MaterialPageRoute(
-          builder: (context) => EditProfileScreen(
-                firstTime: true,
-              ));
+          builder: (context) => EditProfileScreen(firstTime: true));
     case mealPlanRoute:
-      return MaterialPageRoute(builder: (context) => MealPlanScreen());
+      return MaterialPageRoute(builder: (context) => const MealPlanScreen());
     case viewBlogRoute:
       if (settings.arguments != null) {
         final args = settings.arguments;
@@ -83,39 +69,32 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case viewWorkoutRoute:
       if (settings.arguments != null) {
         final args = settings.arguments;
-        return MaterialPageRoute(
-            builder: (context) => ViewWorkoutScreen(post_data: args));
+        return MaterialPageRoute(builder: (context) => ViewWorkoutScreen(post_data: args));
       }
       return MaterialPageRoute(builder: (context) => ViewWorkoutScreen());
     case viewMealPlanRoute:
       if (settings.arguments != null) {
         final args = settings.arguments;
-        return MaterialPageRoute(
-            builder: (context) => ViewMealPlanScreen(post_data: args));
+        return MaterialPageRoute(builder: (context) => ViewMealPlanScreen(post_data: args));
       }
       return MaterialPageRoute(builder: (context) => ViewMealPlanScreen());
     case profileRoute:
       if (settings.arguments != null) {
         final args = settings.arguments as SearchArguments;
-        return MaterialPageRoute(
-            builder: (context) => ProfileScreen(uid: args.uid));
+        return MaterialPageRoute(builder: (context) => ProfileScreen(uid: args.uid));
       }
       return MaterialPageRoute(builder: (context) => ProfileScreen());
-
     case editBlogRoute:
       final args = settings.arguments;
-      return MaterialPageRoute(
-          builder: (context) => EditBlogPost(post_data: args));
+      return MaterialPageRoute(builder: (context) => EditBlogPost(post_data: args));
     case editWorkoutRoute:
       final args = settings.arguments;
-      return MaterialPageRoute(
-          builder: (context) => EditWorkout(post_data: args));
+      return MaterialPageRoute(builder: (context) => EditWorkout(post_data: args));
     case editMealPlanRoute:
       final args = settings.arguments;
-      return MaterialPageRoute(
-          builder: (context) => EditMealPlan(post_data: args));
+      return MaterialPageRoute(builder: (context) => EditMealPlan(post_data: args));
 
     default:
-      return MaterialPageRoute(builder: (context) => HomeScreen());
+      return MaterialPageRoute(builder: (context) => const HomeScreen());
   }
 }

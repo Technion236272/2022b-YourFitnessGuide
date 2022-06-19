@@ -1,37 +1,30 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/services/file_upload_service.dart';
 import 'package:yourfitnessguide/utils/post.dart';
+import 'package:yourfitnessguide/managers/comments_manager.dart';
+import 'package:yourfitnessguide/utils/globals.dart';
 
-import 'comments_manager.dart';
 
 class PostManager with ChangeNotifier {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  static final FirebaseFirestore _db =
-      FirebaseFirestore.instance;
 
-  final CollectionReference<Map<String, dynamic>> _postCollection =
-      _db.collection("versions").doc("v2").collection("posts");
-  final CollectionReference<Map<String, dynamic>> _userCollection =
-      _db.collection("versions").doc("v2").collection("users");
 
   final FileUploadService _fileUploadService = FileUploadService();
   final CommentsManager _commentsManager = CommentsManager();
+
   Future<bool> submitBlog(
       {required String title, required description, File? postImage}) async {
     bool isSubmitted = false;
 
-    String userUid = _firebaseAuth.currentUser!.uid;
+    String userUid = firebaseAuth.currentUser!.uid;
     FieldValue timeStamp = FieldValue.serverTimestamp();
 
     if (postImage != null) {
-      String? pictureUrl =
-          await _fileUploadService.uploadPostFile(file: postImage);
+      String? pictureUrl = await _fileUploadService.uploadPostFile(file: postImage);
 
       //todo: check if user is signed in? i think its better if we just prevent them from getting here.
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Blog',
         "title": title,
         "description": description,
@@ -48,7 +41,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     } else {
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Blog',
         "title": title,
         "description": description,
@@ -69,22 +62,19 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> submitWorkout(
-      {required String title,
-      required description,
-      File? postImage,
-      required goals,
-      required exercises}) async {
+      {required String title, required description, File? postImage,
+        required goals, required exercises}) async {
     bool isSubmitted = false;
 
-    String userUid = _firebaseAuth.currentUser!.uid;
+    String userUid = firebaseAuth.currentUser!.uid;
     FieldValue timeStamp = FieldValue.serverTimestamp();
 
     if (postImage != null) {
       String? pictureUrl =
-          await _fileUploadService.uploadPostFile(file: postImage);
+      await _fileUploadService.uploadPostFile(file: postImage);
 
       //todo: check if user is signed in? i think its better if we just prevent them from getting here.
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Workout',
         "title": title,
         "description": description,
@@ -103,7 +93,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     } else {
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Workout',
         "title": title,
         "description": description,
@@ -126,24 +116,19 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> submitMealPlan(
-      {required String title,
-      required description,
-      File? postImage,
-      required goals,
-      required mealsContents,
-      required mealsName,
-      required mealsIngredients}) async {
+      {required String title, required description, File? postImage,
+        required goals, required mealsContents, required mealsName, required mealsIngredients}) async {
     bool isSubmitted = false;
 
-    String userUid = _firebaseAuth.currentUser!.uid;
+    String userUid = firebaseAuth.currentUser!.uid;
     FieldValue timeStamp = FieldValue.serverTimestamp();
 
     if (postImage != null) {
       String? pictureUrl =
-          await _fileUploadService.uploadPostFile(file: postImage);
+      await _fileUploadService.uploadPostFile(file: postImage);
 
       //todo: check if user is signed in? i think its better if we just prevent them from getting here.
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Meal Plan',
         "title": title,
         "description": description,
@@ -164,7 +149,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     } else {
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Meal Plan',
         "title": title,
         "description": description,
@@ -189,17 +174,18 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> updateBlog(
-      {required String title, required description,required timeStamp, File? postImage}) async {
+      {required String title, required description, required timeStamp,
+        File? postImage}) async {
     bool isSubmitted = false;
 
-    String userUid = _firebaseAuth.currentUser!.uid;
+    String userUid = firebaseAuth.currentUser!.uid;
 
     if (postImage != null) {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
       //todo: check if user is signed in? i think its better if we just prevent them from getting here.
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Blog',
         "title": title,
         "description": description,
@@ -216,7 +202,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     } else {
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Blog',
         "title": title,
         "description": description,
@@ -237,22 +223,19 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> updateWorkout(
-      {required String title,
-        required description,
-        required timeStamp,
-        File? postImage,
-        required goals,
+      {required String title, required description, required timeStamp,
+        File? postImage, required goals,
         required exercises}) async {
     bool isSubmitted = false;
 
-    String userUid = _firebaseAuth.currentUser!.uid;
+    String userUid = firebaseAuth.currentUser!.uid;
 
     if (postImage != null) {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
       //todo: check if user is signed in? i think its better if we just prevent them from getting here.
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Workout',
         "title": title,
         "description": description,
@@ -271,7 +254,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     } else {
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Workout',
         "title": title,
         "description": description,
@@ -294,24 +277,19 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> updateMealPlan(
-      {required String title,
-        required description,
-        required timeStamp,
-        File? postImage,
-        required goals,
-        required mealsContents,
-        required mealsName,
-        required mealsIngredients}) async {
+      {required String title, required description, required timeStamp,
+        File? postImage, required goals,
+        required mealsContents, required mealsName, required mealsIngredients}) async {
     bool isSubmitted = false;
 
-    String userUid = _firebaseAuth.currentUser!.uid;
+    String userUid = firebaseAuth.currentUser!.uid;
 
     if (postImage != null) {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
       //todo: check if user is signed in? i think its better if we just prevent them from getting here.
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Meal Plan',
         "title": title,
         "description": description,
@@ -332,7 +310,7 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     } else {
-      await _postCollection.doc().set({
+      await postCollection.doc().set({
         "category": 'Meal Plan',
         "title": title,
         "description": description,
@@ -358,44 +336,54 @@ class PostManager with ChangeNotifier {
 
   /// get all post from the db
   Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts(String sorting) {
-      return _postCollection.orderBy(sorting, descending: true).snapshots();
+    return postCollection.orderBy(sorting, descending: true).snapshots();
   }
 
-  Future<List<post>> getPosts() async {
-    List<post> res = [];
+  Future<List<Post>> getPosts() async {
+    List<Post> res = [];
 
-    await _postCollection.get().then((querySnapshot) {
+    await postCollection.get().then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         var fullData = doc.data();
         fullData['uid'] = doc.id;
-        var currentPost = post(
-          uid: doc.id,
-          screen: 'timeline',
-            data: fullData,);
+        var currentPost = Post(uid: doc.id, screen: 'timeline', data: fullData);
         res.add(currentPost);
       });
     });
-    return Future<List<post>>.value(res);
+    return Future<List<Post>>.value(res);
   }
 
-  Future<Map<String, dynamic>?> getPostByID(String uid) async {
-    var call = await _postCollection.doc(uid);
-    var post = await call.get();
-    return post.data();
+
+  Future<Map<String, dynamic>> getPostByID(String uid) async {
+    var post = await postCollection.doc(uid).get();
+    return post.data()!;
   }
 
+  /*void visitPost(String postId) async{
+    Map<String, dynamic> post = await getPostByID(postId);
+    var cat = post['category'];
+    var args = data ?? snapshot?.data!.docs[index].data()!;
+    if (cat == 'Blog') {
+      Navigator.pushNamed(context, viewBlogRoute, arguments: args);
+    } else if (cat == 'Workout') {
+      Navigator.pushNamed(context, viewWorkoutRoute, arguments: args);
+    } else {
+      Navigator.pushNamed(context, viewMealPlanRoute, arguments: args);
+    }
+  }*/
 
   Stream<QuerySnapshot<Map<String, dynamic>?>> getUserPosts(String uid) {
-    final Query<Map<String, dynamic>> _userPosts = _postCollection
+    final Query<Map<String, dynamic>> userPosts = postCollection
         .where('user_uid', isEqualTo: uid);
     notifyListeners();
-    return _userPosts.orderBy('createdAt', descending: true).snapshots();
+    return userPosts.orderBy('createdAt', descending: true).snapshots();
   }
 
   Future<List<String>> getUserPostsIDs(String uid) async {
     List<String> ids = [];
 
-    await _db.collection("versions").doc("v2").collection("posts").where('user_uid', isEqualTo: uid).get().then((querySnapshot) {
+    await postCollection.where('user_uid', isEqualTo: uid).get().then((
+        querySnapshot) {
       for (var doc in querySnapshot.docs) {
         var currID = doc.id;
         ids.add(currID);
@@ -405,24 +393,23 @@ class PostManager with ChangeNotifier {
   }
 
   Future<void> deletePost(String postUid) async {
-    _postCollection.doc(postUid).delete();
+    postCollection.doc(postUid).delete();
     _commentsManager.deleteComments(postUid);
     notifyListeners();
   }
 
   Future<bool> checkPostsExists(String postUid) async {
-    var tmp = await _postCollection.doc(postUid).get();
+    var tmp = await postCollection.doc(postUid).get();
     return tmp.exists;
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getPost(String postUid) async {
-    return _postCollection.doc(postUid).get();
+    return postCollection.doc(postUid).get();
   }
-
   ///get user info from db
   Future<Map<String, dynamic>?> getUserInfo(String userUid) async {
     Map<String, dynamic>? userData;
-    await _userCollection
+    await userCollection
         .doc(userUid)
         .get()
         .then((DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -436,5 +423,17 @@ class PostManager with ChangeNotifier {
     return userData;
   }
 
-
+  Future<Map<String, String?>?> getUserPicAndName(String userId) async {
+    String? profilePic;
+    String? username;
+    await getUserInfo(userId).then((data) {
+      profilePic = data!['picture'];
+      username = data!['name'];
+    });
+    return {
+      'picture': profilePic,
+      'name': username,
+    };
+  }
 }
+
