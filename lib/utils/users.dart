@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/database.dart';
+import 'package:yourfitnessguide/managers/notifications_manager.dart';
 
 enum Status { uninitialized, authenticated, authenticating, unauthenticated }
 
@@ -390,11 +391,11 @@ class AuthRepository with ChangeNotifier {
 
 
   /// Follow users functions
-  bool? checkImAlreadyFollowing(String userid) {
+  bool? checkImAlreadyFollowing(String userId) {
     if (userData?.imFollowing == null) {
       return false;
     }
-    return userData?.imFollowing!.contains(userid);
+    return userData?.imFollowing!.contains(userId);
   }
 
   /// Modifies vote, whether its upvotes or downvotes.
@@ -433,38 +434,40 @@ class AuthRepository with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> modifyFollow(String userid, bool delete) async {
+  Future<void> modifyFollow(String userId, bool delete) async {
     if (delete) {
       await userCollection
           .doc(user!.uid)
           .update({
-        'imFollowing': FieldValue.arrayRemove([userid]),
-        'following': FieldValue.increment(-1)
-      });
+            'imFollowing': FieldValue.arrayRemove([userId]),
+            'following': FieldValue.increment(-1)
+          });
       await userCollection
-          .doc(userid)
+          .doc(userId)
           .update({
-        'followingMe': FieldValue.arrayRemove([user!.uid]),
-        'followers': FieldValue.increment(-1)
-      });
-      _userData?.imFollowing?.remove(userid);
+            'followingMe': FieldValue.arrayRemove([user!.uid]),
+            'followers': FieldValue.increment(-1)
+          });
+      _userData?.imFollowing?.remove(userId);
       _userData?.following = _userData?.imFollowing!.length;
+      NotificationsManager().removeFollowNotification(userId);
     } else {
       await userCollection
           .doc(user!.uid)
           .update({
-        'imFollowing': FieldValue.arrayUnion([userid]),
-        'following': FieldValue.increment(1)
-      });
+            'imFollowing': FieldValue.arrayUnion([userId]),
+            'following': FieldValue.increment(1)
+          });
       _userData?.following = (_userData?.following)! + 1;
       await userCollection
-          .doc(userid)
+          .doc(userId)
           .update({
-        'followingMe': FieldValue.arrayUnion([user!.uid]),
-        'followers': FieldValue.increment(1)
-      });
-      _userData?.imFollowing?.add(userid);
+            'followingMe': FieldValue.arrayUnion([user!.uid]),
+            'followers': FieldValue.increment(1)
+          });
+      _userData?.imFollowing?.add(userId);
       _userData?.following = _userData?.imFollowing!.length;
+      NotificationsManager().addFollowNotification(userId);
     }
     notifyListeners();
   }
@@ -490,34 +493,34 @@ class AuthRepository with ChangeNotifier {
     }
   }
 
-  Future<void> removeDeletedFollowing(String userid) async {
-    _userData?.imFollowing?.remove(userid);
+  Future<void> removeDeletedFollowing(String userId) async {
+    _userData?.imFollowing?.remove(userId);
     _userData?.following = _userData?.imFollowing!.length;
 
     await userCollection
         .doc(user!.uid)
         .update({
-      'imFollowing': FieldValue.arrayRemove([userid]),
+      'imFollowing': FieldValue.arrayRemove([userId]),
       'following': _userData?.following
     });
 
     notifyListeners();
   }
 
-  Future<void> removeDeletedFollowed(String userid) async {
-    _userData?.followingMe?.remove(userid);
+  Future<void> removeDeletedFollowed(String userId) async {
+    _userData?.followingMe?.remove(userId);
     _userData?.followers = _userData?.followingMe!.length;
     await userCollection
         .doc(user!.uid)
         .update({
-      'followingMe': FieldValue.arrayRemove([userid]),
+      'followingMe': FieldValue.arrayRemove([userId]),
       'followers': _userData?.followers
     });
 
     notifyListeners();
   }
 
-  Future<List<SearchUserModel>> getFollowing() async {
+  /*Future<List<SearchUserModel>> getFollowing() async {
     List<SearchUserModel> res = [];
     await userCollection
         .get()
@@ -532,7 +535,6 @@ class AuthRepository with ChangeNotifier {
         }
       });
     });
-    print(res);
     return Future<List<SearchUserModel>>.value(res);
   }
 
@@ -543,7 +545,6 @@ class AuthRepository with ChangeNotifier {
         .get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        var currentDocument = doc.get('name');
         var currentUser = SearchUserModel(
             name: doc.get('name'),
             uid: doc.id.toString(),
@@ -552,7 +553,7 @@ class AuthRepository with ChangeNotifier {
       });
     });
     return Future<List<SearchUserModel>>.value(res);
-  }
+  }*/
 
 
   /// I think for search?
@@ -563,7 +564,6 @@ class AuthRepository with ChangeNotifier {
         .get()
         .then((querySnapshot) {
       querySnapshot.docs.forEach((doc) {
-        var currentDocument = doc.get('name');
         var currentUser = SearchUserModel(
             name: doc.get('name'),
             uid: doc.id.toString(),
@@ -628,10 +628,8 @@ class AuthRepository with ChangeNotifier {
           .doc(user!.uid)
           .get();
       var savedTmp = List<String>.from(dataDocument.get('saved_posts') as List);
-      var followingTmp =
-          List<String>.from(dataDocument.get('imFollowing') as List);
-      var followersTmp =
-          List<String>.from(dataDocument.get('followingMe') as List);
+      var followingTmp = List<String>.from(dataDocument.get('imFollowing') as List);
+      var followersTmp = List<String>.from(dataDocument.get('followingMe') as List);
       _userData = UserModel(
           name: dataDocument.get('name'),
           goal: dataDocument.get('goal'),

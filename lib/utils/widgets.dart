@@ -209,3 +209,30 @@ class _WideButtonState extends State<WideButton> {
     );
   }
 }
+
+
+Widget emptyNote(String text, double height, double width) {
+  return Card(
+          color: Colors.grey[200],
+          child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  Flexible(
+                      child: Text(
+                        text,
+                        style: const TextStyle(fontSize: 20),
+                      )),
+                  Flexible(
+                      child: Image.asset(
+                        'images/decorations/binoculars.png',
+                        width: width * 0.3,
+                        height: height * 0.3,
+                      ))
+                ],
+              )));
+}

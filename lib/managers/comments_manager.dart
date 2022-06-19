@@ -1,19 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
+import 'package:yourfitnessguide/managers/notifications_manager.dart';
 
 class CommentsManager with ChangeNotifier {
 
   /// Adds comment made by userId to postId
-  addComment(String postId, String userId, String comment) {
+  addComment(String postId, String comment) {
     commentsCollection
         .doc(postId)
         .collection("comments")
         .add({
           "comment": comment,
           "timestamp": timestamp,
-          "userId": userId,
+          "userId": getCurrUid()!,
         });
+    incrementCommentsNum(postId);
+
+    NotificationsManager().addNotification(postId, 'comment', comment);
   }
 
   /// Deletes all comments of user

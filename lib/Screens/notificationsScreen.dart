@@ -49,6 +49,8 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:flutter/gestures.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
+
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -59,7 +61,9 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   late AuthRepository user;
-  Future<List<NotificationItem>> getActivityFeed() async {
+
+  /// Returns list of all notifications relevant to currUser
+  Future<List<NotificationItem>> getNotificationsList() async {
     List<NotificationItem> feedItems = [];
     await notificationsCollection
         .doc(getCurrUid())
@@ -67,12 +71,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         .orderBy('timestamp', descending: true)
         .get()
         .then( (querySnapshot){
-          //print('got to then');
           querySnapshot.docs.forEach((doc) {
-            //print('adding');
             feedItems.add(NotificationItem.fromDocument(doc));
-            //print('added doc from doc');
-
           });
         });
     return feedItems;
@@ -82,13 +82,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     user = Provider.of<AuthRepository>(context);
     return Scaffold(
-      //backgroundColor: scaffoldBackgroundColor,//Colors.orange,
       appBar: AppBar(centerTitle: false, title: const Text('Notifications')),
       body: FutureBuilder(
-        future: getActivityFeed(),
-        builder: (context, snapshot) {
+        future: getNotificationsList(),
+        builder: (context, AsyncSnapshot<List<NotificationItem>> snapshot) {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
+          }
+          if (snapshot.data!.isEmpty){
+            return emptyNote(
+                'You don\'t have any notifications yet',
+                MediaQuery.of(context).size.height,
+                MediaQuery.of(context).size.width);
           }
           return ListView(children: snapshot.data as List<NotificationItem>);
         },
@@ -101,18 +106,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
 class NotificationItem extends StatelessWidget {
   final String userId;
-  final String type; // 'like', 'follow', 'comment'
+  final String type; /// 'upvote', 'downvote', 'follow', 'comment'
   final String postId;
-  //final String commentData;
+  final String commentData;
   final Timestamp timestamp;
 
   const NotificationItem({
     super.key,
     required this.userId,
-    required this.type, // 'like', 'follow', 'comment'
-    //required this.mediaUrl, ///The post picture
+    required this.type, /// 'upvote', 'downvote', 'follow', 'comment'
     required this.postId,
-    //required this.commentData,
+    required this.commentData,
     required this.timestamp,
   });
 
@@ -121,29 +125,21 @@ class NotificationItem extends StatelessWidget {
       userId: doc['userId'],
       type: doc['type'],
       postId: doc['postId'],
-      //commentData: doc['commentData'],
+      commentData: doc['commentData'],
       timestamp: doc['timestamp'],
     );
   }
 
-  showPost(context) {
-    //print('showing post');
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const Card(child: Text("showing post")),
-      ),
-    );
-  }
-
   String configureActivityItemText(){
-    if (type == 'like') {
-      return "liked your post";
+    if (type == 'upvote') {
+      return 'upvoted your post';
+    } else if(type == 'downvote') {
+      return 'downvoted your post';
     } else if (type == 'follow') {
       return "is following you";
-    } /*else if (type == 'comment') {
+    } else if (type == 'comment') {
       return 'replied: $commentData';
-    }*/ else {
+    } else {
       return "Error: Unknown type '$type'";
     }
   }
@@ -156,7 +152,7 @@ class NotificationItem extends StatelessWidget {
     return FutureBuilder(
       future: Future.wait([
         PostManager().getUserPicAndName(userId)
-        /*,PostManager().getPost*/
+        /*,PostManager().getPostPicture*/
       ]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         if(snapshot.hasData) {

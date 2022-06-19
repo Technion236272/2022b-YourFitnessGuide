@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/database.dart';
-import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
-import 'package:yourfitnessguide/utils/widgets.dart';
+import 'package:yourfitnessguide/managers/notifications_manager.dart';
 
 class search extends StatefulWidget {
   final String searchHint;
@@ -179,6 +178,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                                   user.modifyFollow(model.uid!, true);
                                 });
                               } else {
+                                print("following");
                                 setState2(() {
                                   widget.buttonsTexts[model.uid!] = 'Following';
                                   user.modifyFollow(model.uid!, false);
@@ -211,7 +211,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
     user = Provider.of<AuthRepository>(context);
     var userData;
     height = MediaQuery.of(context).size.height;
-    width = MediaQuery.of(context).size.width;
+    width  = MediaQuery.of(context).size.width;
     List<String>? followList = [];
     return FutureBuilder(
         future: FirebaseDB().getUserModel(widget.currID),
@@ -248,8 +248,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                 }
                 if (snapshot.hasError) {
                   Navigator.pop(context);
-                  const snackBar =
-                      SnackBar(content: Text('Something went wrong'));
+                  const snackBar = SnackBar(content: Text('Something went wrong'));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
                 allUsers = snapshot.data as List<SearchUserModel>;
@@ -257,8 +256,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                 return Scaffold(
                   appBar: AppBar(
                     centerTitle: false,
-                    title:
-                        following ? const Text('Following') : const Text('Followers'),
+                    title: following ? const Text('Following') : const Text('Followers'),
                   ),
                   body: Column(
                     children: [

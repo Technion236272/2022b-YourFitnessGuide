@@ -73,35 +73,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   get uid => widget.uid;
   int savedNum = 0;
 
-  Widget _buildStatline(
-      {required String stat, required int value, String? redirection}) {
+  Widget _buildStatline({required String stat, required int value, String? redirection}) {
     var val =
         (privacySettings.containsKey('profile') && privacySettings['profile']!)
             ? 'N/A'
             : value.toString();
-    var statTitle =
-        Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
+    var statTitle = Text(stat, style: const TextStyle(color: appTheme, fontSize: 12));
     return Center(
       child: Column(
         children: [
-          Text(
-            val,
-            style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25),
-          ),
+          Text(val, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 25)),
           redirection == ''
               ? FittedBox(child: TextButton(onPressed: () {}, child: statTitle))
               : FittedBox(
                   child: TextButton(
                       onPressed: () {
                         var args = {'currID': currUid};
-                        Navigator.pushNamed(context, redirection!,
-                            arguments: args);
+                        Navigator.pushNamed(context, redirection!, arguments: args);
                       },
                       child: statTitle)),
-          const SizedBox(
-            height: 5,
-          ),
+          const SizedBox(height: 5),
         ],
       ),
     );
@@ -149,8 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 stat: 'Following',
                 value: widget.followingNum ?? 0,
                 redirection: (privacySettings.containsKey('profile') &&
-                        (privacySettings['following']! ||
-                            privacySettings['profile']!))
+                        (privacySettings['following']! || privacySettings['profile']!))
                     ? ''
                     : '/following'),
           ),
@@ -161,8 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 stat: 'Followers',
                 value: widget.followersNum ?? 0,
                 redirection: (privacySettings.containsKey('profile') &&
-                        (privacySettings['followers']! ||
-                            privacySettings['profile']!))
+                        (privacySettings['followers']! || privacySettings['profile']!))
                     ? ''
                     : '/followers'),
           ),
@@ -198,24 +187,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.grey[200],
             child: Center(
                 child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  height: height * 0.01,
-                ),
-                Flexible(
-                    child: Text(
-                  text,
-                  style: const TextStyle(fontSize: 20),
-                )),
-                Flexible(
-                    child: Image.asset(
-                  'images/decorations/404.png',
-                  width: width * 0.3,
-                  height: height * 0.3,
-                ))
-              ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    SizedBox(height: height * 0.01),
+                    Flexible(
+                        child: Text(
+                          text,
+                          style: const TextStyle(fontSize: 20),
+                        )
+                    ),
+                    Flexible(
+                        child: Image.asset(
+                          'images/decorations/404.png',
+                          width: width * 0.3,
+                          height: height * 0.3,
+                        )
+                    )
+                  ],
             ))),
         onRefresh: () async {
           setState(() {});
@@ -237,13 +226,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (category != null) {
-      var pronoun = visiting ? 'User hasn\'t ' : 'You have not ';
+      var pronoun = visiting ? 'User hasn\'t' : 'You have not';
       if (category == 'Meal Plan' && !mealsFound) {
         return emptyNote(
-            height, width, pronoun + 'published a ' + category + ' yet');
+            height, width, '${pronoun} published a $category yet');
       } else if (category == 'Workout' && !workoutsFound) {
         return emptyNote(
-            height, width, pronoun + 'published a ' + category + ' yet');
+            height, width, '${pronoun} published a $category yet');
       }
     }
 
@@ -251,25 +240,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       //separatorBuilder: (context, index) => const Divider(),
       itemCount: posts.data == null ? 0 : posts.data!.docs.length,
       itemBuilder: (context, index) {
-        if (posts.connectionState == ConnectionState.waiting &&
-            posts.data == null) {
+        if (posts.connectionState == ConnectionState.waiting && posts.data == null) {
           return const Center(child: CircularProgressIndicator.adaptive());
         }
-        if (posts.connectionState == ConnectionState.done &&
-            posts.data == null) {
+        if (posts.connectionState == ConnectionState.done && posts.data == null) {
           return const Center(child: Text('No data available'));
         }
-
-        if (category != null) {
-          var currCat = posts?.data!.docs[index].data()!['category'];
-          if (currCat != category) {
-            return Container();
-          }
-          return Post(
-            snapshot: posts,
-            index: index,
-            screen: visiting ? 'timeline' : 'profile',
-          );
+        if (category != null && posts?.data!.docs[index].data()!['category'] != category) {
+          return Container();
         }
         return Post(
           snapshot: posts,
@@ -477,8 +455,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ))));
   }
 
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved(
-      {String? category}) {
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>?>> _buildSaved({String? category}) {
     return StreamBuilder(
       stream: PostManager().getAllPosts('createdAt'),
       builder: (context, snapshot) {

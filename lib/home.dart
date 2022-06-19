@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
     TimelineScreen(),
     const SearchScreen(),
     const LeaderboardScreen(),
-    /*const NotificationsScreen(),*/
+    const NotificationsScreen(),
     const LoginScreen()
   ];
 
@@ -55,12 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
         bottomNavigationBar:
           BottomNavigationBar(
             //type: BottomNavigationBarType.fixed,
-            //fixedColor: Colors.black,
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
               BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
-              /*BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),*/
+              BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
               BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
             ],
             currentIndex: _selectedIndex,

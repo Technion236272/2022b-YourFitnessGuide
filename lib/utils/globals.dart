@@ -9,6 +9,8 @@ final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 final FirebaseFirestore database = FirebaseFirestore.instance;
 final FirebaseStorage storage = FirebaseStorage.instance;
 
+
+
 /// Collections
 final CollectionReference<Map<String, dynamic>> userCollection =
     database.collection("versions").doc("v2").collection("users");
@@ -60,3 +62,4 @@ class SearchArguments {
   final bool isUser;
   SearchArguments({required this.uid, required this.isUser, this.postid});
 }
+

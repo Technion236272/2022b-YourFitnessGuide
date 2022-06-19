@@ -127,7 +127,6 @@ class PostManager with ChangeNotifier {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
-      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
       await postCollection.doc().set({
         "category": 'Meal Plan',
         "title": title,
@@ -184,7 +183,6 @@ class PostManager with ChangeNotifier {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
-      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
       await postCollection.doc().set({
         "category": 'Blog',
         "title": title,
@@ -234,7 +232,6 @@ class PostManager with ChangeNotifier {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
-      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
       await postCollection.doc().set({
         "category": 'Workout',
         "title": title,
@@ -288,7 +285,6 @@ class PostManager with ChangeNotifier {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
-      //todo: check if user is signed in? i think its better if we just prevent them from getting here.
       await postCollection.doc().set({
         "category": 'Meal Plan',
         "title": title,
@@ -354,11 +350,15 @@ class PostManager with ChangeNotifier {
   }
 
 
-  Future<Map<String, dynamic>> getPostByID(String uid) async {
-    var post = await postCollection.doc(uid).get();
+  Future<Map<String, dynamic>> getPostByID(String postId) async {
+    var post = await postCollection.doc(postId).get();
     return post.data()!;
   }
 
+  Future<String> getUserIdByPostId(String postId) async {
+    var post = await postCollection.doc(postId).get();
+    return post.data()!['user_uid'];
+  }
   /*void visitPost(String postId) async{
     Map<String, dynamic> post = await getPostByID(postId);
     var cat = post['category'];
@@ -382,8 +382,10 @@ class PostManager with ChangeNotifier {
   Future<List<String>> getUserPostsIDs(String uid) async {
     List<String> ids = [];
 
-    await postCollection.where('user_uid', isEqualTo: uid).get().then((
-        querySnapshot) {
+    await postCollection
+        .where('user_uid', isEqualTo: uid)
+        .get()
+        .then((querySnapshot) {
       for (var doc in querySnapshot.docs) {
         var currID = doc.id;
         ids.add(currID);

@@ -4,8 +4,8 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
-import 'globals.dart';
-
+import 'package:yourfitnessguide/utils/globals.dart';
+import 'package:yourfitnessguide/managers/notifications_manager.dart';
 
 
 class Post extends StatefulWidget {
@@ -25,7 +25,6 @@ class Post extends StatefulWidget {
   bool hide = true;
   var user;
   bool? goalFiltered = false;
-  //late Map? likes = null;
 
   Post({Key? key, this.index, this.snapshot, required this.screen, this.goalFiltered, this.uid, this.data})
       : super(key: key) {
@@ -51,8 +50,6 @@ class Post extends StatefulWidget {
               : (snapshot?.data!.docs[index].data()!['createdAt'] != null
                 ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
                 : DateTime.now());
-          snapshot?.data!.docs[index].data()!['likes'] = {};
-          //likes = data?['likes'] ?? snapshot?.data!.docs[index].data()!['likes'];
 
           return const ListTile();
         });
@@ -65,59 +62,34 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-  ////Map likes;
-  //int likeCount;
   bool isUpvoted = false;
   bool isDownvoted = false;
   bool isSaved = false;
   final _postManager = PostManager();
 
   Widget _buildCommentButton() {
-    String? userId;
-    String? postId;
     return IconButton(
         onPressed: () {
-          postId = widget.data != null
+          String postId = widget.data != null
               ? widget.data!['uid']
               : widget.snapshot?.data!.docs[widget.index].id;
-
-          if (getCurrUid() != null) {
-            userId = getCurrUid();
-          }
-          if (postId == null || userId == null) {
-            userId = "not relevant";
-          }
-
-          if ( userId == "not relevant" ) {
-            Future.delayed(const Duration(milliseconds: 1200), () {
-              Navigator.pushNamed(context, commentsRoute, arguments: {
-                'postId': postId,
-                'userId': userId,
-              });
-
-            });
-          }
-          else {
-            Navigator.pushNamed(context, commentsRoute, arguments: {
-              'postId': postId,
-              'userId': userId,
-            });
-          }
+          Navigator.pushNamed(context, commentsRoute, arguments: {
+            'postId': postId,
+          });
         },
         icon: const Icon(Icons.chat_bubble, color: Colors.grey)
     );
   }
 
   Widget _buildUpvoteButton(){
-    String? userId = getCurrUid();
     String? postId = widget.snapshot?.data!.docs[widget.index].id!;
-    String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid']!;
+    String? postOwnerId = widget.snapshot?.data!.docs[widget.index].data()!['user_uid']!;
 
     List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
-    isUpvoted = upvotesList?.contains(userId) ?? false;
+    isUpvoted = upvotesList?.contains(getCurrUid()) ?? false;
 
     List? downvotesList = widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
-    isDownvoted = downvotesList?.contains(userId) ?? false;
+    isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
 
     return IconButton(
         onPressed: () {
@@ -125,18 +97,18 @@ class _PostState extends State<Post> {
             isUpvoted = !isUpvoted;
             if (isUpvoted && isDownvoted) {
               isDownvoted = false;
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
               widget.user.modifyVote(postId, postOwnerId, 'downvotes', isDownvoted);
             }
             setState(() {});
             widget.user.modifyVote(postId, postOwnerId, 'upvotes', isUpvoted);
 
             /// Notification
-            ///
             if(isUpvoted) {
-              //addUpvoteToNotification(postOwnerId!, postId!);
+              NotificationsManager().addNotification(postId!, 'upvote', '');
             }
             else{
-              //removeUpvoteToNotification(postOwnerId!, postId!);
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
             }
           }
           else{
@@ -144,61 +116,19 @@ class _PostState extends State<Post> {
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        //icon: Icon(Icons.arrow_upward, color: isUpvoted ? Colors.green : Colors.grey)// todo change
-        icon: Icon(Icons.thumb_up, color: isUpvoted ? Colors.green : Colors.grey)// todo change
+        icon: Icon(Icons.thumb_up, color: isUpvoted ? appTheme : Colors.grey)
     );
   }
-
-  /*
-  addUpvoteToNotification(String ownerId, String postId) {
-    /// Since we are going to be updating the same document referenced by the:
-    /// 1. owner id
-    /// 2. the post id
-    /// this is going to be overwritten everytime a like is made to that post
-    /// TODO: If we want to change it, it is easy; simply:
-    /// change the .doc(postId).set({...}) to .add({...})
-    bool isNotPostOwner = getCurrUid() != ownerId;
-    if (isNotPostOwner) {
-      notificationsCollection
-          .doc(ownerId)
-          .collection("feedItems")
-          .add({
-        "type": "like",
-        "userId": widget.user.uid,
-        "postId": postId,
-        "timestamp": timestamp,
-      });
-    }
-  }
-
-  removeUpvoteToNotification(String ownerId, String postId) {
-    bool isNotPostOwner = widget.user.uid != ownerId;
-    if (isNotPostOwner) {
-      notificationsCollection
-          .doc(ownerId)
-          .collection("feedItems")
-          .doc(postId)
-          .get()
-          .then((doc) {
-        if (doc.exists) {
-          doc.reference.delete();
-        }
-      });
-    }
-  }
-  */
-
 
   Widget _buildDownvoteButton(){
     String? postId = widget.snapshot?.data!.docs[widget.index].id;
     String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
-    String? userId = getCurrUid();
 
     List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
-    isUpvoted = upvotesList?.contains(userId) ?? false;
+    isUpvoted = upvotesList?.contains(getCurrUid()) ?? false;
 
     List? downvotesList = widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
-    isDownvoted = downvotesList?.contains(userId) ?? false;
+    isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
 
     return IconButton(
         onPressed: () {
@@ -207,17 +137,25 @@ class _PostState extends State<Post> {
             if (isDownvoted && isUpvoted) {
               isUpvoted = false;
               widget.user.modifyVote(postId, postOwnerId, 'upvotes', isUpvoted);
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'upvote');
             }
             setState(() {});
             widget.user.modifyVote(postId, postOwnerId, 'downvotes', isDownvoted);
+
+            /// Notification
+            if(isDownvoted) {
+              NotificationsManager().addNotification(postId!, 'downvote', '');
+            }
+            else{
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
+            }
           }
           else{
             const snackBar = SnackBar(content: Text('You need to sign in to downvote posts'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        //icon: Icon(Icons.arrow_downward, color: isDownvoted ? Colors.green : Colors.grey)
-        icon: Icon(Icons.thumb_down, color: isDownvoted ? Colors.green : Colors.grey)
+        icon: Icon(Icons.thumb_down, color: isDownvoted ? appTheme : Colors.grey)
     );
   }
 

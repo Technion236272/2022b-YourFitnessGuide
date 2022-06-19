@@ -7,62 +7,28 @@ import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../utils/database.dart';
 import '../utils/users.dart';
+import 'package:yourfitnessguide/utils/widgets.dart';
 
 class CommentsScreen extends StatefulWidget {
   final String postId;
-  final String userId;
 
-  const CommentsScreen({Key? key, required this.postId, required this.userId})
+  const CommentsScreen({Key? key, required this.postId})
       : super(key: key);
 
   @override
   State<CommentsScreen> createState() => _CommentsScreenState(
         postId: this.postId,
-        userId: this.userId,
       );
 }
 
 class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentController = TextEditingController();
   final String postId;
-  final String userId;
   final CommentsManager _commentsManager = CommentsManager();
 
   _CommentsScreenState({
     required this.postId,
-    required this.userId,
   });
-
-  Widget emptyNote(double height, double width) {
-    var text = 'Post doesn\'t have comments yet';
-    return RefreshIndicator(
-        child: Card(
-            color: Colors.grey[200],
-            child: Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  height: height * 0.01,
-                ),
-                Flexible(
-                    child: Text(
-                  text,
-                  style: const TextStyle(fontSize: 20),
-                )),
-                Flexible(
-                    child: Image.asset(
-                  'images/decorations/binoculars.png',
-                  width: width * 0.3,
-                  height: height * 0.3,
-                ))
-              ],
-            ))),
-        onRefresh: () async {
-          setState(() {});
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +60,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: "Write a comment ...",
-                        hintStyle: TextStyle(
-                            height: 1, fontSize: 15, color: Colors.grey),
+                        hintStyle: TextStyle(height: 1, fontSize: 15, color: Colors.grey),
                         labelStyle: TextStyle(
                           color: Colors.black,
                           fontSize: 15,
@@ -134,8 +99,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
 
   addComment() async {
-    await _commentsManager.addComment(postId, userId, commentController.text.toString());
-    _commentsManager.incrementCommentsNum(postId);
+    await _commentsManager.addComment(postId, commentController.text.toString());
     commentController.clear();
   }
 
@@ -166,7 +130,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
         _commentsManager.updateCommentsNum(postId);
 
         if (comments.isEmpty) {
-          return emptyNote(height, width);
+          return emptyNote('Post doesn\'t have comments yet', height, width);
         }
         return ListView(
           children: comments,
@@ -238,7 +202,8 @@ class Comment extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(timeago.format(timestamp!.toDate()))
-                                ]),
+                                ]
+                            ),
                           ],
                         ))
                 ),

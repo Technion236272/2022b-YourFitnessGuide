@@ -8,14 +8,14 @@ import 'package:yourfitnessguide/home.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsCreationScreens/mealPlanScreen.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsCreationScreens/workoutScreen.dart';
-import 'package:yourfitnessguide/Screens/PostsCreationScreens/BlogPostScreen.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/PostsCreationScreens/BlogPostScreen.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsViewingScreens/viewBlogPost.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsViewingScreens/viewWorkoutPost.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsViewingScreens/viewMealPlanPost.dart';
-import 'package:yourfitnessguide/Screens/ProfileScreens/viewUsers.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editBlogPost.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editWorkoutPost.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editMealPlanPost.dart';
+import 'package:yourfitnessguide/Screens/ProfileScreens/viewUsers.dart';
 import 'package:yourfitnessguide/Screens/commentsScreen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
@@ -29,9 +29,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case commentsRoute:
       if (settings.arguments != null) {
         final args = settings.arguments as Map;
-        return MaterialPageRoute(builder: (context) => CommentsScreen(postId: args['postId'], userId: args['userId']));
+        return MaterialPageRoute(builder: (context) => CommentsScreen(postId: args['postId']));
       }
-      return MaterialPageRoute(builder: (context) => const CommentsScreen(postId: "aa", userId: "aa"));
+      return MaterialPageRoute(builder: (context) => const CommentsScreen(postId: "aa"));
     case homeRoute:
       return MaterialPageRoute(builder: (context) => const HomeScreen());
     case blogPostRoute:
