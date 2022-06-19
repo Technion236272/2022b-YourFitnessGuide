@@ -212,7 +212,7 @@ class Comment extends StatelessWidget {
     var user_data = _postManager.getUserInfo(userId);
     await user_data.then((data) {
       profilePic = data!['picture'];
-      username = data!['name'];
+      username = data['name'];
     });
     //print(profilePic);
     return {
