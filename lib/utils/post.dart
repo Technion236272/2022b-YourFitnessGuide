@@ -428,7 +428,22 @@ class _postState extends State<post> {
                         _buildDownvoteButton(),
                       ],
                     ),
-                    _buildCommentButton(),
+                    Row(
+                      children: [
+                        Text(
+                          (widget.data?['commentsNum'] ??
+                              widget.snapshot?.data.docs[widget.index]
+                                  .data()['commentsNum'])
+                              .toString(),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black.withOpacity(0.9),
+                              fontWeight: FontWeight.bold),
+                        ),
+                        _buildCommentButton(),
+                      ],
+                    ),
+
                     _buildSaveButton(),
                   ],
                 )

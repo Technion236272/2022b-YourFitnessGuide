@@ -226,19 +226,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildPrivacySettings(double height, double width) {
-    if(!privacySettings.containsKey('followers')){
+    if (!privacySettings.containsKey('followers')) {
       privacySettings['followers'] = false;
     }
-    if(!privacySettings.containsKey('following')){
+    if (!privacySettings.containsKey('following')) {
       privacySettings['following'] = false;
     }
-    if(!privacySettings.containsKey('profile')){
+    if (!privacySettings.containsKey('profile')) {
       privacySettings['profile'] = false;
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CheckboxListTile(
+            controlAffinity: ListTileControlAffinity.leading,
             title: const Text('Limit my followers list to only me'),
             value: privacySettings['followers'],
             //groupValue: userGoal,
@@ -254,6 +255,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
+            controlAffinity: ListTileControlAffinity.leading,
             title: const Text('Limit my following list to only me'),
             value: privacySettings['following'],
             activeColor: appTheme,
@@ -268,6 +270,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           endIndent: width * 0.1,
         ),
         CheckboxListTile(
+            controlAffinity: ListTileControlAffinity.leading,
             title: const Text('Limit my profile viewing to only me'),
             value: privacySettings['profile'],
             activeColor: appTheme,
@@ -375,12 +378,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               Icons.info_outline,
                               color: Colors.white,
                             )),
-                    IconButton(
-                        onPressed: () {
-                          firstTime ? saveChanges() : deleteAccount();
-                        },
-                        icon: Icon(firstTime ? Icons.check : Icons.delete,
-                            color: Colors.white)),
+                    firstTime
+                        ? IconButton(
+                            onPressed: () {
+                              saveChanges();
+                            },
+                            icon: Icon(Icons.check, color: Colors.white))
+                        : Container(),
                   ],
                 )),
           ]),
@@ -422,19 +426,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   )),
               choices,
-              firstTime? Container() : Container(
-                  padding: EdgeInsets.only(right: width * 0.45),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Privacy Settings',
-                          style: TextStyle(
-                              color: appTheme,
-                              fontSize: 23,
-                              fontWeight: FontWeight.bold)),
-                    ],
-                  )),
-              firstTime? Container() : _buildPrivacySettings(height, width),
+              firstTime
+                  ? Container()
+                  : Container(
+                      padding: EdgeInsets.only(right: width * 0.45),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Privacy Settings',
+                              style: TextStyle(
+                                  color: appTheme,
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      )),
+              firstTime ? Container() : _buildPrivacySettings(height, width),
               SizedBox(
                 height: height * 0.02,
               ),
@@ -456,6 +462,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         saveChanges();
                       },
                       child: const Text("SAVE CHANGES"),
+                    ),
+              firstTime
+                  ? Container()
+                  : SizedBox(
+                      height: height * 0.007,
+                    ),
+              firstTime
+                  ? Container()
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.red,
+                          side: BorderSide(
+                              width: 2.0, color: Colors.black.withOpacity(0.5)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                          fixedSize: Size(width * 0.6, height * 0.055),
+                          textStyle: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          )),
+                      onPressed: () async {
+                        deleteAccount();
+                      },
+                      child: const Text("DELETE ACCOUNT"),
                     ),
               SizedBox(
                 height: height * 0.007,

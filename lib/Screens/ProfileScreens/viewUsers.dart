@@ -161,7 +161,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                         ? Container()
                         : ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: const Color(0xff84C59E),
+                                primary: widget.buttonsTexts[model.uid!] == 'Following'? Colors.white : const Color(0xff84C59E),
                                 shadowColor: appTheme,
                                 side: BorderSide(
                                     width: 2.0, color: Colors.black.withOpacity(0.5)),
@@ -185,7 +185,7 @@ class _ViewUsersScreenState extends State<ViewUsersScreen> {
                                 });
                               }
                             },
-                            child: Text(widget.buttonsTexts[model.uid]!))
+                            child: Text(widget.buttonsTexts[model.uid]!, style: TextStyle(color: widget.buttonsTexts[model.uid!] == 'Following'? Colors.green : Colors.white)))
                   ],
                 ),
                 SizedBox(height: height * 0.02),
