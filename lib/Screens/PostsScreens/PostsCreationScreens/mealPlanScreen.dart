@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'dart:io';
 import 'package:yourfitnessguide/services/image_crop.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class MealPlanScreen extends StatefulWidget {
   const MealPlanScreen({Key? key}) : super(key: key);
@@ -19,16 +20,18 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController mealNameController = TextEditingController();
   TextEditingController mealIngredientsController = TextEditingController();
-  TextEditingController kcalController = TextEditingController();
-  TextEditingController proteinsController = TextEditingController();
-  TextEditingController carbsController = TextEditingController();
-  TextEditingController fatsController = TextEditingController();
+
+  Map<String, int> nutrients = {
+    'calories': 0,
+    'proteins': 0,
+    'carbs': 0,
+    'fats': 0
+  };
   bool? loseWeight = false;
   bool? gainMuscle = false;
   bool? gainWeight = false;
   bool? maintainHealth = false;
   final List<bool?> _goals = [false, false, false, false];
-  bool selectedGoal = false;
   final List<String?> _mealNames = [];
   final List<String?> _mealIngredients = [];
   final List<Widget> _list = [];
@@ -56,9 +59,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         _postImageFile = File(croppedFile!.path); //File(selectedImage.path);
       });
     } on PlatformException catch (_) {
-      const snackBar = SnackBar(
-          content: Text(
-              'You need to grant permission if you want to select a photo'));
+      const snackBar = SnackBar(content: Text('You need to grant permission if you want to select a photo'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -76,7 +77,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     primary: Colors.white,
-                    //side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0)),
                     fixedSize: Size(width * 0.25, height * 0.010),
@@ -479,63 +479,61 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Kcal",
-                labelStyle: TextStyle(color: appTheme, fontSize: 21),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              controller: kcalController,
-            )),
+                child: Column(children: [
+                    const FittedBox(child: Text('Calories', style: TextStyle(color: appTheme, fontSize: 20))),
+                    NumberPicker(
+                      value: nutrients['calories']!,
+                      minValue: 0,
+                      maxValue: 5000,
+                      itemHeight: 30,
+                      step: 10,
+                      selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                      onChanged: (value) => setState(() =>  nutrients['calories'] = value),
+                    )
+                ])
+            ),
             SizedBox(width: 0.05 * width),
             Expanded(
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  labelText: "Proteins",
-                  labelStyle: TextStyle(color: appTheme, fontSize: 21),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                ),
-                controller: proteinsController,
-              ),
+                child: Column(children: [
+                    const FittedBox(child: Text('Proteins', style: TextStyle(color: appTheme, fontSize: 20))),
+                    NumberPicker(
+                      value: nutrients['proteins']!,
+                      minValue: 0,
+                      maxValue: 500,
+                      itemHeight: 30,
+                      selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                      onChanged: (value) => setState(() =>  nutrients['proteins'] = value),
+                    )
+                ])
             ),
-            SizedBox(
-              width: 0.05 * width,
-            ),
+            SizedBox(width: 0.05 * width),
             Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Carbs",
-                labelStyle: TextStyle(
-                  color: appTheme,
-                  fontSize: 21,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              controller: carbsController,
-            )),
-            SizedBox(
-              width: 0.05 * width,
+                child: Column(children: [
+                    const FittedBox(child: Text('Carbs', style: TextStyle(color: appTheme, fontSize: 20))),
+                    NumberPicker(
+                      value: nutrients['carbs']!,
+                      minValue: 0,
+                      maxValue: 500,
+                      itemHeight: 30,
+                      selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                      onChanged: (value) => setState(() =>  nutrients['carbs'] = value),
+                    )
+                ])
             ),
+            SizedBox(width: 0.05 * width),
             Expanded(
-                child: TextField(
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                labelText: "Fats",
-                labelStyle: TextStyle(
-                  color: appTheme,
-                  fontSize: 21,
-                ),
-                floatingLabelBehavior: FloatingLabelBehavior.always,
-              ),
-              controller: fatsController,
-            ))
+                child: Column(children: [
+                    const FittedBox(child: Text('Fats', style: TextStyle(color: appTheme, fontSize: 20))),
+                    NumberPicker(
+                      value: nutrients['fats']!,
+                      minValue: 0,
+                      maxValue: 500,
+                      itemHeight: 30,
+                      selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                      onChanged: (value) => setState(() =>  nutrients['fats'] = value),
+                    )
+                ])
+            )
           ],
         ));
   }
@@ -748,64 +746,26 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? const Center(
-                                child: CircularProgressIndicator.adaptive())
-
+                        ? const Center(child: CircularProgressIndicator.adaptive())
                         : IconButton(
                             onPressed: () async {
                               final String title = mealPlanNameController.text;
-                              final String description =
-                                  descriptionController.text;
-                              final String kcal = kcalController.text;
-                              final String protiens = proteinsController.text;
-                              final String carbs = carbsController.text;
-                              final String fats = fatsController.text;
+                              final String description = descriptionController.text;
 
-                              _mealsContents[0] = int.tryParse(kcal);
-                              _mealsContents[1] = int.tryParse(protiens);
-                              _mealsContents[2] = int.tryParse(carbs);
-                              _mealsContents[3] = int.tryParse(fats);
+                              _mealsContents[0] = nutrients['calories']!;
+                              _mealsContents[1] = nutrients['proteins']!;
+                              _mealsContents[2] = nutrients['carbs']!;
+                              _mealsContents[3] = nutrients['fats']!;
 
-                              if (loseWeight! ||
-                                  gainMuscle! ||
-                                  gainWeight! ||
-                                  maintainHealth!) {
+                              bool selectedGoal = false;
+                              if (loseWeight! || gainMuscle! || gainWeight! || maintainHealth!) {
                                 selectedGoal = true;
                               }
-                              if (title == "" ||
-                                  description == "" ||
-                                  kcal == "" ||
-                                  protiens == "" ||
-                                  carbs == "" ||
-                                  fats == "" ||
-                                  selectedGoal == false ||
-                                  _mealNames.isEmpty) {
-                                const snackBar = SnackBar(
-                                    content: Text(
-                                        'You must fill all the fields and add meals'));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
-                              } else if (_mealsContents[0] == null ||
-                                  _mealsContents[0]! <= 0 ||
-                                  _mealsContents[0]! >= 9999 ||
-                                  _mealsContents[1] == null ||
-                                  _mealsContents[1]! <= 0 ||
-                                  _mealsContents[0]! >= 9999 ||
-                                  _mealsContents[2] == null ||
-                                  _mealsContents[2]! <= 0 ||
-                                  _mealsContents[0]! >= 9999 ||
-                                  _mealsContents[3] == null ||
-                                  _mealsContents[3]! <= 0 ||
-                                  _mealsContents[0]! >= 9999) {
-                                const snackBar = SnackBar(
-                                    content: Text(
-                                        'You must enter a positive integer in Kcal,Protiens,Carbs and Fats'));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
+                              if (title == "" || description == "" || selectedGoal == false || _mealNames.isEmpty) {
+                                const snackBar = SnackBar(content: Text('You must fill all the fields and add meals'));
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
                               } else {
-                                setState(() {
-                                  _isLoading = true;
-                                });
+                                setState(() {_isLoading = true;});
 
                                 bool isSubmitted =
                                     await _postManager.submitMealPlan(
@@ -821,109 +781,99 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                                 });
 
                                 if (isSubmitted) {
-                                  const snackBar = SnackBar(
-                                      content:
-                                          Text('MealPlan posted successfully'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-
+                                  const snackBar = SnackBar(content: Text('MealPlan posted successfully'));
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                   Navigator.pop(context);
                                 } else {
-                                  const snackBar = SnackBar(
-                                      content: Text(
-                                          'There was a problem logging you in'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
+                                  const snackBar = SnackBar(content: Text('An error occurred'));
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 }
                               }
                             },
-                            icon: const Icon(Icons.check_sharp,
-                                color: Colors.white)),
+                            icon: const Icon(Icons.check_sharp, color: Colors.white)),
                   ],
                 )),
           ]),
       body: SingleChildScrollView(
           child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Column(mainAxisAlignment: MainAxisAlignment.start,
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                height: height * 0.012,
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildmealPlanName(height),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildDescription(height),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 20),
-                child: _buildGoal(height, width),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildMeals(height, width),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                child: _buildMealContents(height, width),
-              ),
-              (_postImageFile != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        _postImageFile!,
-                        height: 300,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        fit: BoxFit.contain,
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Column(mainAxisAlignment: MainAxisAlignment.start,
+                //crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(height: height * 0.012),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                    child: _buildmealPlanName(height),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                    child: _buildDescription(height),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 40, 20),
+                    child: _buildGoal(height, width),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                    child: _buildMeals(height, width),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                    child: _buildMealContents(height, width),
+                  ),
+                  (_postImageFile != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.file(
+                            _postImageFile!,
+                            height: 300,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            fit: BoxFit.contain,
+                          ),
+                        )
+                      : const Padding(padding: EdgeInsets.all(0))),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
+                    width: 205,
+                    height: 80.0,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(
+                            width: 2.0, color: Colors.black.withOpacity(0.5)),
+                        primary: color, // background
+                        onPrimary: Colors.white, // foreground
                       ),
-                    )
-                  : const Padding(padding: EdgeInsets.all(0))),
-              const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
-                width: 205,
-                height: 80.0,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: BorderSide(
-                        width: 2.0, color: Colors.black.withOpacity(0.5)),
-                    primary: color, // background
-                    onPrimary: Colors.white, // foreground
+                      onPressed: () async {
+                        if (_postImageFile == null) {
+                          await pickImage();
+                          if (_postImageFile != null) {
+                            color = Colors.red;
+                            photo = "Remove Image";
+                          }
+                        } else {
+                          _postImageFile = null;
+                          color = appTheme;
+                          photo = "Add Image";
+                        }
+                        setState(() {
+                          build(context);
+                        });
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Icon(Icons.add_photo_alternate,
+                              color: Colors.white),
+                          const SizedBox(height: 4),
+                          Text(photo, style: const TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
                   ),
-                  onPressed: () async {
-                    if (_postImageFile == null) {
-                      await pickImage();
-                      if (_postImageFile != null) {
-                        color = Colors.red;
-                        photo = "Remove Image";
-                      }
-                    } else {
-                      _postImageFile = null;
-                      color = appTheme;
-                      photo = "Add Image";
-                    }
-                    setState(() {
-                      build(context);
-                    });
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Icon(Icons.add_photo_alternate,
-                          color: Colors.white),
-                      const SizedBox(height: 4),
-                      Text(photo, style: const TextStyle(color: Colors.white)),
-                    ],
-                  ),
-                ),
-              ),
-            ]),
+                ]),
       )),
       resizeToAvoidBottomInset: true,
     );

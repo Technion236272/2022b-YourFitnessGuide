@@ -20,10 +20,10 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController mealNameController = TextEditingController();
   TextEditingController mealIngredientsController = TextEditingController();
-  TextEditingController KcalController = TextEditingController();
-  TextEditingController ProteinsController = TextEditingController();
-  TextEditingController CarbsController = TextEditingController();
-  TextEditingController FatsController = TextEditingController();
+  late String calories;
+  late String proteins;
+  late String carbs;
+  late String fats;
   bool? loseWeight = false;
   bool? gainMuscle = false;
   bool? gainWeight = false;
@@ -243,17 +243,13 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     );
   }
 
-  Widget _buildStat(String stat, TextEditingController ctrl) {
-    var val = ctrl.text;
+  Widget _buildStat(String stat, String val) {
     Widget content = Column(
       children: [
-        SizedBox(
-          height: height * 0.02,
-        ),
+        SizedBox(height: height * 0.02),
         Text(
           stat,
-          style: const TextStyle(
-              color: appTheme, fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(color: appTheme, fontSize: 16, fontWeight: FontWeight.bold),
         ),
         Text(val, style: const TextStyle(color: appTheme, fontSize: 19)),
       ],
@@ -385,25 +381,13 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: _buildStat('Kcal', KcalController)),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            Expanded(
-              child: _buildStat('Proteins', ProteinsController),
-            ),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            Expanded(
-              child: _buildStat('Carbs', CarbsController),
-            ),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            Expanded(
-              child: _buildStat('Fats', FatsController),
-            )
+            Expanded(child: _buildStat('Calories', calories)),
+            SizedBox(width: 0.05 * width),
+            Expanded(child: _buildStat('Proteins', proteins)),
+            SizedBox(width: 0.05 * width),
+            Expanded(child: _buildStat('Carbs', carbs)),
+            SizedBox(width: 0.05 * width),
+            Expanded(child: _buildStat('Fats', fats))
           ],
         ));
   }
@@ -516,10 +500,10 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     width = screenSize.width;
     mealPlanNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
-    KcalController.text = post_data["meals_contents"][0].toString();
-    ProteinsController.text = post_data["meals_contents"][1].toString();
-    CarbsController.text = post_data["meals_contents"][2].toString();
-    FatsController.text = post_data["meals_contents"][3].toString();
+    calories = post_data["meals_contents"][0].toString();
+    proteins = post_data["meals_contents"][1].toString();
+    carbs = post_data["meals_contents"][2].toString();
+    fats = post_data["meals_contents"][3].toString();
     if (_mealNames.isEmpty) {
       for (int i = 0; i < post_data["meals_name"].length; i++) {
         _mealNames.add(post_data["meals_name"][i] as String);

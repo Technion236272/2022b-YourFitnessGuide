@@ -8,6 +8,7 @@ import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yourfitnessguide/services/image_crop.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class EditProfileScreen extends StatefulWidget {
   late bool firstTime;
@@ -23,9 +24,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     fieldName: 'Name',
     hint: 'Enter your name here',
   );
-  final TextEditingController _initialController = TextEditingController();
-  final TextEditingController _currentController = TextEditingController();
-  final TextEditingController _goalController = TextEditingController();
+  Map<String, int> weights = {
+    'initialWeight': 0,
+    'currentWeight': 0,
+    'goalWeight': 0,
+  };
+
   late Widget _imageContainer;
   Map<String, bool> privacySettings = {
     'profile': false,
@@ -70,29 +74,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget _buildNameField(double height) {
-    return Padding(
-        padding: EdgeInsets.only(bottom: height * 0.03), child: nameField);
+    return Padding(padding: EdgeInsets.only(bottom: height * 0.03), child: nameField);
   }
 
-  Widget _buildWeightField(String label, TextEditingController ctrl) {
+  Widget _buildWeightField(String label, String variable) {
     return Expanded(
-        child: TextField(
-      keyboardType: TextInputType.number,
-      controller: ctrl,
-      decoration: InputDecoration(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 5),
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: appTheme,
-          fontSize: 23,
-          fontWeight: FontWeight.bold,
-        ),
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        hintText: "80",
-        hintStyle:
-            const TextStyle(height: 2.8, fontSize: 16, color: Colors.grey),
-      ),
-    ));
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: const TextStyle(color: appTheme, fontSize: 19, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          NumberPicker(
+            value: weights[variable]!,
+            minValue: 1,
+            maxValue: 450,
+            itemHeight: 30,
+            selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+            onChanged: (value) => setState(() =>  weights[variable] = value),
+          )
+        ]
+      )
+    );
   }
 
   Widget _buildWeightProgress(double height, double width) {
@@ -101,24 +104,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildWeightField("Initial\nweight", _initialController),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            _buildWeightField("Current\nweight",
-                firstTime ? _initialController : _currentController),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            _buildWeightField("Goal\nweight", _goalController),
+            _buildWeightField("Initial\nWeight", 'initialWeight'),
+            SizedBox(width: 0.05 * width),
+            _buildWeightField("Current\nWeight",
+                firstTime ? 'initialWeight' : 'currentWeight'),
+            SizedBox(width: 0.05 * width),
+            _buildWeightField("Goal\nWeight", 'goalWeight'),
           ],
         ));
   }
 
   Future pickImage() async {
     try {
-      final selectedImage =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
+      final selectedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (selectedImage == null) {
         const snackBar = SnackBar(content: Text('No image was selected'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -169,17 +167,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void saveChanges() {
-    int init = int.parse(_initialController.text);
-    int curr = int.parse(_currentController.text);
-    int goal = int.parse(_goalController.text);
+    int init = weights['initialWeight']!;
+    int curr = weights['currentWeight']!;
+    int goal = weights['goalWeight']!;
     if (firstTime) {
       curr = init;
     }
 
     if (choices.userGoal == Goal.loseWeight && (init < goal || curr < goal)) {
       const snackBar = SnackBar(
-          content: Text(
-              'Invalid data: Initial weight must be bigger than goal weight.'));
+          content: Text('Invalid data: Initial weight must be bigger than goal weight.'));
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
@@ -187,20 +184,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     if (choices.userGoal == Goal.gainWeight && (init > goal || curr > goal)) {
       const snackBar = SnackBar(
-          content: Text(
-              'Invalid data: Goal weight must be bigger than goal weight.'));
+          content: Text('Invalid data: Goal weight must be bigger than goal weight.'));
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
 
     if (firstTime) {
-      if (int.parse(_initialController.text) <= 0 ||
-          int.parse(_goalController.text) <= 0 ||
-          int.parse(_initialController.text) >= 500 ||
-          int.parse(_goalController.text) >= 500) {
-        const snackBar =
-            SnackBar(content: Text('You need to fill all the fields'));
+      if (init <= 0 || goal <= 0 || init >= 500 || goal >= 500) {
+        const snackBar = SnackBar(content: Text('You need to fill all the fields'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         user.updateUserData(nameField.controller.text, init, curr, goal,
@@ -208,14 +200,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Navigator.pushReplacementNamed(context, homeRoute);
       }
     } else {
-      if (int.parse(_initialController.text) <= 0 ||
-          int.parse(_currentController.text) <= 0 ||
-          int.parse(_goalController.text) <= 0 ||
-          int.parse(_initialController.text) >= 500 ||
-          int.parse(_currentController.text) >= 500 ||
-          int.parse(_goalController.text) >= 500) {
-        const snackBar =
-            SnackBar(content: Text('You need to fill all the fields'));
+      if (init <= 0 ||
+          curr <= 0 ||
+          goal <= 0 ||
+          init >= 500 ||
+          curr >= 500 ||
+          goal >= 500) {
+        const snackBar = SnackBar(content: Text('You need to fill all the fields'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
         user.updateUserData(nameField.controller.text, init, curr, goal,
@@ -281,32 +272,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  initializeWeights(){
+    if(userData == null){
+      if (weights['initialWeight'] == 0) {
+        weights['initialWeight'] = 1;
+      }
+      if (weights['currentWeight'] == 0) {
+        weights['currentWeight'] = 1;
+      }
+      if (weights['goalWeight'] == 0) {
+        weights['goalWeight'] = 1;
+      }
+      return;
+    }
+    else {
+      if (weights['initialWeight'] == 0) {
+        weights['initialWeight'] = userData.iWeight;
+      }
+      if (weights['currentWeight'] == 0) {
+        weights['currentWeight'] = userData.cWeight;
+      }
+      if (weights['goalWeight'] == 0) {
+        weights['goalWeight'] = userData.gWeight;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AuthRepository>(context);
 
     if (user.isAuthenticated) {
       userData = user.userData;
-
+      initializeWeights();
       profileImage = userData?.pictureUrl;
       nameField.controller.text = nameField.controller.text.isEmpty
           ? (userData != null ? userData.name : nameField.controller.text)
           : nameField.controller.text;
-      _initialController.text = (_initialController.text.isEmpty
-          ? (userData != null
-              ? userData.iWeight.toString()
-              : _initialController.text)
-          : _initialController.text);
-      _currentController.text = (_currentController.text.isEmpty
-          ? (userData != null
-              ? userData.cWeight.toString()
-              : _currentController.text)
-          : _currentController.text);
-      _goalController.text = (_goalController.text.isEmpty
-          ? (userData != null
-              ? userData.gWeight.toString()
-              : _goalController.text)
-          : _goalController.text);
+
       userGoal = userGoal ?? Goal.values[userData != null ? userData.goal : 0];
       privacySettings = userData?.privacySettings;
     } else {
@@ -374,16 +377,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 ],
                               );
                             },
-                            icon: const Icon(
-                              Icons.info_outline,
-                              color: Colors.white,
-                            )),
+                            icon: const Icon(Icons.info_outline, color: Colors.white,)
+                    ),
                     firstTime
                         ? IconButton(
                             onPressed: () {
                               saveChanges();
                             },
-                            icon: Icon(Icons.check, color: Colors.white))
+                            icon: const Icon(Icons.check, color: Colors.white))
                         : Container(),
                   ],
                 )),
@@ -398,8 +399,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               SizedBox(height: height * 0.02),
               Container(
-                padding: EdgeInsets.only(
-                    top: 0.25, left: width * 0.05, right: width * 0.05),
+                padding: EdgeInsets.only(top: 0.25, left: width * 0.05, right: width * 0.05),
                 child: Center(
                   child: Stack(
                     children: [
@@ -432,8 +432,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       padding: EdgeInsets.only(right: width * 0.45),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Privacy Settings',
+                        children: const [
+                          Text('Privacy Settings',
                               style: TextStyle(
                                   color: appTheme,
                                   fontSize: 23,

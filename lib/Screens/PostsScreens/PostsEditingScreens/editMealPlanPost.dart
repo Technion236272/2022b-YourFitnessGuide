@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:flutter/services.dart';
@@ -8,9 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'dart:io';
 import 'package:yourfitnessguide/services/image_crop.dart';
-import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:numberpicker/numberpicker.dart';
 
 
 class EditMealPlan extends StatefulWidget {
@@ -26,10 +25,14 @@ class _EditMealPlanState extends State<EditMealPlan> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController mealNameController = TextEditingController();
   TextEditingController mealIngredientsController = TextEditingController();
-  TextEditingController kcalController = TextEditingController();
-  TextEditingController proteinsController = TextEditingController();
-  TextEditingController carbsController = TextEditingController();
-  TextEditingController fatsController = TextEditingController();
+
+  Map<String, int> nutrients = {
+    'calories': 0,
+    'proteins': 0,
+    'carbs': 0,
+    'fats': 0
+  };
+
   get post_data => widget.post_data;
   bool? loseWeight = false;
   bool? gainMuscle = false;
@@ -66,9 +69,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
         _postImageFile = File(croppedFile!.path); //File(selectedImage.path);
       });
     } on PlatformException catch (_) {
-      const snackBar = SnackBar(
-          content: Text(
-              'You need to grant permission if you want to select a photo'));
+      const snackBar = SnackBar(content: Text('You need to grant permission if you want to select a photo'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
@@ -86,7 +87,6 @@ class _EditMealPlanState extends State<EditMealPlan> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     primary: Colors.white,
-                    //side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(0)),
                     fixedSize: Size(width * 0.25, height * 0.010),
@@ -489,63 +489,61 @@ class _EditMealPlanState extends State<EditMealPlan> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    labelText: "Kcal",
-                    labelStyle: TextStyle(color: appTheme, fontSize: 21),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  controller: kcalController,
-                )),
+                child: Column(children: [
+                  const FittedBox(child: Text('Calories', style: TextStyle(color: appTheme, fontSize: 20))),
+                  NumberPicker(
+                    value: nutrients['calories']!,
+                    minValue: 0,
+                    maxValue: 5000,
+                    itemHeight: 30,
+                    step: 10,
+                    selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                    onChanged: (value) => setState(() =>  nutrients['calories'] = value),
+                  )
+                ])
+            ),
             SizedBox(width: 0.05 * width),
             Expanded(
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  labelText: "Proteins",
-                  labelStyle: TextStyle(color: appTheme, fontSize: 21),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                ),
-                controller: proteinsController,
-              ),
+                child: Column(children: [
+                  const FittedBox(child: Text('Proteins', style: TextStyle(color: appTheme, fontSize: 20))),
+                  NumberPicker(
+                    value: nutrients['proteins']!,
+                    minValue: 0,
+                    maxValue: 500,
+                    itemHeight: 30,
+                    selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                    onChanged: (value) => setState(() =>  nutrients['proteins'] = value),
+                  )
+                ])
             ),
-            SizedBox(
-              width: 0.05 * width,
-            ),
+            SizedBox(width: 0.05 * width),
             Expanded(
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    labelText: "Carbs",
-                    labelStyle: TextStyle(
-                      color: appTheme,
-                      fontSize: 21,
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  controller: carbsController,
-                )),
-            SizedBox(
-              width: 0.05 * width,
+                child: Column(children: [
+                  const FittedBox(child: Text('Carbs', style: TextStyle(color: appTheme, fontSize: 20))),
+                  NumberPicker(
+                    value: nutrients['carbs']!,
+                    minValue: 0,
+                    maxValue: 500,
+                    itemHeight: 30,
+                    selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                    onChanged: (value) => setState(() =>  nutrients['carbs'] = value),
+                  )
+                ])
             ),
+            SizedBox(width: 0.05 * width),
             Expanded(
-                child: TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                    labelText: "Fats",
-                    labelStyle: TextStyle(
-                      color: appTheme,
-                      fontSize: 21,
-                    ),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  controller: fatsController,
-                ))
+                child: Column(children: [
+                  const FittedBox(child: Text('Fats', style: TextStyle(color: appTheme, fontSize: 20))),
+                  NumberPicker(
+                    value: nutrients['fats']!,
+                    minValue: 0,
+                    maxValue: 500,
+                    itemHeight: 30,
+                    selectedTextStyle: const TextStyle(color: appTheme, fontSize: 22),
+                    onChanged: (value) => setState(() =>  nutrients['fats'] = value),
+                  )
+                ])
+            )
           ],
         ));
   }
@@ -741,11 +739,10 @@ class _EditMealPlanState extends State<EditMealPlan> {
 
   Future _fileFromImageUrl() async {
     if (post_data.data()!['image_url'] != null) {
-      var rng = new Random();
+      var rng = Random();
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path;
-      File file =
-      new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
+      File file = File('$tempPath${rng.nextInt(100)}.png');
       http.Response response =
       await http.get(Uri.parse(post_data.data()!['image_url']!));
       await file.writeAsBytes(response.bodyBytes);
@@ -772,10 +769,10 @@ class _EditMealPlanState extends State<EditMealPlan> {
     _goals[1]=post_data.data()!['goals']![1];
     _goals[2]= post_data.data()!['goals']![2];
     _goals[3]=post_data.data()!['goals']![3];
-    kcalController.text=post_data.data()!['meals_contents']![0].toString();
-    proteinsController.text=post_data.data()!['meals_contents']![1].toString();
-    carbsController.text=post_data.data()!['meals_contents']![2].toString();
-    fatsController.text=post_data.data()!['meals_contents']![3].toString();
+    nutrients['calories'] = post_data.data()!['meals_contents']![0];
+    nutrients['proteins'] = post_data.data()!['meals_contents']![1];
+    nutrients['carbs'] = post_data.data()!['meals_contents']![2];
+    nutrients['fats'] = post_data.data()!['meals_contents']![3];
 
     loseWeight = post_data.data()!['goals']![0] as bool;
     gainMuscle = post_data.data()!['goals']![1] as bool;
@@ -820,15 +817,11 @@ class _EditMealPlanState extends State<EditMealPlan> {
                           final String title = mealPlanNameController.text;
                           final String description =
                               descriptionController.text;
-                          final String kcal = kcalController.text;
-                          final String protiens = proteinsController.text;
-                          final String carbs = carbsController.text;
-                          final String fats = fatsController.text;
 
-                          _mealsContents[0] = int.tryParse(kcal);
-                          _mealsContents[1] = int.tryParse(protiens);
-                          _mealsContents[2] = int.tryParse(carbs);
-                          _mealsContents[3] = int.tryParse(fats);
+                          _mealsContents[0] = nutrients['calories']!;
+                          _mealsContents[1] = nutrients['proteins'];
+                          _mealsContents[2] = nutrients['carbs'];
+                          _mealsContents[3] = nutrients['fats'];
 
                           if (loseWeight! ||
                               gainMuscle! ||
@@ -836,36 +829,10 @@ class _EditMealPlanState extends State<EditMealPlan> {
                               maintainHealth!) {
                             selectedGoal = true;
                           }
-                          if (title == "" ||
-                              description == "" ||
-                              kcal == "" ||
-                              protiens == "" ||
-                              carbs == "" ||
-                              fats == "" ||
-                              selectedGoal == false ||
-                              _mealNames.isEmpty) {
+                          if (title == "" || description == "" || selectedGoal == false || _mealNames.isEmpty) {
                             const snackBar = SnackBar(
-                                content: Text(
-                                    'You must fill all the fields and add meals'));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                          } else if (_mealsContents[0] == null ||
-                              _mealsContents[0]! <= 0 ||
-                              _mealsContents[0]! >= 9999 ||
-                              _mealsContents[1] == null ||
-                              _mealsContents[1]! <= 0 ||
-                              _mealsContents[0]! >= 9999 ||
-                              _mealsContents[2] == null ||
-                              _mealsContents[2]! <= 0 ||
-                              _mealsContents[0]! >= 9999 ||
-                              _mealsContents[3] == null ||
-                              _mealsContents[3]! <= 0 ||
-                              _mealsContents[0]! >= 9999) {
-                            const snackBar = SnackBar(
-                                content: Text(
-                                    'You must enter a positive integer in Kcal,Protiens,Carbs and Fats'));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
+                                content: Text('You must fill all the fields and add meals'));
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           } else {
                             setState(() {
                               _isLoading = true;
@@ -886,19 +853,12 @@ class _EditMealPlanState extends State<EditMealPlan> {
                             });
 
                             if (isSubmitted) {
-                              const snackBar = SnackBar(
-                                  content:
-                                  Text('MealPlan edited successfully'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-
+                              const snackBar = SnackBar(content: Text('MealPlan edited successfully'));
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
                               Navigator.pop(context);
                             } else {
-                              const snackBar = SnackBar(
-                                  content: Text(
-                                      'There was a problem logging you in'));
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
+                              const snackBar = SnackBar(content: Text('There was a problem logging you in'));
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             }
                           }
                         },
