@@ -354,8 +354,28 @@ class _PostState extends State<Post> {
                                       });
                                 }
                                 else if (value==2) {
-                                  var category= widget.snapshot?.data!.docs[widget.index].data()!['category']!;
-                                  var args = widget.snapshot?.data!.docs[widget.index];
+                                  var post_id     = widget.snapshot?.data!.docs[widget.index].id;
+                                  var title       = widget.snapshot?.data!.docs[widget.index].data()!['title']!;
+                                  var description = widget.snapshot?.data!.docs[widget.index].data()!['description']!;
+                                  var image_url   = widget.snapshot?.data!.docs[widget.index].data()!['image_url'];
+                                  var goals       = widget.snapshot?.data!.docs[widget.index].data()!['goals'];
+                                  var meals_name  = widget.snapshot?.data!.docs[widget.index].data()!['meals_name'];
+                                  var meals_contents    = widget.snapshot?.data!.docs[widget.index].data()!['meals_contents'];
+                                  var meals_ingredients = widget.snapshot?.data!.docs[widget.index].data()!['meals_ingredients'];
+                                  var exercises   = widget.snapshot?.data!.docs[widget.index].data()!['exercises'];
+
+                                  var args = {
+                                    'post_id': post_id,
+                                    'title': title,
+                                    'description': description,
+                                    'image_url': image_url,
+                                    'goals': goals,
+                                    'meals_contents': meals_contents,
+                                    'meals_name': meals_name,
+                                    'meals_ingredients': meals_ingredients,
+                                    'exercises': exercises
+                                  };
+                                  var category = widget.snapshot?.data!.docs[widget.index].data()!['category']!;
                                   if(category == "Blog") {
                                     Navigator.pushNamed(context, editBlogRoute, arguments: args);
                                   }
@@ -374,8 +394,8 @@ class _PostState extends State<Post> {
                             ),
                       );
                     }),
-                Text( widget.data?['title']
-                    ?? widget.snapshot?.data!.docs[widget.index].data()!['title']!,
+                Text(
+                  widget.data?['title'] ?? widget.snapshot?.data!.docs[widget.index].data()!['title']!,
                   textAlign: TextAlign.left,
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),

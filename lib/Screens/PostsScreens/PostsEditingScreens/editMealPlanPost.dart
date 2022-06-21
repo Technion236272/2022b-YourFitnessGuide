@@ -13,8 +13,8 @@ import 'package:numberpicker/numberpicker.dart';
 
 
 class EditMealPlan extends StatefulWidget {
-  late var post_data;
-   EditMealPlan({Key? key, this.post_data}) : super(key: key);
+  late var postData;
+   EditMealPlan({Key? key, this.postData}) : super(key: key);
 
   @override
   State<EditMealPlan> createState() => _EditMealPlanState();
@@ -33,7 +33,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
     'fats': 0
   };
 
-  get post_data => widget.post_data;
+  get postData => widget.postData;
   bool? loseWeight = false;
   bool? gainMuscle = false;
   bool? gainWeight = false;
@@ -54,8 +54,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
 
   Future pickImage() async {
     try {
-      final selectedImage =
-      await ImagePicker().pickImage(source: ImageSource.gallery);
+      final selectedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (selectedImage == null) {
         const snackBar = SnackBar(content: Text('No image was selected'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -209,16 +208,6 @@ class _EditMealPlanState extends State<EditMealPlan> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              /* Text(
-                "Plan name",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 20,
-                  // fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              */
               TextField(
                 keyboardType: TextInputType.name,
                 controller: mealPlanNameController,
@@ -226,11 +215,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
                 maxLength: 30,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(bottom: 5),
-                  label: false
-                      ? Center(
-                    child: Text("Plan name"),
-                  )
-                      : Text("Plan name"),
+                  label: Text("Plan name"),
                   hintStyle:
                   TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
@@ -285,11 +270,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
                 textAlign: TextAlign.left,
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(bottom: 5),
-                  label: false
-                      ? Center(
-                    child: Text("Description"),
-                  )
-                      : Text("Description"),
+                  label: Text("Description"),
                   hintStyle:
                   TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                   labelStyle: TextStyle(
@@ -685,8 +666,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
                                     mealIngredientsController.text.isEmpty) {
                                   Navigator.of(context).pop(["", ""]);
                                   const snackBar = SnackBar(
-                                      content: Text(
-                                          'You must fill all the fields, adding meal failed'));
+                                      content: Text('You must fill all the fields, adding meal failed'));
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(snackBar);
                                 } else {
@@ -738,13 +718,13 @@ class _EditMealPlanState extends State<EditMealPlan> {
   }
 
   Future _fileFromImageUrl() async {
-    if (post_data.data()!['image_url'] != null) {
+    if (postData['image_url'] != null) {
       var rng = Random();
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path;
       File file = File('$tempPath${rng.nextInt(100)}.png');
       http.Response response =
-      await http.get(Uri.parse(post_data.data()!['image_url']!));
+      await http.get(Uri.parse(postData['image_url']!));
       await file.writeAsBytes(response.bodyBytes);
       _postImageFile = file;
       color = Colors.red;
@@ -759,48 +739,46 @@ class _EditMealPlanState extends State<EditMealPlan> {
   @override
   initState() {
     super.initState();
-    mealPlanNameController.text=post_data.data()!['title']!;
-    descriptionController.text=post_data.data()!['description']!;
-    if(firsttime==0) {
-      _fileFromImageUrl();
-      firsttime++;
-    }
-    _goals[0]=post_data.data()!['goals']![0];
-    _goals[1]=post_data.data()!['goals']![1];
-    _goals[2]= post_data.data()!['goals']![2];
-    _goals[3]=post_data.data()!['goals']![3];
-    nutrients['calories'] = post_data.data()!['meals_contents']![0];
-    nutrients['proteins'] = post_data.data()!['meals_contents']![1];
-    nutrients['carbs'] = post_data.data()!['meals_contents']![2];
-    nutrients['fats'] = post_data.data()!['meals_contents']![3];
+    mealPlanNameController.text = postData['title']!;
+    descriptionController.text  = postData['description']!;
+    _fileFromImageUrl();
 
-    loseWeight = post_data.data()!['goals']![0] as bool;
-    gainMuscle = post_data.data()!['goals']![1] as bool;
-    gainWeight = post_data.data()!['goals']![2] as bool;
-    maintainHealth = post_data.data()!['goals']![3] as bool;
+    _goals[0] = postData['goals']![0];
+    _goals[1] = postData['goals']![1];
+    _goals[2] = postData['goals']![2];
+    _goals[3] = postData['goals']![3];
+
+    nutrients['calories'] = postData['meals_contents']![0];
+    nutrients['proteins'] = postData['meals_contents']![1];
+    nutrients['carbs']    = postData['meals_contents']![2];
+    nutrients['fats']     = postData['meals_contents']![3];
+
+    loseWeight = postData['goals']![0] as bool;
+    gainMuscle = postData['goals']![1] as bool;
+    gainWeight = postData['goals']![2] as bool;
+    maintainHealth = postData['goals']![3] as bool;
   }
+
 // todo to check what happens when we don't add anything
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final height = screenSize.height;
-    final width = screenSize.width;
-    var timestamp=post_data.data()!['createdAt']!;
+    final width  = screenSize.width;
+    var postId = postData['post_id'];
     if (_mealNames.isEmpty && !_alreadyfilled ) {
-      _alreadyfilled=true;
-      for (int i = 0; i < post_data["meals_name"].length; i++) {
-        _mealNames.add(post_data["meals_name"][i] as String);
-        _mealIngredients.add(post_data["meals_ingredients"][i] as String);
-        _addButtonWidget(post_data["meals_name"][i], height, width);
+      _alreadyfilled = true;
+      for (int i = 0; i < postData["meals_name"].length; i++) {
+        _mealNames.add(postData["meals_name"][i] as String);
+        _mealIngredients.add(postData["meals_ingredients"][i] as String);
+        _addButtonWidget(postData["meals_name"][i], height, width);
       }
     }
 
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            'Edit meal plan',
-          ),
+          title: const Text('Edit Meal Plan'),
           backgroundColor: appTheme,
           centerTitle: false,
           actions: [
@@ -809,61 +787,51 @@ class _EditMealPlanState extends State<EditMealPlan> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? const Center(
-                        child: CircularProgressIndicator.adaptive())
-
+                        ? const Center(child: CircularProgressIndicator.adaptive())
                         : IconButton(
-                        onPressed: () async {
-                          final String title = mealPlanNameController.text;
-                          final String description =
-                              descriptionController.text;
+                          onPressed: () async {
+                            final String title = mealPlanNameController.text;
+                            final String description = descriptionController.text;
 
-                          _mealsContents[0] = nutrients['calories']!;
-                          _mealsContents[1] = nutrients['proteins'];
-                          _mealsContents[2] = nutrients['carbs'];
-                          _mealsContents[3] = nutrients['fats'];
+                            _mealsContents[0] = nutrients['calories']!;
+                            _mealsContents[1] = nutrients['proteins'];
+                            _mealsContents[2] = nutrients['carbs'];
+                            _mealsContents[3] = nutrients['fats'];
 
-                          if (loseWeight! ||
-                              gainMuscle! ||
-                              gainWeight! ||
-                              maintainHealth!) {
-                            selectedGoal = true;
-                          }
-                          if (title == "" || description == "" || selectedGoal == false || _mealNames.isEmpty) {
-                            const snackBar = SnackBar(
-                                content: Text('You must fill all the fields and add meals'));
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                          } else {
-                            setState(() {
-                              _isLoading = true;
-                            });
-                            await _postManager.deletePost(post_data.id);
-                            bool isSubmitted =
-                            await _postManager.updateMealPlan(
-                                title: title,
-                                description: description,
-                                timeStamp: timestamp,
-                                postImage: _postImageFile,
-                                goals: _goals,
-                                mealsContents: _mealsContents,
-                                mealsName: _mealNames,
-                                mealsIngredients: _mealIngredients);
-                            setState(() {
-                              _isLoading = false;
-                            });
-
-                            if (isSubmitted) {
-                              const snackBar = SnackBar(content: Text('MealPlan edited successfully'));
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                              Navigator.pop(context);
-                            } else {
-                              const snackBar = SnackBar(content: Text('There was a problem logging you in'));
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            if (loseWeight! || gainMuscle! || gainWeight! || maintainHealth!) {
+                              selectedGoal = true;
                             }
-                          }
-                        },
-                        icon: const Icon(Icons.check_sharp,
-                            color: Colors.white)),
+                            if (title == "" || description == "" || selectedGoal == false || _mealNames.isEmpty) {
+                              const snackBar = SnackBar(content: Text('You must fill all the fields and add meals'));
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            } else {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              bool isSubmitted =
+                                await _postManager.updateMealPlan(
+                                  postId: postId,
+                                  title: title,
+                                  description: description,
+                                  postImage: _postImageFile,
+                                  goals: _goals,
+                                  mealsContents: _mealsContents,
+                                  mealsName: _mealNames,
+                                  mealsIngredients: _mealIngredients);
+                              setState(() {
+                                _isLoading = false;
+                              });
+                              if (isSubmitted) {
+                                const snackBar = SnackBar(content: Text('Meal Plan edited successfully'));
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                Navigator.pop(context);
+                              } else {
+                                const snackBar = SnackBar(content: Text('There was a problem logging you in'));
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              }
+                            }
+                          },
+                          icon: const Icon(Icons.check_sharp, color: Colors.white)),
                   ],
                 )),
           ]),
@@ -875,9 +843,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
             child: Column(mainAxisAlignment: MainAxisAlignment.start,
                 //crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(
-                    height: height * 0.012,
-                  ),
+                  SizedBox(height: height * 0.012),
                   Container(
                     padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
                     child: _buildmealPlanName(height),
@@ -900,15 +866,15 @@ class _EditMealPlanState extends State<EditMealPlan> {
                   ),
                   (_postImageFile != null
                       ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      _postImageFile!,
-                      height: 300,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      fit: BoxFit.contain,
-                    ),
-                  )
-                      : const Padding(padding: EdgeInsets.all(0))),
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.file(
+                            _postImageFile!,
+                            height: 300,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            fit: BoxFit.contain,
+                          ),
+                        )
+                      : Container()),
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
@@ -916,8 +882,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
                     height: 80.0,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        side: BorderSide(
-                            width: 2.0, color: Colors.black.withOpacity(0.5)),
+                        side: BorderSide(width: 2.0, color: Colors.black.withOpacity(0.5)),
                         primary: color, // background
                         onPrimary: Colors.white, // foreground
                       ),
@@ -940,8 +905,7 @@ class _EditMealPlanState extends State<EditMealPlan> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          const Icon(Icons.add_photo_alternate,
-                              color: Colors.white),
+                          const Icon(Icons.add_photo_alternate, color: Colors.white),
                           const SizedBox(height: 4),
                           Text(photo, style: const TextStyle(color: Colors.white)),
                         ],

@@ -152,13 +152,14 @@ class NotificationItem extends StatelessWidget {
     return FutureBuilder(
       future: Future.wait([
         PostManager().getUserPicAndName(userId)
-        /*,PostManager().getPostPicture*/
+        //,PostManager().getPostPicture(postId)
       ]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         if(snapshot.hasData) {
           final userMap = snapshot.data![0];
           String userName = userMap['name'];
           String userPic  = userMap['picture'];
+          //final postPic = snapshot.data![1];
           return Padding(
             padding: const EdgeInsets.only(bottom: 2.0),
             child: Container(
@@ -195,13 +196,26 @@ class NotificationItem extends StatelessWidget {
                     child: CircleAvatar(radius: 25, backgroundImage: NetworkImage(userPic))
                 ),
                 subtitle: Text(timeago.format(timestamp.toDate()), overflow: TextOverflow.ellipsis),
-                //trailing: mediaPreview,
+                /*trailing: Container(
+                  height: 50.0,
+                  width: 50.0,
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(postPic),
+                          )),
+                    ),
+                  ),
+                ),*/
               ),
             ),
           );
         }
         else{
-          return const CircularProgressIndicator(); //TODO: change
+          return Container();//CircularProgressIndicator();
         }
       }
     );
