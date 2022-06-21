@@ -10,6 +10,10 @@ import 'package:yourfitnessguide/utils/post.dart';
 class TimelineScreen extends StatefulWidget {
   bool? isGoalOriented = false;
   String sorting = 'createdAt';
+  bool? isBlogSelected = false;
+  bool? isWorkoutSelected = false;
+  bool? isMealPlanSelected= false;
+  bool? isPostsbyfollowingSelected=false;
 
   TimelineScreen({Key? key, bool? oriented = false}) : super(key: key) {
     this.isGoalOriented = oriented ?? false;
@@ -22,6 +26,9 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   final PostManager _postManager = PostManager();
+  String? dropdownValue;
+  final ratingController = TextEditingController();
+  int?  minRating;
 
   SpeedDialChild _buildDialOption(String name, String route) {
     return SpeedDialChild(
@@ -100,18 +107,171 @@ class _TimelineScreenState extends State<TimelineScreen> {
   );
 
   Future openFilterDialog() => showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => StatefulBuilder(
           builder: (context, setStatee) => AlertDialog(
             title: const Center(child: Text('Filter Options'),),
-            content: CheckboxListTile(
-                title: const Text('Only show posts that match my goal',
-                    style: TextStyle(color: appTheme)),
-                value: widget.isGoalOriented,
-                activeColor: appTheme,
-                onChanged: (value) => setStatee(() {
-                  widget.isGoalOriented = value!;
-                })),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment : CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Posts Type",
+                    style: TextStyle(
+                      color: appTheme,
+                      fontSize: 18,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Blog post',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: widget.isBlogSelected,
+                      //groupValue: userGoal,
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        widget.isBlogSelected=value!;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Meals Plans',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: widget.isMealPlanSelected,
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        widget.isMealPlanSelected=value!;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Workouts',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: widget.isWorkoutSelected,
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        widget.isWorkoutSelected=value!;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    children: [
+                      const Text(
+                        "Timerange",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 18,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 25, 0),
+                        child: DropdownButton<String>(
+                          value: dropdownValue,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.black),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.grey,
+                          ),
+                          onChanged: (String? newValue) {
+                            setStatee(() {
+                              dropdownValue = newValue!;
+                            });
+                          },
+                          items: <String>['a day ago', '5 days ago', '10 days ago', '15 days ago','a month ago']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+
+                    ],
+                  ),
+
+
+                  Row(
+                    children: [
+                      const Text(
+                        "Minimum rating",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 25, 10),
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            controller: ratingController,
+                            textAlign: TextAlign. center,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                              labelText: "",
+                              labelStyle: TextStyle(color: appTheme, fontSize: 21),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                            ),
+                          ),
+                        ),
+
+                      ),
+
+                    ],
+                  ),
+
+                  CheckboxListTile(
+                    //controlAffinity: ListTileControlAffinity.leading,
+                      title: const Text('Show posts from following only',
+                          style: TextStyle(color: appTheme,fontSize: 17)),
+                      value: widget.isPostsbyfollowingSelected,
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        widget.isPostsbyfollowingSelected = value!;
+                      })),
+
+                  CheckboxListTile(
+                    // controlAffinity: ListTileControlAffinity.leading,
+                      title: const Text('Only show posts that match my goal',
+                          style: TextStyle(color: appTheme,fontSize: 17)),
+                      value: widget.isGoalOriented,
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        widget.isGoalOriented = value!;
+                      })),
+                ],
+              ),
+            ),
             actions: [
               Padding(
                 padding:
@@ -124,6 +284,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         onPressed: () {
                           setStatee(() => widget.isGoalOriented =
                           widget.isGoalOriented!);
+                          widget.isBlogSelected=widget.isBlogSelected!;
+                          widget.isWorkoutSelected=widget.isWorkoutSelected!;
+                          widget.isMealPlanSelected=widget.isMealPlanSelected!;
+                          widget.isPostsbyfollowingSelected=widget.isPostsbyfollowingSelected!;
+                          dropdownValue=dropdownValue;
+                          minRating=int.tryParse(ratingController.text);
                           Navigator.of(context).pop();
                         },
                         child: const Text('OK',
@@ -138,6 +304,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
             ],
           )));
 
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -151,6 +318,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
             title: const Text('YourFitnessGuide'),
             centerTitle: false,
             actions: [
+        (user.isAuthenticated
+        ?
               Padding(
                   padding: const EdgeInsets.only(right: 2.0),
                   child:
@@ -163,9 +332,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                             Icons.filter_alt,
                             color: Colors.white,
                           ))
-                    ),
-              (user.isAuthenticated
-                  ? Padding(
+                    ): const Padding(padding: EdgeInsets.all(0))),
+              Padding(
                       padding: const EdgeInsets.only(right: 1.0),
                       child:
                           IconButton(
@@ -178,7 +346,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                 color: Colors.white,
                               ))
                         )
-                  : const Padding(padding: EdgeInsets.all(0))),
+
             ]),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,
@@ -218,6 +386,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         snapshot: snapshot,
                         screen: "timeline",
                         goalFiltered: widget.isGoalOriented ?? false,
+                        isBlogSelected: widget.isBlogSelected?? false,
+                        isWorkoutSelected: widget.isWorkoutSelected??false,
+                        isMealPlanSelected: widget.isMealPlanSelected??false,
+                        isPostsbyfollowingSelected: widget.isPostsbyfollowingSelected??false,
+                        timeRange: dropdownValue?? 'nothing',
+                        minRating: minRating?? -100000000,
                       );
                     },
                   ));

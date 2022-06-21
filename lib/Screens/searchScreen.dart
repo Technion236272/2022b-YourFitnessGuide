@@ -80,9 +80,21 @@ class _SearchScreenState extends State<SearchScreen> {
   List<Post> meals = [];
   List<Post> allWorkouts = [];
   List<Post> workouts = [];
-
+  final List<bool?> _workoutGoals = [false, false, false, false];
+  final List<bool?> _mealPlanGoals = [false, false, false, false];
   String query = '';
+  String? dropdownValueWorkout;
+  String? dropdownValuemealPlan;
+  int?  minRatingWorkout;
+  int?  minRatingWMealPlan;
   final searchUserController = TextEditingController();
+  final ratingWorkoutController = TextEditingController();
+  final ratingMealPlanController = TextEditingController();
+  RangeValues kcalrange= RangeValues((0), 5000);
+  RangeValues protiensrange= RangeValues((0), 500);
+  RangeValues carbsrange= RangeValues((0), 500);
+  RangeValues fatsrange= RangeValues((0), 500);
+  final PostManager _postManager = PostManager();
 
   @override
   void initState(){
@@ -118,7 +130,512 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
   }
+  Future openFilterDialogWorkout() => showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+          builder: (context, setStatee) => AlertDialog(
+            title: const Center(child: Text('Workout Filter Options'),),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment : CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text(
+                        "Timerange",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 18,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 25, 0),
+                        child: DropdownButton<String>(
+                          value: dropdownValueWorkout,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.black),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.grey,
+                          ),
+                          onChanged: (String? newValue) {
+                            setStatee(() {
+                              dropdownValueWorkout = newValue!;
+                            });
+                          },
+                          items: <String>['a day ago', '5 days ago', '10 days ago', '15 days ago','a month ago']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
 
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  const Text(
+                    "Workout goal",
+                    style: TextStyle(
+                      color: appTheme,
+                      fontSize: 17,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Lose Weight' ,style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _workoutGoals[0],
+                      //groupValue: userGoal,
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _workoutGoals[0] = value;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+                    indent: width * 0.05,
+                    endIndent: width * 0.1,
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Gain Muscle',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _workoutGoals[1],
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _workoutGoals[1] = value;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+                    indent: width * 0.05,
+                    endIndent: width * 0.1,
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Gain Healthy Weight',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _workoutGoals[2],
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _workoutGoals[2] = value;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+                    indent: width * 0.05,
+                    endIndent: width * 0.1,
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Maintain Healthy Lifestyle',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _workoutGoals[3],
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _workoutGoals[3] = value;
+                      })),
+                  Row(
+                    children: [
+                      const Text(
+                        "Minimum rating",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 25, 10),
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            controller: ratingWorkoutController,
+                            textAlign: TextAlign. center,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                              labelText: "",
+                              labelStyle: TextStyle(color: appTheme, fontSize: 21),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                            ),
+                          ),
+                        ),
+
+                      ),
+
+                    ],
+                  ),
+
+
+                ],
+              ),
+            ),
+            actions: [
+              Container(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setStatee(() =>
+                          dropdownValueWorkout=dropdownValueWorkout);
+                          minRatingWorkout=int.tryParse(ratingWorkoutController.text);
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                                color: appTheme,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      )
+                    ]),
+              )
+            ],
+          )));
+  Future openFilterDialogMealplan() => showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => StatefulBuilder(
+          builder: (context, setStatee) => AlertDialog(
+            title: const Center(child: Text('Meal Plan Filter Options'),),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment : CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Text(
+                        "Timerange",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 18,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 40,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10, 0, 25, 0),
+                        child: DropdownButton<String>(
+                          value: dropdownValuemealPlan,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          elevation: 16,
+                          style: const TextStyle(color: Colors.black),
+                          underline: Container(
+                            height: 2,
+                            color: Colors.grey,
+                          ),
+                          onChanged: (String? newValue) {
+                            setStatee(() {
+                              dropdownValuemealPlan = newValue!;
+                            });
+                          },
+                          items: <String>['a day ago', '5 days ago', '10 days ago', '15 days ago','a month ago']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  const Text(
+                    "Workout goal",
+                    style: TextStyle(
+                      color: appTheme,
+                      fontSize: 17,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Lose Weight' ,style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _mealPlanGoals[0],
+                      //groupValue: userGoal,
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _mealPlanGoals[0] = value;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+                    indent: width * 0.05,
+                    endIndent: width * 0.1,
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Gain Muscle',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _mealPlanGoals[1],
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _mealPlanGoals[1] = value;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+                    indent: width * 0.05,
+                    endIndent: width * 0.1,
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Gain Healthy Weight',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _mealPlanGoals[2],
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _mealPlanGoals[2] = value;
+                      })),
+                  Divider(
+                    color: Colors.grey,
+                    height: 0,
+                    thickness: 0.5,
+                    indent: width * 0.05,
+                    endIndent: width * 0.1,
+                  ),
+                  CheckboxListTile(
+                      title: const Text('Maintain Healthy Lifestyle',style: TextStyle(
+                        fontSize: 14,
+                      ),),
+                      value: _mealPlanGoals[3],
+                      activeColor: appTheme,
+                      onChanged: (value) => setStatee(() {
+                        _mealPlanGoals[3] = value;
+                      })),
+                  Row(
+                    children: [
+                      const Text(
+                        "Minimum rating",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(5, 0, 25, 10),
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            controller: ratingMealPlanController,
+                            textAlign: TextAlign. center,
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 5),
+                              labelText: "",
+                              labelStyle: TextStyle(color: appTheme, fontSize: 21),
+                              floatingLabelBehavior: FloatingLabelBehavior.always,
+                            ),
+                          ),
+                        ),
+
+                      ),
+
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Specify Kcal",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      Container(
+                        child:  RangeSlider(
+                          min: 0,
+                          max: 5000,
+                          activeColor: appTheme,
+                          divisions: 50,
+                          values:kcalrange,
+                          onChanged:  (values){
+                            setStatee(() {
+                              kcalrange =values;
+                            });
+                          },
+                          labels: RangeLabels('${kcalrange.start}','${kcalrange.end}'),
+
+                        ),
+                      ),
+
+
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Specify Proteins",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      Container(
+                        child:  RangeSlider(
+                          activeColor: appTheme,
+                          min: 0,
+                          max: 500,
+                          divisions: 500,
+                          values: protiensrange,
+                          onChanged:  (values){
+                            setStatee(() {
+                              protiensrange =values;
+                            });
+                          },
+                          labels: RangeLabels('${protiensrange.start}','${protiensrange.end}'),
+
+
+
+                        ),
+                      ),
+
+
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Specify Carbs",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      Container(
+                        child:  RangeSlider(
+                          activeColor: appTheme,
+                          min: 0,
+                          max: 500,
+                          divisions: 500,
+                          values: carbsrange,
+                          onChanged:  (values){
+                            setStatee(() {
+                              carbsrange =values;
+                            });
+                          },
+                          labels: RangeLabels('${carbsrange.start}','${carbsrange.end}'),
+
+
+                        ),
+                      ),
+
+
+                    ],
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Specify Fats",
+                        style: TextStyle(
+                          color: appTheme,
+                          fontSize: 17,
+                          // fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 30,
+                      ),
+                      Container(
+                        child:  RangeSlider(
+                          min: 0,
+                          max: 500,
+                          activeColor: appTheme,
+                          divisions: 500,
+                          values: fatsrange,
+                          onChanged:  (values){
+                            setStatee(() {
+                              fatsrange =values;
+                            });
+                          },
+                          labels: RangeLabels('${fatsrange.start}','${fatsrange.end}'),
+
+                        ),
+                      ),
+
+
+                    ],
+                  )
+
+                ],
+              ),
+            ),
+            actions: [
+              Container(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setStatee(() =>dropdownValuemealPlan=dropdownValuemealPlan);
+                          minRatingWMealPlan=int.tryParse(ratingMealPlanController.text);
+                          Navigator.of(context).pop();
+
+
+                        },
+                        child: const Text('OK',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                                color: appTheme,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      )
+                    ]),
+              )
+            ],
+          )));
   /*
   Widget _buildSearch(String Title) {
 
@@ -221,6 +738,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
 
   void searchUser(String searchContent){
+
     final filteredUsers = allUsers.where((user) {
       final titleLower = user.name!.toLowerCase();
       final searchContentLower = searchContent.toLowerCase();
@@ -233,6 +751,10 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void searchBlog(String searchContent){
+    allBlogs = allPosts.where((element) {return element.data!['category'].startsWith('Blog');}).toList();
+    allBlogs.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
     final filteredPosts = allBlogs.where((post) {
       final titleLower = post.data!['title'].toLowerCase();
       final searchContentLower = searchContent.toLowerCase();
@@ -245,6 +767,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void searchMeal(String searchContent){
+    allMeals = (allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList());
+    allMeals.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    minRatingWMealPlan=int.tryParse(ratingMealPlanController.text);
+    _filterMinRatingMeal(context,minRatingWMealPlan ??-100000000);
+    _filterTimeRangeMeal(context, dropdownValuemealPlan ??'nothing');
+    _filterMealGoals(context);
+    _filterMealContents(context);
     final filteredPosts = allMeals.where((post) {
       final titleLower = post.data!['title'].toLowerCase();
       final searchContentLower = searchContent.toLowerCase();
@@ -257,6 +788,14 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void searchWorkout(String searchContent){
+    allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
+    allWorkouts.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    minRatingWorkout=int.tryParse(ratingWorkoutController.text);
+    _filterMinRatingWorkout(context,minRatingWorkout??-100000000);
+    _filterTimeRangeWorkout(context, dropdownValueWorkout??'nothing');
+    _filterWorkoutGoals(context);
     final filteredPosts = allWorkouts.where((post) {
       final titleLower = post.data!['title'].toLowerCase();
       final searchContentLower = searchContent.toLowerCase();
@@ -266,6 +805,167 @@ class _SearchScreenState extends State<SearchScreen> {
       workouts = filteredPosts;
       query = searchContent;
     });
+  }
+
+  _filterWorkoutGoals(BuildContext context)
+  {
+    allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
+    allWorkouts.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    _filterTimeRangeWorkout(context, dropdownValueWorkout ??'nothing');
+    if(_workoutGoals[0]==false && _workoutGoals[1]==false && _workoutGoals[2]==false&&
+        _workoutGoals[3]==false)
+    {}
+    else {
+      allWorkouts = (allWorkouts.where((element) {
+        List<dynamic> postGoals = element.data!['goals'];
+
+        return postGoals[0] == _workoutGoals[0] &&
+            postGoals[1] == _workoutGoals[1]
+            && postGoals[2] == _workoutGoals[2] &&
+            postGoals[3] == _workoutGoals[3];
+      }).toList());
+    }
+    workouts=allWorkouts;
+  }
+  _filterMinRatingWorkout(BuildContext context,int MinRating)
+  {
+    allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
+    allWorkouts.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    allWorkouts = (allWorkouts.where((element) {
+      return element.data!['rating']>=MinRating ;}).toList());
+
+    workouts=allWorkouts;
+  }
+  _filterTimeRangeWorkout(BuildContext context,String? timerange)
+  {
+    allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
+    allWorkouts.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    _filterMinRatingWorkout(context,minRatingWorkout??-100000000);
+    allWorkouts = (allWorkouts.where((element) {
+      if(timerange=='a day ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 1));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='5 days ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 5));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='10 days ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 10));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='15 days ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 15));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='a month ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 30));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      return true;}).toList());
+
+
+
+    workouts=allWorkouts;
+  }
+
+  _filterMealGoals(BuildContext context)
+  {
+    allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
+    allMeals.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    _filterTimeRangeMeal(context, dropdownValuemealPlan ??'nothing');
+    if(_mealPlanGoals[0]==false && _mealPlanGoals[1]==false && _mealPlanGoals[2]==false&&
+        _mealPlanGoals[3]==false)
+    {}
+    else {
+      allMeals = (allMeals.where((element) {
+        List<dynamic> postGoals = element.data!['goals'];
+
+        return postGoals[0] == _mealPlanGoals[0] &&
+            postGoals[1] == _mealPlanGoals[1]
+            && postGoals[2] == _mealPlanGoals[2] &&
+            postGoals[3] == _mealPlanGoals[3];
+      }).toList());
+    }
+    meals=allMeals;
+  }
+  _filterMealContents(BuildContext context)
+  {
+    allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
+    allMeals.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    _filterMealGoals(context);
+    allMeals = (allMeals.where((element) {
+      List<dynamic> mealContents = element.data!['meals_contents'];
+
+      return mealContents[0] >= kcalrange.start && mealContents[0] <= kcalrange.end &&
+          mealContents[1] >= protiensrange.start && mealContents[1] <= protiensrange.end &&
+          mealContents[2] >= carbsrange.start && mealContents[2] <= carbsrange.end &&
+          mealContents[3] >= fatsrange.start && mealContents[3] <= fatsrange.end ;
+    }).toList());
+    meals=allMeals;
+  }
+  _filterMinRatingMeal(BuildContext context,int MinRating)
+  {
+    allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
+    allMeals.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    allMeals = (allMeals.where((element) {
+      return element.data!['rating']>=MinRating ;}).toList());
+
+    meals=allMeals;
+  }
+  _filterTimeRangeMeal(BuildContext context,String? timerange)
+  {
+    allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
+    allMeals.sort((post1, post2){
+      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
+    });
+    _filterMinRatingMeal(context,minRatingWMealPlan??-100000000);
+    allMeals = (allMeals.where((element) {
+      if(timerange=='a day ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 1));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='5 days ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 5));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='10 days ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 10));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='15 days ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 15));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      if(timerange=='a month ago') {
+        DateTime time = DateTime.now().subtract(Duration(days: 30));
+        DateTime postCreationTime =element.data!['createdAt'].toDate();
+        return postCreationTime.isAfter(time);
+      }
+      return true;}).toList());
+
+    meals=allMeals;
   }
 
   @override
@@ -288,7 +988,6 @@ class _SearchScreenState extends State<SearchScreen> {
         return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
       });
     });
-   // print(PostManager().getPostByID('vL85d9242g3ViA6ts11E'));
 
 
     return DefaultTabController(
@@ -302,15 +1001,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     padding: const EdgeInsets.only(right: 12.0),
                     child: Row(
                       children: [
-                        IconButton(
-                            onPressed: () {
-                              const snackBar = SnackBar(content: Text('Filtering options coming soon'));
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            },
-                            icon: const Icon(
-                              Icons.filter_alt,
-                              color: Colors.white,
-                            ))
+
                       ],
                     )),
               ],
@@ -379,7 +1070,30 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 Column(
                   children: [
-                    SearchBar(searchHint: 'Search Meals posts', onChanged: searchMeal),
+                    Row(
+                      children: [
+                        Expanded (child: SearchBar(searchHint: 'Search Meals posts', onChanged: searchMeal)),
+                        IconButton(
+                            onPressed: () async {
+
+                              await openFilterDialogMealplan();
+                              setState(() {
+
+                                minRatingWMealPlan=int.tryParse(ratingMealPlanController.text);
+                                _filterMinRatingMeal(context,minRatingWMealPlan ??-100000000);
+                                _filterTimeRangeMeal(context, dropdownValuemealPlan ??'nothing');
+                                _filterMealGoals(context);
+                                _filterMealContents(context);
+
+                              });
+                            },
+                            icon: const Icon(
+                              Icons.filter_alt,
+                              color: appTheme,
+                            )),
+                      ],
+                    ),
+
                     Divider(
                       color: Colors.grey,
                       height: 0,
@@ -398,7 +1112,27 @@ class _SearchScreenState extends State<SearchScreen> {
                   ],
                 ),
                 Column(children: [
-                  SearchBar(searchHint: 'Search Workouts Posts', onChanged: searchWorkout),
+
+                  Row(
+                    children: [
+                      Expanded(child: SearchBar(searchHint: 'Search Workouts Posts', onChanged: searchWorkout)),
+                      IconButton(
+                          onPressed: () async {
+                            await openFilterDialogWorkout();
+                            setState(() {
+
+                              minRatingWorkout=int.tryParse(ratingWorkoutController.text);
+                              _filterMinRatingWorkout(context,minRatingWorkout ??-100000000);
+                              _filterTimeRangeWorkout(context, dropdownValueWorkout ??'nothing');
+                              _filterWorkoutGoals(context);
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.filter_alt,
+                            color: appTheme,
+                          ))
+                    ],
+                  ),
                   Divider(
                     color: Colors.grey,
                     height: 0,
@@ -413,7 +1147,10 @@ class _SearchScreenState extends State<SearchScreen> {
                           final post = workouts[index];
                           return post;
                         },
-                      )),
+                      )
+
+                  )
+
                 ])
               ],
             )));

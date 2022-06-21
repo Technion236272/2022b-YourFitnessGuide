@@ -25,6 +25,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
   TextEditingController commentController = TextEditingController();
   final String postId;
   final CommentsManager _commentsManager = CommentsManager();
+  bool isButtonActive=false;
 
   _CommentsScreenState({
     required this.postId,
@@ -35,6 +36,11 @@ class _CommentsScreenState extends State<CommentsScreen> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     var user = Provider.of<AuthRepository>(context);
+    commentController.addListener(() {
+      final isButtonActive=commentController.text.isNotEmpty;
+      setState(()=>this.isButtonActive=isButtonActive);
+
+    });
 
     return Scaffold(
         appBar: AppBar(
@@ -80,14 +86,16 @@ class _CommentsScreenState extends State<CommentsScreen> {
                             fixedSize: Size(width * 0.2, height * 0.04),
                             textStyle: const TextStyle(fontSize: 14, color: Colors.white)
                         ),
-                        onPressed: () {
+                        onPressed: isButtonActive ?
+                            () {
                           if (commentController.text.toString().isEmpty) {
                             const snackBar = SnackBar(content: Text('You must enter a comment'));
                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           } else {
                             addComment();
                           }
-                        },
+                        }
+                        : null,
                         child: const Text("Post"),
                       )
                   ),
