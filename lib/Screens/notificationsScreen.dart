@@ -154,7 +154,6 @@ class NotificationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     String activityItemText = configureActivityItemText();
     return FutureBuilder(
-<<<<<<< HEAD
         future: Future.wait([
           PostManager().getUserPicAndName(userId)
           /*,PostManager().getPostPicture*/
@@ -164,7 +163,6 @@ class NotificationItem extends StatelessWidget {
             final userMap = snapshot.data![0];
             String userName = userMap['name'];
             String userPic = userMap['picture'];
-
             if (isUserRedirect!) {
               return InkWell(
                 onTap: () {
@@ -217,149 +215,100 @@ class NotificationItem extends StatelessWidget {
               );
             } else {
               return FutureBuilder(
-                  future: Future.wait([
-                    PostManager().getPostType(postId)
-                    /*,PostManager().getPostPicture*/
-                  ]),
+                  future: Future.wait([PostManager().getPost(postId)]),
                   builder:
                       (BuildContext context, AsyncSnapshot<dynamic> snapshot1) {
-                    return InkWell(
-                      onTap: () {
-                        final postCat = snapshot1.data![0];
-                        print('----------------------------------');
-                        print(postCat);
-                        print('----------------------------------');
-                        var cat = postCat['category'];
+                    var postData = null;
+                    if (snapshot1.data?[0] != null) {
+                      postData =
+                          snapshot1.data?[0].data() as Map<String, dynamic>;
+                    }
+                    var postCat = postData?['category'];
 
-                        if (postCat == 'Blog') {
-                          Navigator.pushNamed(context, viewBlogRoute, );
-                        } else if (postCat == 'Workout') {
-                          Navigator.pushNamed(context, viewWorkoutRoute, );
-                        } else {
-                          Navigator.pushNamed(context, viewMealPlanRoute, );
-                        }
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 2.0),
-                        child: Container(
-                          color: Colors.white54,
-                          child: ListTile(
-                            title: RichText(
-                              overflow: TextOverflow.ellipsis,
-                              text: TextSpan(
-                                  style: const TextStyle(
-                                      fontSize: 14.0, color: Colors.black),
-                                  children: [
-                                    TextSpan(
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            SearchArguments arg =
-                                                SearchArguments(
-                                                    uid: userId, isUser: true);
-                                            Navigator.pushNamed(
-                                                context, '/profile',
-                                                arguments: arg);
-                                          },
-                                        text: userName,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: appTheme)),
-                                    TextSpan(text: ' $activityItemText')
-                                  ]),
-                            ),
-                            leading: GestureDetector(
-                                onTap: () {
-                                  SearchArguments arg = SearchArguments(
-                                      uid: userId, isUser: true);
-                                  Navigator.pushNamed(context, '/profile',
-                                      arguments: arg);
-                                },
-                                child: CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage: NetworkImage(userPic))),
-                            subtitle: Text(timeago.format(timestamp.toDate()),
-                                overflow: TextOverflow.ellipsis),
-                            //trailing: mediaPreview,
-                          ),
-                        ),
-                      ),
-                    );
+                    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+                    print(postData);
+                    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+                    return InkWell(
+                        onTap: () {
+                          print(postData);
+                          if (postCat == 'Blog') {
+                            Navigator.pushNamed(context, viewBlogRoute,
+                                arguments: postData);
+                          } else if (postCat == 'Workout') {
+                            Navigator.pushNamed(context, viewWorkoutRoute,
+                                arguments: postData);
+                          } else {
+                            Navigator.pushNamed(context, viewMealPlanRoute,
+                                arguments: postData);
+                          }
+                        },
+                        child: Row(children: [
+                          Expanded(
+                              flex: 4,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 2.0),
+                                child: Container(
+                                  color: Colors.white54,
+                                  child: ListTile(
+                                    title: RichText(
+                                      overflow: TextOverflow.ellipsis,
+                                      text: TextSpan(
+                                          style: const TextStyle(
+                                              fontSize: 14.0,
+                                              color: Colors.black),
+                                          children: [
+                                            TextSpan(
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        SearchArguments arg =
+                                                            SearchArguments(
+                                                                uid: userId,
+                                                                isUser: true);
+                                                        Navigator.pushNamed(
+                                                            context, '/profile',
+                                                            arguments: arg);
+                                                      },
+                                                text: userName,
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: appTheme)),
+                                            TextSpan(text: ' $activityItemText')
+                                          ]),
+                                    ),
+                                    leading: GestureDetector(
+                                        onTap: () {
+                                          SearchArguments arg = SearchArguments(
+                                              uid: userId, isUser: true);
+                                          Navigator.pushNamed(
+                                              context, '/profile',
+                                              arguments: arg);
+                                        },
+                                        child: CircleAvatar(
+                                            radius: 25,
+                                            backgroundImage:
+                                                NetworkImage(userPic))),
+                                    subtitle: Text(
+                                        timeago.format(timestamp.toDate()),
+                                        overflow: TextOverflow.ellipsis),
+                                    //trailing: mediaPreview,
+                                  ),
+                                ),
+                              )),
+                          postData != null &&
+                                  !postData?.containsKey('image_url')
+                              ? Container()
+                              : Expanded(
+                                  flex: 1,
+                                  child: postData == null
+                                      ? Container()
+                                      : Image.network(postData['image_url']!))
+                        ]));
                   });
             }
           } else {
             return const CircularProgressIndicator(); //TODO: change
           }
         });
-=======
-      future: Future.wait([
-        PostManager().getUserPicAndName(userId)
-        //,PostManager().getPostPicture(postId)
-      ]),
-      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if(snapshot.hasData) {
-          final userMap = snapshot.data![0];
-          String userName = userMap['name'];
-          String userPic  = userMap['picture'];
-          //final postPic = snapshot.data![1];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 2.0),
-            child: Container(
-              color: Colors.white54,
-              child: ListTile(
-                title: GestureDetector(
-                  onTap: () {
-                    // TODO: go to post
-                  },
-                  child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                        style: const TextStyle(fontSize: 14.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  SearchArguments arg = SearchArguments(uid: userId, isUser: true);
-                                  Navigator.pushNamed(context, '/profile', arguments: arg);
-                                },
-                              text: userName,
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: appTheme)
-                          ),
-                          TextSpan(text: ' $activityItemText')
-                        ]
-                    ),
-                  ),
-                ),
-                leading: GestureDetector(
-                    onTap: () {
-                      SearchArguments arg = SearchArguments(uid: userId, isUser: true);
-                      Navigator.pushNamed(context, '/profile', arguments: arg);
-                    },
-                    child: CircleAvatar(radius: 25, backgroundImage: NetworkImage(userPic))
-                ),
-                subtitle: Text(timeago.format(timestamp.toDate()), overflow: TextOverflow.ellipsis),
-                /*trailing: Container(
-                  height: 50.0,
-                  width: 50.0,
-                  child: AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(postPic),
-                          )),
-                    ),
-                  ),
-                ),*/
-              ),
-            ),
-          );
-        }
-        else{
-          return Container();//CircularProgressIndicator();
-        }
-      }
-    );
->>>>>>> develop
   }
 }

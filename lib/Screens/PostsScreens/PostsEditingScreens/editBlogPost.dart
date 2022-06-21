@@ -10,14 +10,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 class EditBlogPost extends StatefulWidget {
-<<<<<<< HEAD
-  late var post_data;
-
-  EditBlogPost({Key? key, this.post_data}) : super(key: key);
-=======
   late var postData;
   EditBlogPost({Key? key, this.postData}) : super(key: key);
->>>>>>> develop
 
   @override
   State<EditBlogPost> createState() => _EditBlogPostState();
@@ -31,14 +25,7 @@ class _EditBlogPostState extends State<EditBlogPost> {
   File? _postImageFile;
   var color = appTheme;
   String photoText = "Add Image";
-<<<<<<< HEAD
-
-  get post_data => widget.post_data;
-  int firsttime = 0;
-
-=======
   get postData => widget.postData;
->>>>>>> develop
   Widget _buildPostName(double height) {
     final iconSize = height * 0.050;
     return Row(
