@@ -82,13 +82,21 @@ class _PostState extends State<Post> {
   }
 
   Widget _buildUpvoteButton(){
-    String? postId = widget.snapshot?.data!.docs[widget.index].id!;
-    String? postOwnerId = widget.snapshot?.data!.docs[widget.index].data()!['user_uid']!;
+    String? postId =  widget.data != null
+        ? widget.data!['uid']
+        : widget.snapshot?.data!.docs[widget.index].id;
+    String? postOwnerId =  widget.data != null
+        ? widget.data!['user_uid']
+        : widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
 
-    List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
+    List? upvotesList =  widget.data != null
+        ? widget.data!['upvotes']
+        : widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
     isUpvoted = upvotesList?.contains(getCurrUid()) ?? false;
 
-    List? downvotesList = widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
+    List? downvotesList =  widget.data != null
+        ? widget.data!['downvotes']
+        : widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
     isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
 
     return IconButton(
@@ -121,13 +129,21 @@ class _PostState extends State<Post> {
   }
 
   Widget _buildDownvoteButton(){
-    String? postId = widget.snapshot?.data!.docs[widget.index].id;
-    String? postOwnerId =  widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
+    String? postId =  widget.data != null
+        ? widget.data!['uid']
+        : widget.snapshot?.data!.docs[widget.index].id;
+    String? postOwnerId =  widget.data != null
+        ? widget.data!['user_uid']
+        : widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
 
-    List? upvotesList = widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
+    List? upvotesList =  widget.data != null
+        ? widget.data!['upvotes']
+        : widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
     isUpvoted = upvotesList?.contains(getCurrUid()) ?? false;
 
-    List? downvotesList = widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
+    List? downvotesList =  widget.data != null
+        ? widget.data!['downvotes']
+        : widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
     isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
 
     return IconButton(

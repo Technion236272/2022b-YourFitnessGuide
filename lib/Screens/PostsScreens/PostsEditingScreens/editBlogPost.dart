@@ -165,16 +165,16 @@ class _EditBlogPostState extends State<EditBlogPost> {
   @override
   initState() {
     super.initState();
+
     postNameController.text = postData['title']!;
     descriptionController.text = postData['description']!;
     _fileFromImageUrl();
   }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final height = screenSize.height;
-
-
     return Scaffold(
       appBar: AppBar(
           title: const Text('Edit Blog'),
