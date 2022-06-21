@@ -1,20 +1,23 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/services/image_crop.dart';
-import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 class EditBlogPost extends StatefulWidget {
+<<<<<<< HEAD
   late var post_data;
 
   EditBlogPost({Key? key, this.post_data}) : super(key: key);
+=======
+  late var postData;
+  EditBlogPost({Key? key, this.postData}) : super(key: key);
+>>>>>>> develop
 
   @override
   State<EditBlogPost> createState() => _EditBlogPostState();
@@ -28,10 +31,14 @@ class _EditBlogPostState extends State<EditBlogPost> {
   File? _postImageFile;
   var color = appTheme;
   String photoText = "Add Image";
+<<<<<<< HEAD
 
   get post_data => widget.post_data;
   int firsttime = 0;
 
+=======
+  get postData => widget.postData;
+>>>>>>> develop
   Widget _buildPostName(double height) {
     final iconSize = height * 0.050;
     return Row(
@@ -131,8 +138,7 @@ class _EditBlogPostState extends State<EditBlogPost> {
 
   Future pickImage() async {
     try {
-      final selectedImage =
-          await ImagePicker().pickImage(source: ImageSource.gallery);
+      final selectedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (selectedImage == null) {
         const snackBar = SnackBar(content: Text('No image was selected'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -143,45 +149,21 @@ class _EditBlogPostState extends State<EditBlogPost> {
       final croppedFile = await myImageCropper(selectedImage.path);
 
       setState(() {
-        _postImageFile = File(croppedFile!.path); //File(selectedImage.path);
+        _postImageFile = File(croppedFile!.path);
       });
     } on PlatformException catch (_) {
-      const snackBar = SnackBar(
-          content: Text(
-              'You need to grant permission if you want to select a photo'));
+      const snackBar = SnackBar(content: Text('You need to grant permission if you want to select a photo'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
-/*
   Future _fileFromImageUrl() async {
-    if (post_data.data()!['image_url'] != null) {
-      final response = await http.get(
-          Uri.parse(post_data.data()!['image_url']!));
-
-      final documentDirectory = await getApplicationDocumentsDirectory();
-
-      final file = File(p.join(documentDirectory.path, 'image.png'));
-      _postImageFile = file;
-      color=Colors.red;
-      photoText = "Remove Image";
-      if (!mounted) return;
-      setState(() {
-        build(context);
-      });
-    }
-  }
-
- */
-  Future _fileFromImageUrl() async {
-    if (post_data.data()!['image_url'] != null) {
-      var rng = new Random();
+    if (postData['image_url'] != null) {
+      var rng = Random();
       Directory tempDir = await getTemporaryDirectory();
       String tempPath = tempDir.path;
-      File file =
-          new File('$tempPath' + (rng.nextInt(100)).toString() + '.png');
-      http.Response response =
-          await http.get(Uri.parse(post_data.data()!['image_url']!));
+      File file = File('$tempPath${rng.nextInt(100)}.png');
+      http.Response response = await http.get(Uri.parse(postData['image_url']!));
       await file.writeAsBytes(response.bodyBytes);
       _postImageFile = file;
       color = Colors.red;
@@ -196,22 +178,16 @@ class _EditBlogPostState extends State<EditBlogPost> {
   @override
   initState() {
     super.initState();
-    postNameController.text = post_data.data()!['title']!;
-    descriptionController.text = post_data.data()!['description']!;
-    if (firsttime == 0) {
-      _fileFromImageUrl();
-      firsttime++;
-    }
+
+    postNameController.text = postData['title']!;
+    descriptionController.text = postData['description']!;
+    _fileFromImageUrl();
   }
 
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final height = screenSize.height;
-    final width = screenSize.width;
-    var timestamp = post_data.data()!['createdAt']!;
-
-    //print(_postImageFile);
     return Scaffold(
       appBar: AppBar(
           title: const Text('Edit Blog'),
@@ -223,52 +199,39 @@ class _EditBlogPostState extends State<EditBlogPost> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? const Center(
-                            child: CircularProgressIndicator.adaptive())
+                        ? const Center(child: CircularProgressIndicator.adaptive())
                         : IconButton(
                             onPressed: () async {
                               final String title = postNameController.text;
-                              final String description =
-                                  descriptionController.text;
+                              final String description = descriptionController.text;
                               if (title == "" || description == "") {
-                                const snackBar = SnackBar(
-                                    content: Text(
-                                        'You must enter title and description'));
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
+                                const snackBar = SnackBar(content: Text('You must enter title and description'));
+                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
                               } else {
                                 setState(() {
                                   _isLoading = true;
                                 });
-                                await _postManager.deletePost(post_data.id);
                                 bool isSubmitted =
                                     await _postManager.updateBlog(
+                                        postId: postData['post_id']!,
                                         title: title,
                                         description: description,
-                                        timeStamp: timestamp,
                                         postImage: _postImageFile);
                                 setState(() {
                                   _isLoading = false;
                                 });
 
                                 if (isSubmitted) {
-                                  const snackBar = SnackBar(
-                                      content:
-                                          Text('Blog edited successfully'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
+                                  const snackBar = SnackBar(content: Text('Blog edited successfully'));
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                   Navigator.pop(context);
                                 } else {
-                                  const snackBar = SnackBar(
-                                      content: Text(
-                                          'There was a problem logging you in'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
+                                  const snackBar = SnackBar(content: Text('There was a problem logging you in'));
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 }
                               }
                             },
-                            icon: const Icon(Icons.check_sharp,
-                                color: Colors.white)),
+                            icon: const Icon(Icons.check_sharp, color: Colors.white)),
                   ],
                 )),
           ]),
@@ -277,71 +240,65 @@ class _EditBlogPostState extends State<EditBlogPost> {
               child: Column(mainAxisAlignment: MainAxisAlignment.start,
                   //crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-            SizedBox(height: height * 0.012),
-            Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildPostName(height)),
-            Container(
-                padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
-                child: _buildDescription(height)),
-            SizedBox(
-              height: height * 0.02,
-            ),
-            (_postImageFile != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      _postImageFile!,
-                      height: 300,
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      fit: BoxFit.contain,
+                SizedBox(height: height * 0.012),
+                Container(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                    child: _buildPostName(height)),
+                Container(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
+                    child: _buildDescription(height)),
+                SizedBox(height: height * 0.02),
+                (_postImageFile != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          _postImageFile!,
+                          height: 300,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          fit: BoxFit.contain,
+                        ),
+                      )
+                    : const Padding(padding: EdgeInsets.all(0))),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
+                  width: 205,
+                  height: 80.0,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      side: BorderSide(
+                          width: 2.0, color: Colors.black.withOpacity(0.5)),
+                      primary: color, // background
+                      onPrimary: Colors.white, // foreground
                     ),
-                  )
-                : const Padding(padding: EdgeInsets.all(0))),
-            const SizedBox(
-              height: 4,
-            ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 8, 40, 10),
-              width: 205,
-              height: 80.0,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  side: BorderSide(
-                      width: 2.0, color: Colors.black.withOpacity(0.5)),
-                  primary: color, // background
-                  onPrimary: Colors.white, // foreground
+                    onPressed: () async {
+                      if (_postImageFile == null) {
+                        await pickImage();
+                        if (_postImageFile != null) {
+                          color = Colors.red;
+                          photoText = "Remove Image";
+                        }
+                      } else {
+                        _postImageFile = null;
+                        color = appTheme;
+                        photoText = "Add Image";
+                      }
+                      setState(() {
+                        build(context);
+                      });
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Icon(Icons.add_photo_alternate, color: Colors.white),
+                        const SizedBox(height: 4),
+                        Text(photoText,
+                            style: const TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  ),
                 ),
-                onPressed: () async {
-                  if (_postImageFile == null) {
-                    await pickImage();
-                    if (_postImageFile != null) {
-                      color = Colors.red;
-                      photoText = "Remove Image";
-                    }
-                  } else {
-                    _postImageFile = null;
-                    color = appTheme;
-                    photoText = "Add Image";
-                  }
-                  setState(() {
-                    build(context);
-                  });
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Icon(Icons.add_photo_alternate, color: Colors.white),
-                    const SizedBox(height: 4),
-                    Text(photoText,
-                        style: const TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: height * 0.02,
-            ),
+                SizedBox(height: height * 0.02),
           ]))),
       resizeToAvoidBottomInset: true,
     );

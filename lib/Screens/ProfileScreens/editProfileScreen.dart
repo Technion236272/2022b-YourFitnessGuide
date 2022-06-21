@@ -306,7 +306,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       userData = user.userData;
       initializeWeights();
       profileImage = userData?.pictureUrl;
-      nameField.controller.text = nameField.controller.text.isEmpty
+      nameField.controller.text =
+        nameField.controller.text.isEmpty
           ? (userData != null ? userData.name : nameField.controller.text)
           : nameField.controller.text;
 
@@ -465,9 +466,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
               firstTime
                   ? Container()
-                  : SizedBox(
-                      height: height * 0.007,
-                    ),
+                  : SizedBox(height: height * 0.007),
               firstTime
                   ? Container()
                   : ElevatedButton(
@@ -487,9 +486,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       },
                       child: const Text("DELETE ACCOUNT"),
                     ),
-              SizedBox(
-                height: height * 0.007,
-              ),
+              SizedBox(height: height * 0.007),
             ],
           ),
         ),

@@ -154,6 +154,7 @@ class NotificationItem extends StatelessWidget {
   Widget build(BuildContext context) {
     String activityItemText = configureActivityItemText();
     return FutureBuilder(
+<<<<<<< HEAD
         future: Future.wait([
           PostManager().getUserPicAndName(userId)
           /*,PostManager().getPostPicture*/
@@ -289,5 +290,76 @@ class NotificationItem extends StatelessWidget {
             return const CircularProgressIndicator(); //TODO: change
           }
         });
+=======
+      future: Future.wait([
+        PostManager().getUserPicAndName(userId)
+        //,PostManager().getPostPicture(postId)
+      ]),
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+        if(snapshot.hasData) {
+          final userMap = snapshot.data![0];
+          String userName = userMap['name'];
+          String userPic  = userMap['picture'];
+          //final postPic = snapshot.data![1];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 2.0),
+            child: Container(
+              color: Colors.white54,
+              child: ListTile(
+                title: GestureDetector(
+                  onTap: () {
+                    // TODO: go to post
+                  },
+                  child: RichText(
+                    overflow: TextOverflow.ellipsis,
+                    text: TextSpan(
+                        style: const TextStyle(fontSize: 14.0, color: Colors.black),
+                        children: [
+                          TextSpan(
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  SearchArguments arg = SearchArguments(uid: userId, isUser: true);
+                                  Navigator.pushNamed(context, '/profile', arguments: arg);
+                                },
+                              text: userName,
+                              style: const TextStyle(fontWeight: FontWeight.bold, color: appTheme)
+                          ),
+                          TextSpan(text: ' $activityItemText')
+                        ]
+                    ),
+                  ),
+                ),
+                leading: GestureDetector(
+                    onTap: () {
+                      SearchArguments arg = SearchArguments(uid: userId, isUser: true);
+                      Navigator.pushNamed(context, '/profile', arguments: arg);
+                    },
+                    child: CircleAvatar(radius: 25, backgroundImage: NetworkImage(userPic))
+                ),
+                subtitle: Text(timeago.format(timestamp.toDate()), overflow: TextOverflow.ellipsis),
+                /*trailing: Container(
+                  height: 50.0,
+                  width: 50.0,
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(postPic),
+                          )),
+                    ),
+                  ),
+                ),*/
+              ),
+            ),
+          );
+        }
+        else{
+          return Container();//CircularProgressIndicator();
+        }
+      }
+    );
+>>>>>>> develop
   }
 }

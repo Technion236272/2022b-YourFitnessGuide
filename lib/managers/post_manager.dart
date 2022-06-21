@@ -173,44 +173,34 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> updateBlog(
-      {required String title, required description, required timeStamp,
+      {required String postId, required String title, required description,
         File? postImage}) async {
     bool isSubmitted = false;
 
-    String userUid = firebaseAuth.currentUser!.uid;
 
     if (postImage != null) {
-      String? pictureUrl =
-      await _fileUploadService.uploadPostFile(file: postImage);
+      String? pictureUrl = await _fileUploadService.uploadPostFile(file: postImage);
 
-      await postCollection.doc().set({
-        "category": 'Blog',
+      await postCollection.doc(postId).update({
         "title": title,
         "description": description,
         "image_url": pictureUrl,
-        "createdAt": timeStamp,
-        "user_uid": userUid,
-        'commentsNum': 0,
-        "rating": 0
       }).then((_) {
-        isSubmitted = true;]
+        isSubmitted = true;
       }).catchError((onError) {
+        print(onError);
         isSubmitted = false;
       }).timeout(const Duration(seconds: 20), onTimeout: () {
         isSubmitted = false;
       });
     } else {
-      await postCollection.doc().set({
-        "category": 'Blog',
+      await postCollection.doc(postId).update({
         "title": title,
         "description": description,
-        "createdAt": timeStamp,
-        "user_uid": userUid,
-        'commentsNum': 0,
-        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
+        print(onError);
         isSubmitted = false;
       }).timeout(const Duration(seconds: 20), onTimeout: () {
         isSubmitted = false;
@@ -221,28 +211,19 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> updateWorkout(
-      {required String title, required description, required timeStamp,
-        File? postImage, required goals,
-        required exercises}) async {
+      {required String title, required description, File? postImage, required goals, required exercises}) async {
     bool isSubmitted = false;
-
-    String userUid = firebaseAuth.currentUser!.uid;
 
     if (postImage != null) {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
-      await postCollection.doc().set({
-        "category": 'Workout',
+      await postCollection.doc().update({
         "title": title,
         "description": description,
         "image_url": pictureUrl,
         "goals": goals,
         "exercises": exercises,
-        "createdAt": timeStamp,
-        "user_uid": userUid,
-        'commentsNum': 0,
-        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -252,15 +233,10 @@ class PostManager with ChangeNotifier {
       });
     } else {
       await postCollection.doc().set({
-        "category": 'Workout',
         "title": title,
         "description": description,
         "goals": goals,
         "exercises": exercises,
-        "createdAt": timeStamp,
-        "user_uid": userUid,
-        'commentsNum': 0,
-        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -274,19 +250,16 @@ class PostManager with ChangeNotifier {
   }
 
   Future<bool> updateMealPlan(
-      {required String title, required description, required timeStamp,
+      {required postId, required String title, required description,
         File? postImage, required goals,
         required mealsContents, required mealsName, required mealsIngredients}) async {
     bool isSubmitted = false;
-
-    String userUid = firebaseAuth.currentUser!.uid;
 
     if (postImage != null) {
       String? pictureUrl =
       await _fileUploadService.uploadPostFile(file: postImage);
 
-      await postCollection.doc().set({
-        "category": 'Meal Plan',
+      await postCollection.doc(postId).update({
         "title": title,
         "description": description,
         "image_url": pictureUrl,
@@ -294,10 +267,6 @@ class PostManager with ChangeNotifier {
         "meals_contents": mealsContents,
         "meals_name": mealsName,
         "meals_ingredients": mealsIngredients,
-        "createdAt": timeStamp,
-        "user_uid": userUid,
-        'commentsNum': 0,
-        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -306,18 +275,13 @@ class PostManager with ChangeNotifier {
         isSubmitted = false;
       });
     } else {
-      await postCollection.doc().set({
-        "category": 'Meal Plan',
+      await postCollection.doc(postId).update({
         "title": title,
         "description": description,
         "goals": goals,
         "meals_contents": mealsContents,
         "meals_name": mealsName,
         "meals_ingredients": mealsIngredients,
-        "createdAt": timeStamp,
-        "user_uid": userUid,
-        'commentsNum': 0,
-        "rating": 0
       }).then((_) {
         isSubmitted = true;
       }).catchError((onError) {
@@ -405,9 +369,30 @@ class PostManager with ChangeNotifier {
     return tmp.exists;
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getPost(String postUid) async {
-    return postCollection.doc(postUid).get();
+  Future<DocumentSnapshot<Map<String, dynamic>>> getPost(String postId) async {
+    return postCollection.doc(postId).get();
   }
+
+  Future<String?> getPostPicture(String postId) async {
+    return postCollection
+        .doc(postId)
+        .get()
+        .then((data){
+            String? to_ret = data['image_url'];
+            return to_ret;
+        });
+  }
+
+  Future<String?> getPostType(String postId) async{
+    return postCollection
+        .doc(postId)
+        .get()
+        .then((data){
+          return data['category']; // 'Blog' 'Workout 'Meal Plan'
+        });
+  }
+
+  //TODO: change location to users or something
   ///get user info from db
   Future<Map<String, dynamic>?> getUserInfo(String userUid) async {
     Map<String, dynamic>? userData;
@@ -425,15 +410,7 @@ class PostManager with ChangeNotifier {
     return userData;
   }
 
-  Future<String?> getPostType(String postId) async{
-    return postCollection
-        .doc(postId)
-        .get()
-        .then((data){
-      return data['category']; // 'Blog' 'Workout 'Meal Plan'
-    });
-  }
-
+  //TODO: change location because this isn't post
   Future<Map<String, String?>?> getUserPicAndName(String userId) async {
     String? profilePic;
     String? username;
