@@ -48,13 +48,8 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 decoration: const InputDecoration(
                   contentPadding: EdgeInsets.only(bottom: 5),
                   label: Text("Title"),
-                  hintStyle:
-                      TextStyle(height: 1, fontSize: 16, color: Colors.grey),
-                  labelStyle: TextStyle(
-                    color: appTheme,
-                    fontSize: 27,
-                    fontWeight: FontWeight.normal,
-                  ),
+                  hintStyle: TextStyle(height: 1, fontSize: 16, color: Colors.grey),
+                  labelStyle: TextStyle(color: appTheme, fontSize: 27, fontWeight: FontWeight.normal),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
                 ),
               )
@@ -84,16 +79,6 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              /* Text(
-                "Description",
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 20,
-                  //fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              */
               TextField(
                 minLines: 1,
                 maxLines: 40,
@@ -160,9 +145,7 @@ class _BlogPostScreenState extends State<BlogPostScreen> {
                 child: Row(
                   children: [
                     _isLoading
-                        ? const Center(
-                                child: CircularProgressIndicator.adaptive())
-
+                        ? const Center(child: CircularProgressIndicator.adaptive())
                         : IconButton(
                             onPressed: () async {
                               final String title = postNameController.text;

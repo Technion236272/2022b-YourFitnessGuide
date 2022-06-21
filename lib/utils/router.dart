@@ -86,13 +86,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (context) => ProfileScreen());
     case editBlogRoute:
       final args = settings.arguments;
-      return MaterialPageRoute(builder: (context) => EditBlogPost(post_data: args));
+      return MaterialPageRoute(builder: (context) => EditBlogPost(postData: args));
     case editWorkoutRoute:
       final args = settings.arguments;
-      return MaterialPageRoute(builder: (context) => EditWorkout(post_data: args));
+      return MaterialPageRoute(builder: (context) => EditWorkout(postData: args));
     case editMealPlanRoute:
       final args = settings.arguments;
-      return MaterialPageRoute(builder: (context) => EditMealPlan(post_data: args));
+      return MaterialPageRoute(builder: (context) => EditMealPlan(postData: args));
 
     default:
       return MaterialPageRoute(builder: (context) => const HomeScreen());

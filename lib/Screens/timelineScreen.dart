@@ -205,8 +205,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     setState(() {});
                   },
                   child: ListView.builder(
-                    itemCount:
-                        snapshot.data == null ? 0 : snapshot.data!.docs.length,
+                    itemCount: snapshot.data == null ? 0 : snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       if (snapshot.connectionState == ConnectionState.waiting && snapshot.data == null) {
                         return const Center(child: CircularProgressIndicator.adaptive());
