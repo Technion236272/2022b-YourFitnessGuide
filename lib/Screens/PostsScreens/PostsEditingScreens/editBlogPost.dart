@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 
 class EditBlogPost extends StatefulWidget {
   late var post_data;
+
   EditBlogPost({Key? key, this.post_data}) : super(key: key);
 
   @override
@@ -27,8 +28,10 @@ class _EditBlogPostState extends State<EditBlogPost> {
   File? _postImageFile;
   var color = appTheme;
   String photoText = "Add Image";
+
   get post_data => widget.post_data;
   int firsttime = 0;
+
   Widget _buildPostName(double height) {
     final iconSize = height * 0.050;
     return Row(
@@ -195,19 +198,18 @@ class _EditBlogPostState extends State<EditBlogPost> {
     super.initState();
     postNameController.text = post_data.data()!['title']!;
     descriptionController.text = post_data.data()!['description']!;
-    if(firsttime==0) {
+    if (firsttime == 0) {
       _fileFromImageUrl();
       firsttime++;
     }
-
   }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final height = screenSize.height;
     final width = screenSize.width;
     var timestamp = post_data.data()!['createdAt']!;
-
 
     //print(_postImageFile);
     return Scaffold(

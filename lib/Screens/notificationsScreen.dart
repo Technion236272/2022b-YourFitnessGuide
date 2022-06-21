@@ -51,7 +51,6 @@ import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:flutter/gestures.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
-
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
@@ -70,11 +69,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         .collection('feedItems')
         .orderBy('timestamp', descending: true)
         .get()
-        .then( (querySnapshot){
-          querySnapshot.docs.forEach((doc) {
-            feedItems.add(NotificationItem.fromDocument(doc));
-          });
-        });
+        .then((querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        feedItems.add(NotificationItem.fromDocument(doc));
+      });
+    });
     return feedItems;
   }
 
@@ -89,7 +88,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           if (!snapshot.hasData) {
             return const CircularProgressIndicator();
           }
-          if (snapshot.data!.isEmpty){
+          if (snapshot.data!.isEmpty) {
             return emptyNote(
                 'You don\'t have any notifications yet',
                 MediaQuery.of(context).size.height,
@@ -102,19 +101,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 }
 
-
-
 class NotificationItem extends StatelessWidget {
   final String userId;
-  final String type; /// 'upvote', 'downvote', 'follow', 'comment'
+  final String type;
+
+  /// 'upvote', 'downvote', 'follow', 'comment'
   final String postId;
   final String commentData;
   final Timestamp timestamp;
+  late bool? isUserRedirect;
 
-  const NotificationItem({
+  NotificationItem({
     super.key,
     required this.userId,
-    required this.type, /// 'upvote', 'downvote', 'follow', 'comment'
+    required this.type,
+
+    /// 'upvote', 'downvote', 'follow', 'comment'
     required this.postId,
     required this.commentData,
     required this.timestamp,
@@ -130,80 +132,162 @@ class NotificationItem extends StatelessWidget {
     );
   }
 
-  String configureActivityItemText(){
+  String configureActivityItemText() {
     if (type == 'upvote') {
+      isUserRedirect = false;
       return 'upvoted your post';
-    } else if(type == 'downvote') {
+    } else if (type == 'downvote') {
+      isUserRedirect = false;
       return 'downvoted your post';
     } else if (type == 'follow') {
+      isUserRedirect = true;
       return "is following you";
     } else if (type == 'comment') {
+      isUserRedirect = false;
       return 'replied: $commentData';
     } else {
       return "Error: Unknown type '$type'";
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     String activityItemText = configureActivityItemText();
     return FutureBuilder(
-      future: Future.wait([
-        PostManager().getUserPicAndName(userId)
-        /*,PostManager().getPostPicture*/
-      ]),
-      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if(snapshot.hasData) {
-          final userMap = snapshot.data![0];
-          String userName = userMap['name'];
-          String userPic  = userMap['picture'];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 2.0),
-            child: Container(
-              color: Colors.white54,
-              child: ListTile(
-                title: GestureDetector(
-                  onTap: () {
-                    // TODO: go to post
-                  },
-                  child: RichText(
-                    overflow: TextOverflow.ellipsis,
-                    text: TextSpan(
-                        style: const TextStyle(fontSize: 14.0, color: Colors.black),
-                        children: [
-                          TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  SearchArguments arg = SearchArguments(uid: userId, isUser: true);
-                                  Navigator.pushNamed(context, '/profile', arguments: arg);
-                                },
-                              text: userName,
-                              style: const TextStyle(fontWeight: FontWeight.bold, color: appTheme)
-                          ),
-                          TextSpan(text: ' $activityItemText')
-                        ]
+        future: Future.wait([
+          PostManager().getUserPicAndName(userId)
+          /*,PostManager().getPostPicture*/
+        ]),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+          if (snapshot.hasData) {
+            final userMap = snapshot.data![0];
+            String userName = userMap['name'];
+            String userPic = userMap['picture'];
+
+            if (isUserRedirect!) {
+              return InkWell(
+                onTap: () {
+                  SearchArguments arg =
+                      SearchArguments(uid: userId, isUser: true);
+                  Navigator.pushNamed(context, '/profile', arguments: arg);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 2.0),
+                  child: Container(
+                    color: Colors.white54,
+                    child: ListTile(
+                      title: RichText(
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                            style: const TextStyle(
+                                fontSize: 14.0, color: Colors.black),
+                            children: [
+                              TextSpan(
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      SearchArguments arg = SearchArguments(
+                                          uid: userId, isUser: true);
+                                      Navigator.pushNamed(context, '/profile',
+                                          arguments: arg);
+                                    },
+                                  text: userName,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: appTheme)),
+                              TextSpan(text: ' $activityItemText')
+                            ]),
+                      ),
+                      leading: GestureDetector(
+                          onTap: () {
+                            SearchArguments arg =
+                                SearchArguments(uid: userId, isUser: true);
+                            Navigator.pushNamed(context, '/profile',
+                                arguments: arg);
+                          },
+                          child: CircleAvatar(
+                              radius: 25,
+                              backgroundImage: NetworkImage(userPic))),
+                      subtitle: Text(timeago.format(timestamp.toDate()),
+                          overflow: TextOverflow.ellipsis),
+                      //trailing: mediaPreview,
                     ),
                   ),
                 ),
-                leading: GestureDetector(
-                    onTap: () {
-                      SearchArguments arg = SearchArguments(uid: userId, isUser: true);
-                      Navigator.pushNamed(context, '/profile', arguments: arg);
-                    },
-                    child: CircleAvatar(radius: 25, backgroundImage: NetworkImage(userPic))
-                ),
-                subtitle: Text(timeago.format(timestamp.toDate()), overflow: TextOverflow.ellipsis),
-                //trailing: mediaPreview,
-              ),
-            ),
-          );
-        }
-        else{
-          return const CircularProgressIndicator(); //TODO: change
-        }
-      }
-    );
+              );
+            } else {
+              return FutureBuilder(
+                  future: Future.wait([
+                    PostManager().getPostType(postId)
+                    /*,PostManager().getPostPicture*/
+                  ]),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot1) {
+                    return InkWell(
+                      onTap: () {
+                        final postCat = snapshot1.data![0];
+                        print('----------------------------------');
+                        print(postCat);
+                        print('----------------------------------');
+                        var cat = postCat['category'];
+
+                        if (postCat == 'Blog') {
+                          Navigator.pushNamed(context, viewBlogRoute, );
+                        } else if (postCat == 'Workout') {
+                          Navigator.pushNamed(context, viewWorkoutRoute, );
+                        } else {
+                          Navigator.pushNamed(context, viewMealPlanRoute, );
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 2.0),
+                        child: Container(
+                          color: Colors.white54,
+                          child: ListTile(
+                            title: RichText(
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(
+                                  style: const TextStyle(
+                                      fontSize: 14.0, color: Colors.black),
+                                  children: [
+                                    TextSpan(
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            SearchArguments arg =
+                                                SearchArguments(
+                                                    uid: userId, isUser: true);
+                                            Navigator.pushNamed(
+                                                context, '/profile',
+                                                arguments: arg);
+                                          },
+                                        text: userName,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: appTheme)),
+                                    TextSpan(text: ' $activityItemText')
+                                  ]),
+                            ),
+                            leading: GestureDetector(
+                                onTap: () {
+                                  SearchArguments arg = SearchArguments(
+                                      uid: userId, isUser: true);
+                                  Navigator.pushNamed(context, '/profile',
+                                      arguments: arg);
+                                },
+                                child: CircleAvatar(
+                                    radius: 25,
+                                    backgroundImage: NetworkImage(userPic))),
+                            subtitle: Text(timeago.format(timestamp.toDate()),
+                                overflow: TextOverflow.ellipsis),
+                            //trailing: mediaPreview,
+                          ),
+                        ),
+                      ),
+                    );
+                  });
+            }
+          } else {
+            return const CircularProgressIndicator(); //TODO: change
+          }
+        });
   }
 }

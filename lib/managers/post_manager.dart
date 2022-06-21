@@ -193,7 +193,7 @@ class PostManager with ChangeNotifier {
         'commentsNum': 0,
         "rating": 0
       }).then((_) {
-        isSubmitted = true;
+        isSubmitted = true;]
       }).catchError((onError) {
         isSubmitted = false;
       }).timeout(const Duration(seconds: 20), onTimeout: () {
@@ -423,6 +423,15 @@ class PostManager with ChangeNotifier {
     });
     notifyListeners();
     return userData;
+  }
+
+  Future<String?> getPostType(String postId) async{
+    return postCollection
+        .doc(postId)
+        .get()
+        .then((data){
+      return data['category']; // 'Blog' 'Workout 'Meal Plan'
+    });
   }
 
   Future<Map<String, String?>?> getUserPicAndName(String userId) async {
