@@ -224,13 +224,8 @@ class NotificationItem extends StatelessWidget {
                           snapshot1.data?[0].data() as Map<String, dynamic>;
                     }
                     var postCat = postData?['category'];
-
-                    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-                    print(postData);
-                    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
                     return InkWell(
                         onTap: () {
-                          print(postData);
                           if (postCat == 'Blog') {
                             Navigator.pushNamed(context, viewBlogRoute,
                                 arguments: postData);
@@ -307,7 +302,7 @@ class NotificationItem extends StatelessWidget {
                   });
             }
           } else {
-            return const CircularProgressIndicator(); //TODO: change
+            return Container();
           }
         });
   }

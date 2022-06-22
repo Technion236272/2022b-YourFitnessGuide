@@ -974,7 +974,6 @@ class _SearchScreenState extends State<SearchScreen> {
     width = MediaQuery.of(context).size.width;
     FirebaseDB().getUsers().then((value) => allUsers = value);
     PostManager().getPosts().then((value) {
-      print('~~~~~~');
       allPosts = List.from(value);
       allMeals = (allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList());
       allMeals.sort((post1, post2){

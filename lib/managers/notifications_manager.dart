@@ -1,8 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 
 class NotificationsManager with ChangeNotifier {
+
+  /// Deletes user notifications on other users.
+  deleteUserNotifications(String userId) async {
+    var ids = await PostManager().getAllUsersIds();
+    for(var id in ids){
+      var query = await notificationsCollection
+          .doc(id)
+          .collection('feedItems')
+          .where('userId', isEqualTo: userId)
+          .get();
+      for(var doc in query.docs){
+        doc.reference.delete();
+      }
+    }
+    //TODO if we have time: notificationsCollection.doc(userId).delete();
+  }
+
+
   addNotification(String postId, String type, String commentData) async {
     /// You get a notification on every interaction.
     /// If you want to change to only latest interaction on a certain post you

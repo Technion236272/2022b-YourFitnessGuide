@@ -294,6 +294,17 @@ class PostManager with ChangeNotifier {
     return isSubmitted;
   }
 
+  Future<List<String>> getAllUsersIds() async  {
+    List<String> ids = [];
+    await userCollection.get().then((querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        var currID = doc.id;
+        ids.add(currID);
+      }
+    });
+    return ids;
+  }
+
   /// get all post from the db
   Stream<QuerySnapshot<Map<String, dynamic>?>> getAllPosts(String sorting) {
     return postCollection.orderBy(sorting, descending: true).snapshots();

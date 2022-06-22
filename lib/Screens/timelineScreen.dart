@@ -6,6 +6,7 @@ import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'package:yourfitnessguide/utils/post.dart';
+import 'package:yourfitnessguide/managers/notifications_manager.dart';
 
 class TimelineScreen extends StatefulWidget {
   bool? isGoalOriented = false;

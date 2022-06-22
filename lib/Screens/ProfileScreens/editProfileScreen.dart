@@ -273,6 +273,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   initializeWeights(){
+    if(firstTime){
+      weights['initialWeight'] = 1;
+      weights['currentWeight'] = 1;
+      weights['goalWeight'] = 1;
+      return;
+    }
     if(userData == null){
       if (weights['initialWeight'] == 0) {
         weights['initialWeight'] = 1;
@@ -296,7 +302,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         weights['goalWeight'] = userData.gWeight;
       }
     }
+
   }
+
 
   @override
   Widget build(BuildContext context) {

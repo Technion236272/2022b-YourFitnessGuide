@@ -515,7 +515,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     try {
-      if (userData != null) {
+      if (userData != null && user.isAuthenticated) {
         user.updateSaved();
         user.updateFollow();
         if (!visiting) {
