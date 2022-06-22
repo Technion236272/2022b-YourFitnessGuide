@@ -102,12 +102,13 @@ class _PostState extends State<Post> {
 
     List? upvotesList =  widget.data != null
         ? widget.data!['upvotes']
-        :widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
+        : widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
     isUpvoted = upvotesList?.contains(getCurrUid()) ?? false;
 
     List? downvotesList =  widget.data != null
         ? widget.data!['downvotes']
-        :widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
+        : widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
+
     isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
     return IconButton(
         onPressed: () {
@@ -148,12 +149,12 @@ class _PostState extends State<Post> {
 
     List? upvotesList =  widget.data != null
         ? widget.data!['upvotes']
-        :widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
+        : widget.snapshot?.data!.docs[widget.index].data()!['upvotes'];
     isUpvoted = upvotesList?.contains(getCurrUid()) ?? false;
 
     List? downvotesList =  widget.data != null
         ? widget.data!['downvotes']
-        :widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
+        : widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
     isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
 
     return IconButton(
