@@ -1120,7 +1120,6 @@ class _SearchScreenState extends State<SearchScreen> {
                           onPressed: () async {
                             await openFilterDialogWorkout();
                             setState(() {
-
                               minRatingWorkout=int.tryParse(ratingWorkoutController.text);
                               _filterMinRatingWorkout(context,minRatingWorkout ??-100000000);
                               _filterTimeRangeWorkout(context, dropdownValueWorkout ??'nothing');

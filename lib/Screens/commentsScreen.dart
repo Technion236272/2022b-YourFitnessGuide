@@ -131,8 +131,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
         });
 
         snapshot.data!.docs.forEach((doc) {
+         // print(doc.id);
           if (doc['timestamp'] != null) {
-            comments.add(Comment.fromDocument(doc));
+            comments.add(Comment.fromDocument(doc,postId));
           }
         });
         _commentsManager.updateCommentsNum(postId);
@@ -150,6 +151,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
 
 class Comment extends StatelessWidget {
   final String userId;
+  final String postId;
+  final String commentId;
   final String comment;
   final Timestamp? timestamp;
 
@@ -157,18 +160,24 @@ class Comment extends StatelessWidget {
     required this.userId,
     required this.comment,
     required this.timestamp,
+    required this.commentId,
+    required this.postId
   });
 
-  factory Comment.fromDocument(DocumentSnapshot doc) {
+  factory Comment.fromDocument(DocumentSnapshot doc,String postId1) {
     return Comment(
         userId: doc['userId'],
         comment: doc['comment'],
-        timestamp: doc['timestamp']);
+        commentId: doc.id,
+        timestamp: doc['timestamp'],
+        postId:postId1 );
   }
 
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AuthRepository>(context);
+   // CommentsManager().deleteCommentById(postId, 'z2WXSfgRfX3n4XZhvhAD');
     return FutureBuilder(
         future: PostManager().getUserPicAndName(userId),
         builder: (context, AsyncSnapshot<Map<String, String?>?> snapshot) {
@@ -177,43 +186,67 @@ class Comment extends StatelessWidget {
               snapshot.data!['picture'] != null) {
             return Column(
               children: [
-                ListTile(
-                    title: GestureDetector(
-                      onTap: () {
-                        SearchArguments arg = SearchArguments(uid: userId, isUser: true);
-                        Navigator.pushNamed(context, '/profile', arguments: arg);
-                      },
-                      child: Container(
-                          margin: const EdgeInsets.only(top: 12),
-                          child: Text(
-                            snapshot.data!['name']!,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          )
-                      )
+                Dismissible(
+                  key:Key(UniqueKey().toString()),
+                  onDismissed: (direction) {
+                    CommentsManager().deleteCommentById(postId, commentId);
+                    CommentsManager().updateCommentsNum(postId);
+                  },
+                  direction:
+                  user.isAuthenticated&& userId==user.uid ? DismissDirection.horizontal : DismissDirection.none,
+                  background: Container(
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Delete comment',
+                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        )
+                      ],
                     ),
-                    leading: GestureDetector(
-                      onTap: () {
-                        SearchArguments arg = SearchArguments(uid: userId, isUser: true);
-                        Navigator.pushNamed(context, '/profile', arguments: arg);
-                      },
-                      child: CircleAvatar(radius: 25, backgroundImage: NetworkImage(snapshot.data!['picture']!)),
-                    ),
-                    subtitle: Container(
-                        margin: const EdgeInsets.only(top: 2),
-                        child: Column(
-                          //mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(comment, style: const TextStyle(fontSize: 18)),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(timeago.format(timestamp!.toDate()))
-                                ]
-                            ),
-                          ],
-                        ))
+                    color: Colors.red,
+                  ),
+                  child: ListTile(
+                      title: GestureDetector(
+                        onTap: () {
+                          SearchArguments arg = SearchArguments(uid: userId, isUser: true);
+                          Navigator.pushNamed(context, '/profile', arguments: arg);
+                        },
+                        child: Container(
+                            margin: const EdgeInsets.only(top: 12),
+                            child: Text(
+                              snapshot.data!['name']!,
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            )
+                        )
+                      ),
+                      leading: GestureDetector(
+                        onTap: () {
+                          SearchArguments arg = SearchArguments(uid: userId, isUser: true);
+                          Navigator.pushNamed(context, '/profile', arguments: arg);
+                        },
+                        child: CircleAvatar(radius: 25, backgroundImage: NetworkImage(snapshot.data!['picture']!)),
+                      ),
+                      subtitle: Container(
+                          margin: const EdgeInsets.only(top: 2),
+                          child: Column(
+                            //mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(comment, style: const TextStyle(fontSize: 18)),
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(timeago.format(timestamp!.toDate()))
+                                  ]
+                              ),
+                            ],
+                          ))
+                  ),
                 ),
                 const Divider(thickness: 1),
               ],
