@@ -131,7 +131,6 @@ class _CommentsScreenState extends State<CommentsScreen> {
         });
 
         snapshot.data!.docs.forEach((doc) {
-         // print(doc.id);
           if (doc['timestamp'] != null) {
             comments.add(Comment.fromDocument(doc,postId));
           }
@@ -177,37 +176,31 @@ class Comment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<AuthRepository>(context);
-   // CommentsManager().deleteCommentById(postId, 'z2WXSfgRfX3n4XZhvhAD');
     return FutureBuilder(
         future: PostManager().getUserPicAndName(userId),
         builder: (context, AsyncSnapshot<Map<String, String?>?> snapshot) {
-          if (snapshot.hasData &&
-              snapshot.data!['name'] != null &&
-              snapshot.data!['picture'] != null) {
+          if (snapshot.hasData && snapshot.data!['name'] != null && snapshot.data!['picture'] != null) {
             return Column(
               children: [
                 Dismissible(
-                  key:Key(UniqueKey().toString()),
+                  key: Key(UniqueKey().toString()),
                   onDismissed: (direction) {
                     CommentsManager().deleteCommentById(postId, commentId);
                     CommentsManager().updateCommentsNum(postId);
                   },
-                  direction:
-                  user.isAuthenticated&& userId==user.uid ? DismissDirection.horizontal : DismissDirection.none,
+                  direction: user.isAuthenticated&& userId==user.uid ? DismissDirection.endToStart : DismissDirection.none,
                   background: Container(
-                    child: Row(
-                      children: const [
-                        Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                        ),
-                        Text(
-                          'Delete comment',
-                          style: TextStyle(color: Colors.white, fontSize: 15),
-                        )
-                      ],
-                    ),
                     color: Colors.red,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: const [
+                          Text('Delete Comment', style: TextStyle(color: Colors.white, fontSize: 15)),
+                          Icon(Icons.delete, color: Colors.white),
+                        ],
+                      )
+                    )
                   ),
                   child: ListTile(
                       title: GestureDetector(
