@@ -25,8 +25,19 @@ class Post extends StatefulWidget {
   bool hide = true;
   var user;
   bool? goalFiltered = false;
+  bool? isBlogSelected = false;
+  bool? isWorkoutSelected = false;
+  bool? isMealPlanSelected= false;
+  bool? isPostsbyfollowingSelected=false;
+  String? timeRange='no time selected';
+  int? minRating=-100000000;
 
-  Post({Key? key, this.index, this.snapshot, required this.screen, this.goalFiltered, this.uid, this.data})
+  Post({Key? key,
+    this.index,
+    this.snapshot,
+    required this.screen,
+    this.goalFiltered,this.isBlogSelected,this.isWorkoutSelected,this.isMealPlanSelected,
+    this.timeRange,this.minRating,this.isPostsbyfollowingSelected, this.uid, this.data})
       : super(key: key) {
     StreamBuilder<Map<String, dynamic>?>(
         stream: PostManager()
@@ -97,8 +108,8 @@ class _PostState extends State<Post> {
     List? downvotesList =  widget.data != null
         ? widget.data!['downvotes']
         : widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
-    isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
 
+    isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
     return IconButton(
         onPressed: () {
           if (widget.user.isAuthenticated) {
@@ -205,7 +216,127 @@ class _PostState extends State<Post> {
         icon: Icon(Icons.bookmark, color: isSaved ? appTheme : Colors.grey)
     );
   }
+  int _filterPostType(BuildContext context)
+  {
+    var cat =
+    widget.data != null
+        ? widget.data!['category']
+        : widget.snapshot?.data!.docs[widget.index].data()!['category'];
 
+    if( widget.isBlogSelected==true && widget.isWorkoutSelected==false
+        && widget.isMealPlanSelected==false
+        && (cat=='Workout' || cat=='Meal Plan')){
+      return 1;
+    }
+    if( widget.isBlogSelected==false && widget.isWorkoutSelected==false
+        && widget.isMealPlanSelected==true && (cat=='Blog'|| cat=='Workout' )
+    )
+    {
+      return 1;
+    }
+    if( widget.isBlogSelected==false && widget.isWorkoutSelected==true
+        && widget.isMealPlanSelected==false && (cat=='Blog'|| cat=='Meal Plan' )
+    )
+    {
+      return 1;
+    }
+    if( widget.isBlogSelected==true && widget.isWorkoutSelected==true
+        && widget.isMealPlanSelected==false
+        && ( cat=='Meal Plan')){
+      return 1;
+    }
+    if( widget.isBlogSelected==true && widget.isWorkoutSelected==false
+        && widget.isMealPlanSelected==true
+        && ( cat=='Workout')){
+      return 1;
+    }
+
+    if( widget.isBlogSelected==false && widget.isWorkoutSelected==true
+        && widget.isMealPlanSelected==true && (cat=="Blog")
+    )
+    {
+      return 1;
+    }
+
+
+    return 0;
+  }
+  int _filterTimeRange(BuildContext context,String? timerange)
+  {
+    if(timerange==null)
+      return 0;
+    if(timerange=='a day ago') {
+      DateTime time = DateTime.now().subtract(Duration(days: 1));
+      DateTime postCreationTime =
+      widget.data != null ? (widget.data?['createdAt'].toDate())
+          : (widget.snapshot?.data!.docs[widget.index].data()!['createdAt'].toDate());
+      //print(postCreationTime.isAfter(time));
+      if (postCreationTime.isBefore(time))
+        return 1;
+    }
+    if(timerange=='5 days ago') {
+      DateTime time = DateTime.now().subtract(Duration(days: 5));
+      DateTime postCreationTime =
+      widget.data != null ? (widget.data?['createdAt'].toDate())
+          : (widget.snapshot?.data!.docs[widget.index].data()!['createdAt'].toDate());
+      //print(postCreationTime.isAfter(time));
+      if (postCreationTime.isBefore(time))
+        return 1;
+    }
+    if(timerange=='10 days ago') {
+      DateTime time = DateTime.now().subtract(Duration(days: 10));
+      DateTime postCreationTime =
+      widget.data != null ? (widget.data?['createdAt'].toDate())
+          : (widget.snapshot?.data!.docs[widget.index].data()!['createdAt'].toDate());
+      //print(postCreationTime.isAfter(time));
+      if (postCreationTime.isBefore(time))
+        return 1;
+    }
+    if(timerange=='15 days ago') {
+      DateTime time = DateTime.now().subtract(Duration(days: 15));
+      DateTime postCreationTime =
+      widget.data != null ? (widget.data?['createdAt'].toDate())
+          : (widget.snapshot?.data!.docs[widget.index].data()!['createdAt'].toDate());
+      //print(postCreationTime.isAfter(time));
+      if (postCreationTime.isBefore(time))
+        return 1;
+    }
+    if(timerange=='a month ago') {
+      DateTime time = DateTime.now().subtract(Duration(days: 30));
+      DateTime postCreationTime =
+      widget.data != null ? (widget.data?['createdAt'].toDate())
+          : (widget.snapshot?.data!.docs[widget.index].data()!['createdAt'].toDate());
+      //print(postCreationTime.isAfter(time));
+      if (postCreationTime.isBefore(time))
+        return 1;
+    }
+    return 0;
+  }
+  int _filterMinRating(BuildContext context,int minRating)
+  {
+    int postRating=widget.data != null ? (widget.data?['rating'])
+        : (widget.snapshot?.data!.docs[widget.index].data()!['rating']);
+    //print(postRating);
+    //print(minRating);
+    if(postRating <minRating)
+      return 1;
+
+    return 0;
+  }
+  int _filterImFollowing(BuildContext context)
+  {
+
+    List? imFollowing=widget.user.userData.imFollowing;
+    String? postuserid=widget.data != null
+        ? widget.data!['user_uid']
+        : widget.snapshot?.data!.docs[widget.index].data()!['user_uid'];
+
+    if(imFollowing!.contains(postuserid)==false) {
+      return 1;
+    }
+    //print(imFollowing);
+    return 0;
+  }
   @override
   Widget build(BuildContext context) {
     widget.user = Provider.of<AuthRepository>(context);
@@ -229,10 +360,22 @@ class _PostState extends State<Post> {
       if (widget.goalFiltered != null && widget.goalFiltered! && cat == 'Blog') {
         return Container();
       }
+      if(_filterPostType(context)==1)
+        return Container();
+      if(_filterTimeRange(context,widget.timeRange)==1)
+        return Container();
+      if(_filterMinRating(context,widget.minRating??-100000000)==1)
+        return Container();
+      if(widget.isPostsbyfollowingSelected==true &&_filterImFollowing(context)==1)
+        return Container();
+
+      if (widget.goalFiltered != null && widget.goalFiltered! && cat == 'Blog') {
+        return Container();
+      }
 
       if (widget.goalFiltered != null && widget.goalFiltered!) {
         var postGoals =
-          widget.data != null
+        widget.data != null
             ? widget.data!['goals']
             : widget.snapshot?.data!.docs[widget.index].data()!['goals'];
         if (cat == "Blog") {

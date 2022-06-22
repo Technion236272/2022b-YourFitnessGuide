@@ -33,6 +33,14 @@ class CommentsManager with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteCommentById(String postId, String commentId) async {
+    var query = await commentsCollection
+        .doc(postId)
+        .collection('comments')
+        .doc(commentId)
+        .delete();
+    notifyListeners();
+  }
   /// Deletes all comments of post
   Future<void> deleteComments(String postId) async {
     var query = await commentsCollection
