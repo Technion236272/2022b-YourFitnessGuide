@@ -5,8 +5,8 @@ import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:yourfitnessguide/managers/comments_manager.dart';
 import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import '../utils/database.dart';
-import '../utils/users.dart';
+import '../../utils/database.dart';
+import '../../utils/users.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
 class CommentsScreen extends StatefulWidget {

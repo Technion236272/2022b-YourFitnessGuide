@@ -16,7 +16,7 @@ import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editBl
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editWorkoutPost.dart';
 import 'package:yourfitnessguide/Screens/PostsScreens/PostsEditingScreens/editMealPlanPost.dart';
 import 'package:yourfitnessguide/Screens/ProfileScreens/viewUsers.dart';
-import 'package:yourfitnessguide/Screens/commentsScreen.dart';
+import 'package:yourfitnessguide/Screens/PostsScreens/commentsScreen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {

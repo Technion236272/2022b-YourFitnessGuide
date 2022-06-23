@@ -49,18 +49,19 @@ class _HomeScreenState extends State<HomeScreen> {
         _views.add(const LoginScreen());
       }
     }
+    var height = MediaQuery.of(context).size.height;
 
     return Scaffold(
         body: IndexedStack(index: _selectedIndex, children: _views),
         bottomNavigationBar:
           BottomNavigationBar(
             //type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-              BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Leaderboard'),
-              BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
-              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
+            items: [
+              BottomNavigationBarItem(icon: Icon(Icons.home, size: height * 0.04 ,), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.search, size: height * 0.04 ,), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.leaderboard, size: height * 0.04 ,), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.notifications, size: height * 0.04 ,), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.person, size: height * 0.04 ,), label: '')
             ],
             currentIndex: _selectedIndex,
             selectedItemColor: Theme.of(context).iconTheme.color,
