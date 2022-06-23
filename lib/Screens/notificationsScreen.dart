@@ -51,6 +51,8 @@ import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:flutter/gestures.dart';
 import 'package:yourfitnessguide/utils/widgets.dart';
 
+late List<String>? savedPosts;
+
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
@@ -60,6 +62,7 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   late AuthRepository user;
+
 
   /// Returns list of all notifications relevant to currUser
   Future<List<NotificationItem>> getNotificationsList() async {
@@ -80,6 +83,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<AuthRepository>(context);
+    savedPosts = user.savedPosts;
     return Scaffold(
       appBar: AppBar(centerTitle: false, title: const Text('Notifications')),
       body: FutureBuilder(
@@ -223,6 +227,9 @@ class NotificationItem extends StatelessWidget {
                       postData =
                           snapshot1.data?[0].data() as Map<String, dynamic>;
                     }
+                    var post_uid = snapshot1.data?[0].id;
+                    bool isSaved = savedPosts!.contains(post_uid);
+                    postData.addAll({'uid' : post_uid, 'isSaved': isSaved, });
                     var postCat = postData?['category'];
                     return InkWell(
                         onTap: () {
