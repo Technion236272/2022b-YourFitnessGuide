@@ -272,6 +272,28 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
           title: Text('${post_data["title"]}'),
           backgroundColor: appTheme,
           centerTitle: false),
+      bottomSheet: Container(
+          alignment: Alignment(0.0, -1.0),
+          height: 50,
+          width: double.maxFinite,
+          decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius:
+              BorderRadius.vertical(top: Radius.circular(20.0))),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _buildUpvoteButton(),
+              Text(
+                widget.rating!,
+                style: TextStyle(color: Colors.white),
+              ),
+              _buildDownvoteButton(),
+              _buildCommentButton(),
+              _buildSaveButton(),
+            ],
+          )),
       body: SingleChildScrollView(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -360,31 +382,6 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
           Container(
               padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
               child: _buildDescription(height)),
-          SizedBox(
-            height: height * 0.02,
-          ),
-          Container(
-              alignment: Alignment(0.0, -1.0),
-              height: 50,
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(20.0))),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  _buildUpvoteButton(),
-                  Text(
-                    widget.rating!,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  _buildDownvoteButton(),
-                  _buildCommentButton(),
-                  _buildSaveButton(),
-                ],
-              ))
         ],
       )),
       resizeToAvoidBottomInset: true,
