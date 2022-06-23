@@ -278,8 +278,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
           width: double.maxFinite,
           decoration: BoxDecoration(
               color: Colors.grey,
-              borderRadius:
-              BorderRadius.vertical(top: Radius.circular(20.0))),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.0))),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -382,6 +381,9 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
           Container(
               padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
               child: _buildDescription(height)),
+          SizedBox(
+            height: height * 0.03,
+          ),
         ],
       )),
       resizeToAvoidBottomInset: true,

@@ -787,6 +787,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             child: _buildMealContents(height, width),
           ),
+          SizedBox(height: height * 0.03,)
         ]),
       )),
       resizeToAvoidBottomInset: true,
