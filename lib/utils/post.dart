@@ -108,7 +108,6 @@ class _PostState extends State<Post> {
     List? downvotesList =  widget.data != null
         ? widget.data!['downvotes']
         : widget.snapshot?.data!.docs[widget.index].data()!['downvotes'];
-
     isDownvoted = downvotesList?.contains(getCurrUid()) ?? false;
     return IconButton(
         onPressed: () {
@@ -394,7 +393,9 @@ class _PostState extends State<Post> {
     return InkWell(
       onTap: () {
         var cat = widget.data?['category'] ?? widget.snapshot?.data!.docs[widget.index].data()!['category'];
-        var args = widget.data ?? widget.snapshot?.data!.docs[widget.index].data()!;
+        var args = Map<String, dynamic>.from(widget.data ?? widget.snapshot?.data!.docs[widget.index].data()!);
+        args.addAll({'uid' : widget.snapshot?.data!.docs[widget.index].id ?? widget.data!['uid'], 'isSaved': isSaved, });
+        print(args);
         if (cat == 'Blog') {
           Navigator.pushNamed(context, viewBlogRoute, arguments: args);
         } else if (cat == 'Workout') {
