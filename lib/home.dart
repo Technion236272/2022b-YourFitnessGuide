@@ -50,23 +50,23 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     var height = MediaQuery.of(context).size.height;
-
     return Scaffold(
         body: IndexedStack(index: _selectedIndex, children: _views),
         bottomNavigationBar:
           BottomNavigationBar(
+              showSelectedLabels: false,   // <-- HERE
+              showUnselectedLabels: false,
             //type: BottomNavigationBarType.fixed,
             items: [
-              BottomNavigationBarItem(icon: Icon(Icons.home, size: height * 0.04 ,), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.search, size: height * 0.04 ,), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.leaderboard, size: height * 0.04 ,), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.notifications, size: height * 0.04 ,), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.person, size: height * 0.04 ,), label: '')
+              BottomNavigationBarItem(icon: Icon(Icons.home, size: height * 0.04,), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(Icons.search, size: height * 0.04,), label: 'Search'),
+              BottomNavigationBarItem(icon: Icon(Icons.leaderboard, size: height * 0.04,), label: 'Leaderboard'),
+              BottomNavigationBarItem(icon: Icon(Icons.notifications, size: height * 0.04,), label: 'Notifications'),
+              BottomNavigationBarItem(icon: Icon(Icons.person, size: height * 0.04,), label: 'Profile')
             ],
             currentIndex: _selectedIndex,
             selectedItemColor: Theme.of(context).iconTheme.color,
             unselectedItemColor: Colors.grey,
-            showUnselectedLabels: true,
             onTap: _onItemTapped
         )
     );
