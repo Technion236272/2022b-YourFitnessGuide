@@ -16,6 +16,7 @@ class ViewWorkoutScreen extends StatefulWidget {
   late bool isAuthenticated;
   late bool? isSaved = null;
   late String? rating = null;
+
   ViewWorkoutScreen({Key? key, this.post_data}) : super(key: key);
 
   @override
@@ -37,7 +38,6 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
   late var user_data;
   var user;
 
-
   Widget _buildWorkoutName(double height) {
     final iconSize = height * 0.050;
     return Row(
@@ -57,7 +57,8 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text("Workout name",style: TextStyle(color: appTheme,fontSize: 20)),
+              const Text("Workout name",
+                  style: TextStyle(color: appTheme, fontSize: 20)),
               TextField(
                 keyboardType: TextInputType.name,
                 controller: workoutNameController,
@@ -105,8 +106,8 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                             child: Text("Description"),
                           )
                         : Text("Description"),
-                    hintStyle: TextStyle(
-                        height: 1, fontSize: 16, color: Colors.grey),
+                    hintStyle:
+                        TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                     labelStyle: TextStyle(
                       color: appTheme,
                       fontSize: 27,
@@ -256,15 +257,17 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
     );
   }
 
-  Widget _buildUpvoteButton(){
+  Widget _buildUpvoteButton() {
     String? postId = post_data!['uid'];
     String? postOwnerId = post_data!['user_uid'];
 
     List? upvotesList = post_data['upvotes'];
-    widget.isUpvoted = widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
+    widget.isUpvoted =
+        widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
 
     List? downvotesList = post_data['downvotes'];
-    widget.isDownvoted = widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
+    widget.isDownvoted =
+        widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
 
     return IconButton(
         onPressed: () {
@@ -273,41 +276,45 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             if (widget.isUpvoted! && widget.isDownvoted!) {
               widget.rating = (int.parse(widget.rating!) + 1).toString();
               widget.isDownvoted = false;
-              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
-              user.modifyVote(postId, postOwnerId, 'downvotes', widget.isDownvoted);
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
+              user.modifyVote(
+                  postId, postOwnerId, 'downvotes', widget.isDownvoted);
             }
             setState(() {});
             user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
             setState(() {});
+
             /// Notification
-            if(widget.isUpvoted!) {
+            if (widget.isUpvoted!) {
               widget.rating = (int.parse(widget.rating!) + 1).toString();
               NotificationsManager().addNotification(postId!, 'upvote', '');
-            }
-            else{
+            } else {
               widget.rating = (int.parse(widget.rating!) - 1).toString();
-              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
             }
-          }
-          else{
-            const snackBar = SnackBar(content: Text('You need to sign in to upvote posts'));
+          } else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to upvote posts'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon: Icon(Icons.thumb_up, color: widget.isUpvoted! ? appTheme : Colors.white)
-    );
+        icon: Icon(Icons.thumb_up,
+            color: widget.isUpvoted! ? appTheme : Colors.white));
   }
 
-  Widget _buildDownvoteButton(){
+  Widget _buildDownvoteButton() {
     String? postId = post_data!['uid'];
     String? postOwnerId = post_data!['user_uid'];
 
     List? upvotesList = post_data['upvotes'];
-    widget.isUpvoted = widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
+    widget.isUpvoted =
+        widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
 
     List? downvotesList = post_data['downvotes'];
-    widget.isDownvoted = widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
-
+    widget.isDownvoted =
+        widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
 
     return IconButton(
         onPressed: () {
@@ -317,53 +324,51 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
               widget.rating = (int.parse(widget.rating!) - 1).toString();
               widget.isUpvoted = false;
               user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
-              NotificationsManager().removeNotification(postOwnerId!, postId!, 'upvote');
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'upvote');
             }
             setState(() {});
-            user.modifyVote(postId, postOwnerId, 'downvotes', widget.isDownvoted);
+            user.modifyVote(
+                postId, postOwnerId, 'downvotes', widget.isDownvoted);
 
             /// Notification
-            if(widget.isDownvoted!) {
+            if (widget.isDownvoted!) {
               widget.rating = (int.parse(widget.rating!) - 1).toString();
               NotificationsManager().addNotification(postId!, 'downvote', '');
-            }
-            else{
+            } else {
               widget.rating = (int.parse(widget.rating!) + 1).toString();
-              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
             }
-          }
-          else{
-            const snackBar = SnackBar(content: Text('You need to sign in to downvote posts'));
+          } else {
+            const snackBar = SnackBar(
+                content: Text('You need to sign in to downvote posts'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon: Icon(Icons.thumb_down, color: widget.isDownvoted! ? appTheme : Colors.white)
-    );
+        icon: Icon(Icons.thumb_down,
+            color: widget.isDownvoted! ? appTheme : Colors.white));
   }
 
-  Widget _buildSaveButton(){
+  Widget _buildSaveButton() {
     return IconButton(
         onPressed: () {
           if (widget.isAuthenticated) {
             widget.isSaved = !widget.isSaved!;
             setState(() {});
             if (!widget.isSaved!) {
-              user.modifySaved( post_data['uid'],
-                  true
-              );
+              user.modifySaved(post_data['uid'], true);
             } else {
-              user.modifySaved( post_data['uid'],
-                  false
-              );
+              user.modifySaved(post_data['uid'], false);
             }
-          }
-          else {
-            const snackBar = SnackBar(content: Text('You need to sign in to save posts'));
+          } else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to save posts'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
-        icon: Icon(Icons.bookmark, color: widget.isSaved! ? appTheme : Colors.white)
-    );
+        icon: Icon(Icons.bookmark,
+            color: widget.isSaved! ? appTheme : Colors.white));
   }
 
   Widget _buildCommentButton() {
@@ -374,8 +379,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             'postId': postId,
           });
         },
-        icon: const Icon(Icons.chat_bubble, color: Colors.white)
-    );
+        icon: const Icon(Icons.chat_bubble, color: Colors.white));
   }
 
   @override
@@ -399,6 +403,27 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
         backgroundColor: appTheme,
         centerTitle: false,
       ),
+      bottomSheet: Container(
+          alignment: Alignment(0.0, -1.0),
+          height: 50,
+          width: double.maxFinite,
+          decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.0))),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _buildUpvoteButton(),
+              Text(
+                widget.rating!,
+                style: TextStyle(color: Colors.white),
+              ),
+              _buildDownvoteButton(),
+              _buildCommentButton(),
+              _buildSaveButton(),
+            ],
+          )),
       body: SingleChildScrollView(
           child: GestureDetector(
         onTap: () {
@@ -433,13 +458,15 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                     contentPadding: const EdgeInsets.all(0),
                     leading: GestureDetector(
                         onTap: () {
-                          SearchArguments arg = SearchArguments(uid: post_data["user_uid"], isUser: true);
-                          Navigator.pushNamed(context, '/profile', arguments: arg);
+                          SearchArguments arg = SearchArguments(
+                              uid: post_data["user_uid"], isUser: true);
+                          Navigator.pushNamed(context, '/profile',
+                              arguments: arg);
                         },
                         child: CircleAvatar(
                           radius: 25,
                           backgroundImage:
-                          NetworkImage(userSnapshot.data!['picture']!),
+                              NetworkImage(userSnapshot.data!['picture']!),
                         )),
                     title: RichText(
                       text: TextSpan(
@@ -488,12 +515,12 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
               : const Padding(padding: EdgeInsets.all(0))),
           //SizedBox(height: height * 0.04),
           post_data!['image_url'] != null
-          ? Divider(
-            height: height * 0.00001,
-            thickness: 1,
-            color: Colors.black45,
-          )
-          : const Padding(padding: EdgeInsets.all(0)),
+              ? Divider(
+                  height: height * 0.00001,
+                  thickness: 1,
+                  color: Colors.black45,
+                )
+              : const Padding(padding: EdgeInsets.all(0)),
           Container(
             padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
             child: _buildDescription(height),
@@ -508,27 +535,6 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
           ),
           SizedBox(
             height: height * 0.015,
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-                height: 50,
-                width: double.maxFinite,
-                decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius:
-                    BorderRadius.vertical(top: Radius.circular(20.0))),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    _buildUpvoteButton(),
-                    Text(widget.rating!, style: TextStyle(color: Colors.white),),
-                    _buildDownvoteButton(),
-                    _buildCommentButton(),
-                    _buildSaveButton(),
-                  ],
-                )),
           ),
         ]),
       )),

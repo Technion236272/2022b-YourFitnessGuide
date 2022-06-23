@@ -191,7 +191,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     if (firstTime) {
-      if (init <= 0 || goal <= 0 || init >= 500 || goal >= 500) {
+      if (init <= 0 || goal <= 0 || init >= 500 || goal >= 500 || nameField.controller.text == "") {
         const snackBar = SnackBar(content: Text('You need to fill all the fields'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       } else {
