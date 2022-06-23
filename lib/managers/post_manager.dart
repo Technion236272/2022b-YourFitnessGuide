@@ -317,7 +317,7 @@ class PostManager with ChangeNotifier {
       querySnapshot.docs.forEach((doc) {
         var fullData = doc.data();
         fullData['uid'] = doc.id;
-        var currentPost = Post(uid: doc.id, screen: 'timeline', data: fullData);
+        var currentPost = Post(uid: doc.id, screen: 'Search', data: fullData);
         res.add(currentPost);
       });
     });

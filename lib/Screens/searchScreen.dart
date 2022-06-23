@@ -85,11 +85,7 @@ class _SearchScreenState extends State<SearchScreen> {
   String query = '';
   String? dropdownValueWorkout;
   String? dropdownValuemealPlan;
-  int?  minRatingWorkout;
-  int?  minRatingWMealPlan;
   final searchUserController = TextEditingController();
-  final ratingWorkoutController = TextEditingController();
-  final ratingMealPlanController = TextEditingController();
   RangeValues kcalrange= RangeValues((0), 5000);
   RangeValues protiensrange= RangeValues((0), 500);
   RangeValues carbsrange= RangeValues((0), 500);
@@ -110,6 +106,7 @@ class _SearchScreenState extends State<SearchScreen> {
     PostManager().getPosts().then((value) {
       allPosts = List.from(value);
       posts = List.from(value);
+
       allBlogs = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
       allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
       allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
@@ -127,6 +124,8 @@ class _SearchScreenState extends State<SearchScreen> {
       blogs = allBlogs;
       meals = allMeals;
       workouts = allWorkouts;
+
+
     });
 
   }
@@ -250,41 +249,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       onChanged: (value) => setStatee(() {
                         _workoutGoals[3] = value;
                       })),
-                  Row(
-                    children: [
-                      const Text(
-                        "Minimum rating",
-                        style: TextStyle(
-                          color: appTheme,
-                          fontSize: 17,
-                          // fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 25, 10),
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            controller: ratingWorkoutController,
-                            textAlign: TextAlign. center,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                              labelText: "",
-                              labelStyle: TextStyle(color: appTheme, fontSize: 21),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                            ),
-                          ),
-                        ),
-
-                      ),
-
-                    ],
-                  ),
-
-
                 ],
               ),
             ),
@@ -298,7 +262,6 @@ class _SearchScreenState extends State<SearchScreen> {
                         onPressed: () {
                           setStatee(() =>
                           dropdownValueWorkout=dropdownValueWorkout);
-                          minRatingWorkout=int.tryParse(ratingWorkoutController.text);
                           Navigator.of(context).pop();
                         },
                         child: const Text('OK',
@@ -432,39 +395,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       onChanged: (value) => setStatee(() {
                         _mealPlanGoals[3] = value;
                       })),
-                  Row(
-                    children: [
-                      const Text(
-                        "Minimum rating",
-                        style: TextStyle(
-                          color: appTheme,
-                          fontSize: 17,
-                          // fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(5, 0, 25, 10),
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            controller: ratingMealPlanController,
-                            textAlign: TextAlign. center,
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                              labelText: "",
-                              labelStyle: TextStyle(color: appTheme, fontSize: 21),
-                              floatingLabelBehavior: FloatingLabelBehavior.always,
-                            ),
-                          ),
-                        ),
-
-                      ),
-
-                    ],
-                  ),
                   SizedBox(
                     height: 15,
                   ),
@@ -620,7 +550,6 @@ class _SearchScreenState extends State<SearchScreen> {
                       TextButton(
                         onPressed: () {
                           setStatee(() =>dropdownValuemealPlan=dropdownValuemealPlan);
-                          minRatingWMealPlan=int.tryParse(ratingMealPlanController.text);
                           Navigator.of(context).pop();
 
 
@@ -636,41 +565,7 @@ class _SearchScreenState extends State<SearchScreen> {
               )
             ],
           )));
-  /*
-  Widget _buildSearch(String Title) {
 
-    return Container(
-      height: 42,
-      margin: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        border: Border.all(color: Colors.black26),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: TextField(
-        controller: searchUserController,
-        onChanged: (text) {
-          setState(() {});
-        },
-        decoration: InputDecoration(
-          icon: const Icon(Icons.search, color: appTheme),
-          suffixIcon: searchUserController.text.isNotEmpty
-              ? GestureDetector(
-            child: const Icon(Icons.close, color: appTheme),
-            onTap: () {
-              searchUserController.clear();
-              FocusScope.of(context).requestFocus(FocusNode());
-            },
-          )
-              : null,
-          hintText: Title,
-          border: InputBorder.none,
-        ),
-      ),
-    );
-  }
-*/
 
   Widget buildUser(SearchUserModel model) => ListTile(
       onTap: () {
@@ -771,8 +666,6 @@ class _SearchScreenState extends State<SearchScreen> {
     allMeals.sort((post1, post2){
       return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
     });
-    minRatingWMealPlan=int.tryParse(ratingMealPlanController.text);
-    _filterMinRatingMeal(context,minRatingWMealPlan ??-100000000);
     _filterTimeRangeMeal(context, dropdownValuemealPlan ??'nothing');
     _filterMealGoals(context);
     _filterMealContents(context);
@@ -792,8 +685,6 @@ class _SearchScreenState extends State<SearchScreen> {
     allWorkouts.sort((post1, post2){
       return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
     });
-    minRatingWorkout=int.tryParse(ratingWorkoutController.text);
-    _filterMinRatingWorkout(context,minRatingWorkout??-100000000);
     _filterTimeRangeWorkout(context, dropdownValueWorkout??'nothing');
     _filterWorkoutGoals(context);
     final filteredPosts = allWorkouts.where((post) {
@@ -829,24 +720,13 @@ class _SearchScreenState extends State<SearchScreen> {
     }
     workouts=allWorkouts;
   }
-  _filterMinRatingWorkout(BuildContext context,int MinRating)
-  {
-    allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
-    allWorkouts.sort((post1, post2){
-      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
-    });
-    allWorkouts = (allWorkouts.where((element) {
-      return element.data!['rating']>=MinRating ;}).toList());
 
-    workouts=allWorkouts;
-  }
   _filterTimeRangeWorkout(BuildContext context,String? timerange)
   {
     allWorkouts = allPosts.where((element) {return element.data!['category'].startsWith('Workout');}).toList();
     allWorkouts.sort((post1, post2){
       return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
     });
-    _filterMinRatingWorkout(context,minRatingWorkout??-100000000);
     allWorkouts = (allWorkouts.where((element) {
       if(timerange=='a day ago') {
         DateTime time = DateTime.now().subtract(Duration(days: 1));
@@ -919,24 +799,13 @@ class _SearchScreenState extends State<SearchScreen> {
     }).toList());
     meals=allMeals;
   }
-  _filterMinRatingMeal(BuildContext context,int MinRating)
-  {
-    allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
-    allMeals.sort((post1, post2){
-      return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
-    });
-    allMeals = (allMeals.where((element) {
-      return element.data!['rating']>=MinRating ;}).toList());
 
-    meals=allMeals;
-  }
   _filterTimeRangeMeal(BuildContext context,String? timerange)
   {
     allMeals = allPosts.where((element) {return element.data!['category'].startsWith('Meal Plan');}).toList();
     allMeals.sort((post1, post2){
       return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
     });
-    _filterMinRatingMeal(context,minRatingWMealPlan??-100000000);
     allMeals = (allMeals.where((element) {
       if(timerange=='a day ago') {
         DateTime time = DateTime.now().subtract(Duration(days: 1));
@@ -972,6 +841,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
+
     FirebaseDB().getUsers().then((value) => allUsers = value);
     PostManager().getPosts().then((value) {
       allPosts = List.from(value);
@@ -988,6 +858,8 @@ class _SearchScreenState extends State<SearchScreen> {
         return post2.data!['createdAt'].toDate().compareTo(post1.data!['createdAt'].toDate());
       });
     });
+
+
 
 
     return DefaultTabController(
@@ -1078,9 +950,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
                               await openFilterDialogMealplan();
                               setState(() {
-
-                                minRatingWMealPlan=int.tryParse(ratingMealPlanController.text);
-                                _filterMinRatingMeal(context,minRatingWMealPlan ??-100000000);
                                 _filterTimeRangeMeal(context, dropdownValuemealPlan ??'nothing');
                                 _filterMealGoals(context);
                                 _filterMealContents(context);
@@ -1120,8 +989,6 @@ class _SearchScreenState extends State<SearchScreen> {
                           onPressed: () async {
                             await openFilterDialogWorkout();
                             setState(() {
-                              minRatingWorkout=int.tryParse(ratingWorkoutController.text);
-                              _filterMinRatingWorkout(context,minRatingWorkout ??-100000000);
                               _filterTimeRangeWorkout(context, dropdownValueWorkout ??'nothing');
                               _filterWorkoutGoals(context);
                             });
