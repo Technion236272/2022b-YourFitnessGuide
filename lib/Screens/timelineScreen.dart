@@ -334,6 +334,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                             color: Colors.white,
                           ))
                     ): const Padding(padding: EdgeInsets.all(0))),
+    (user.isAuthenticated
+    ?
               Padding(
                       padding: const EdgeInsets.only(right: 1.0),
                       child:
@@ -346,7 +348,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                 Icons.sort,
                                 color: Colors.white,
                               ))
-                        )
+                        ): const Padding(padding: EdgeInsets.all(0))),
 
             ]),
         floatingActionButton: SpeedDial(

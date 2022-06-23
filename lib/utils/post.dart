@@ -476,7 +476,7 @@ class _PostState extends State<Post> {
                                 fontWeight: FontWeight.normal,
                                 color: Colors.grey)
                         ),
-                        trailing: widget.screen == 'timeline'
+                        trailing: widget.screen == 'timeline' || widget.screen=="Search"
                             ? null
                             : PopupMenuButton(
                               icon: const Icon(Icons.more_horiz),
@@ -584,40 +584,45 @@ class _PostState extends State<Post> {
                       ),
                 )
                     : Container(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        _buildUpvoteButton(),
-                        Text(
-                          (widget.data?['rating'] ?? widget.snapshot?.data.docs[widget.index].data()['rating']).toString(),
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black.withOpacity(0.9),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        _buildDownvoteButton(),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          (widget.data?['commentsNum'] ??
-                              widget.snapshot?.data.docs[widget.index]
-                                  .data()['commentsNum'])
-                              .toString(),
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black.withOpacity(0.9),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        _buildCommentButton(),
-                      ],
-                    ),
 
-                    _buildSaveButton(),
-                  ],
+                Visibility(
+                  visible:  widget.screen != 'Search',
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+
+                      Row(
+                        children: [
+                          _buildUpvoteButton(),
+                          Text(
+                            (widget.data?['rating'] ?? widget.snapshot?.data.docs[widget.index].data()['rating']).toString(),
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black.withOpacity(0.9),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          _buildDownvoteButton(),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            (widget.data?['commentsNum'] ??
+                                widget.snapshot?.data.docs[widget.index]
+                                    .data()['commentsNum'])
+                                .toString(),
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black.withOpacity(0.9),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          _buildCommentButton(),
+                        ],
+                      ),
+
+                      _buildSaveButton(),
+                    ],
+                  ),
                 )
               ],
             ),
