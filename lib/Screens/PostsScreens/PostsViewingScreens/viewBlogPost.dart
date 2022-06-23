@@ -382,7 +382,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
               padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
               child: _buildDescription(height)),
           SizedBox(
-            height: height * 0.03,
+            height: height * 0.1,
           ),
         ],
       )),
