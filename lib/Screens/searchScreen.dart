@@ -168,7 +168,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               dropdownValueWorkout = newValue!;
                             });
                           },
-                          items: <String>['a day ago', '5 days ago', '10 days ago', '15 days ago','a month ago']
+                          items: <String>['none','a day ago', '5 days ago', '10 days ago', '15 days ago','a month ago']
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
@@ -314,7 +314,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               dropdownValuemealPlan = newValue!;
                             });
                           },
-                          items: <String>['a day ago', '5 days ago', '10 days ago', '15 days ago','a month ago']
+                          items: <String>['none','a day ago', '5 days ago', '10 days ago', '15 days ago','a month ago']
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
