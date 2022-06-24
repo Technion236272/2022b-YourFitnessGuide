@@ -1,13 +1,21 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:yourfitnessguide/managers/notifications_manager.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:flutter/services.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:yourfitnessguide/utils/users.dart';
 
 class ViewWorkoutScreen extends StatefulWidget {
   late var post_data;
+  late bool? isDownvoted = null;
+  late bool? isUpvoted = null;
+  late bool isAuthenticated;
+  late bool? isSaved = null;
+  late String? rating = null;
 
   ViewWorkoutScreen({Key? key, this.post_data}) : super(key: key);
 
@@ -28,6 +36,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
   final List<TextField> _textFieldInput = [];
   final PostManager _postManager = PostManager();
   late var user_data;
+  var user;
 
   Widget _buildWorkoutName(double height) {
     final iconSize = height * 0.050;
@@ -48,7 +57,8 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text("Workout name",style: TextStyle(color: appTheme,fontSize: 20)),
+              const Text("Workout name",
+                  style: TextStyle(color: appTheme, fontSize: 20)),
               TextField(
                 keyboardType: TextInputType.name,
                 controller: workoutNameController,
@@ -84,7 +94,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             children: <Widget>[
               TextField(
                 minLines: 1,
-                maxLines: 8,
+                maxLines: 40,
                 keyboardType: TextInputType.multiline,
                 controller: descriptionController,
                 textAlign: TextAlign.left,
@@ -96,8 +106,8 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                             child: Text("Description"),
                           )
                         : Text("Description"),
-                    hintStyle: TextStyle(
-                        height: 1, fontSize: 16, color: Colors.grey),
+                    hintStyle:
+                        TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                     labelStyle: TextStyle(
                       color: appTheme,
                       fontSize: 27,
@@ -247,6 +257,131 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
     );
   }
 
+  Widget _buildUpvoteButton() {
+    String? postId = post_data!['uid'];
+    String? postOwnerId = post_data!['user_uid'];
+
+    List? upvotesList = post_data['upvotes'];
+    widget.isUpvoted =
+        widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
+
+    List? downvotesList = post_data['downvotes'];
+    widget.isDownvoted =
+        widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
+
+    return IconButton(
+        onPressed: () {
+          if (widget.isAuthenticated) {
+            widget.isUpvoted = !widget.isUpvoted!;
+            if (widget.isUpvoted! && widget.isDownvoted!) {
+              widget.rating = (int.parse(widget.rating!) + 1).toString();
+              widget.isDownvoted = false;
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
+              user.modifyVote(
+                  postId, postOwnerId, 'downvotes', widget.isDownvoted);
+            }
+            setState(() {});
+            user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
+            setState(() {});
+
+            /// Notification
+            if (widget.isUpvoted!) {
+              widget.rating = (int.parse(widget.rating!) + 1).toString();
+              NotificationsManager().addNotification(postId!, 'upvote', '');
+            } else {
+              widget.rating = (int.parse(widget.rating!) - 1).toString();
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
+            }
+          } else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to upvote posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.thumb_up,
+            color: widget.isUpvoted! ? appTheme : Colors.white));
+  }
+
+  Widget _buildDownvoteButton() {
+    String? postId = post_data!['uid'];
+    String? postOwnerId = post_data!['user_uid'];
+
+    List? upvotesList = post_data['upvotes'];
+    widget.isUpvoted =
+        widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
+
+    List? downvotesList = post_data['downvotes'];
+    widget.isDownvoted =
+        widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
+
+    return IconButton(
+        onPressed: () {
+          if (widget.isAuthenticated) {
+            widget.isDownvoted = !widget.isDownvoted!;
+            if (widget.isDownvoted! && widget.isUpvoted!) {
+              widget.rating = (int.parse(widget.rating!) - 1).toString();
+              widget.isUpvoted = false;
+              user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'upvote');
+            }
+            setState(() {});
+            user.modifyVote(
+                postId, postOwnerId, 'downvotes', widget.isDownvoted);
+
+            /// Notification
+            if (widget.isDownvoted!) {
+              widget.rating = (int.parse(widget.rating!) - 1).toString();
+              NotificationsManager().addNotification(postId!, 'downvote', '');
+            } else {
+              widget.rating = (int.parse(widget.rating!) + 1).toString();
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
+            }
+          } else {
+            const snackBar = SnackBar(
+                content: Text('You need to sign in to downvote posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.thumb_down,
+            color: widget.isDownvoted! ? appTheme : Colors.white));
+  }
+
+  Widget _buildSaveButton() {
+    return IconButton(
+        onPressed: () {
+          if (widget.isAuthenticated) {
+            widget.isSaved = !widget.isSaved!;
+            setState(() {});
+            if (!widget.isSaved!) {
+              user.modifySaved(post_data['uid'], true);
+            } else {
+              user.modifySaved(post_data['uid'], false);
+            }
+          } else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to save posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.bookmark,
+            color: widget.isSaved! ? appTheme : Colors.white));
+  }
+
+  Widget _buildCommentButton() {
+    return IconButton(
+        onPressed: () {
+          String postId = post_data['uid'];
+          Navigator.pushNamed(context, commentsRoute, arguments: {
+            'postId': postId,
+          });
+        },
+        icon: const Icon(Icons.chat_bubble, color: Colors.white));
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
@@ -255,6 +390,10 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
     workoutNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
     user_data = _postManager.getUserInfo(post_data["user_uid"]).asStream();
+    user = Provider.of<AuthRepository>(context);
+    widget.isAuthenticated = user.isAuthenticated;
+    widget.isSaved = widget.isSaved ?? post_data['isSaved'];
+    widget.rating = widget.rating ?? post_data['rating'].toString();
 
     return Scaffold(
       appBar: AppBar(
@@ -264,6 +403,27 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
         backgroundColor: appTheme,
         centerTitle: false,
       ),
+      bottomSheet: Container(
+          alignment: Alignment(0.0, -1.0),
+          height: 50,
+          width: double.maxFinite,
+          decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.0))),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _buildUpvoteButton(),
+              Text(
+                widget.rating!,
+                style: TextStyle(color: Colors.white),
+              ),
+              _buildDownvoteButton(),
+              _buildCommentButton(),
+              _buildSaveButton(),
+            ],
+          )),
       body: SingleChildScrollView(
           child: GestureDetector(
         onTap: () {
@@ -296,11 +456,18 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
                   }
                   return ListTile(
                     contentPadding: const EdgeInsets.all(0),
-                    leading: CircleAvatar(
-                      radius: 25,
-                      backgroundImage:
-                          NetworkImage(userSnapshot.data!['picture']!),
-                    ),
+                    leading: GestureDetector(
+                        onTap: () {
+                          SearchArguments arg = SearchArguments(
+                              uid: post_data["user_uid"], isUser: true);
+                          Navigator.pushNamed(context, '/profile',
+                              arguments: arg);
+                        },
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundImage:
+                              NetworkImage(userSnapshot.data!['picture']!),
+                        )),
                     title: RichText(
                       text: TextSpan(
                         style: Theme.of(context)
@@ -348,12 +515,12 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
               : const Padding(padding: EdgeInsets.all(0))),
           //SizedBox(height: height * 0.04),
           post_data!['image_url'] != null
-          ? Divider(
-            height: height * 0.00001,
-            thickness: 1,
-            color: Colors.black45,
-          )
-          : const Padding(padding: EdgeInsets.all(0)),
+              ? Divider(
+                  height: height * 0.00001,
+                  thickness: 1,
+                  color: Colors.black45,
+                )
+              : const Padding(padding: EdgeInsets.all(0)),
           Container(
             padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
             child: _buildDescription(height),

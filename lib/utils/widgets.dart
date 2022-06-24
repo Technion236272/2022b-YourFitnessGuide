@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:yourfitnessguide/utils/users.dart';
 import 'globals.dart';
 
@@ -130,12 +130,7 @@ class imageContainer extends StatelessWidget {
             image: imageFile != null
                 ? DecorationImage(
                     fit: BoxFit.contain, image: Image.file(imageFile!).image)
-                : (imageLink == null
-                    ? DecorationImage(
-                        fit: BoxFit.contain,
-                        image:
-                            Image.asset('images/decorations/mclovin.png').image)
-                    : DecorationImage(
+                : (DecorationImage(
                         fit: BoxFit.contain,
                         image: NetworkImage(imageLink!)))));
   }
@@ -168,354 +163,23 @@ class _textFieldState extends State<textField> {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.only(bottom: 5),
         label: widget.centered
-            ? Center(
-                child: Text(widget.fieldName),
-              )
+            ? Center(child: Text(widget.fieldName))
             : Text(widget.fieldName),
         hintStyle: const TextStyle(height: 1, fontSize: 16, color: Colors.grey),
         hintText: widget.hint ?? '',
-        labelStyle: const TextStyle(
-          color: appTheme,
-          fontSize: 23,
-          fontWeight: FontWeight.bold,
-        ),
+        labelStyle: const TextStyle(color: appTheme, fontSize: 23, fontWeight: FontWeight.bold),
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
     );
   }
 }
 
-class post extends StatefulWidget {
-  AsyncSnapshot? snapshot;
-  late int? index;
-  bool completed = true;
-  bool owner = false;
-  late Image? userPicture = null;
-  late Image? postImage;
-  late String? category = null;
-  late String? username = null;
-  late DateTime? date = null;
-  late int? rating = null;
-  late String? screen = null;
-  bool hide = true;
-  var user;
-  bool isSaved = false;
-  bool? goalFiltered = false;
-
-  post(
-      {Key? key,
-      this.index,
-      required this.snapshot,
-      required this.screen,
-      this.goalFiltered})
-      : super(key: key) {
-    StreamBuilder<Map<String, dynamic>?>(
-        stream: PostManager()
-            .getUserInfo(snapshot?.data!.docs[index].data()!['user_uid'])
-            .asStream(),
-        builder: (context, userSnapshot) {
-          if (userSnapshot.connectionState == ConnectionState.waiting &&
-              userSnapshot.data == null) {
-            return const Center(child: LinearProgressIndicator());
-          }
-          if (userSnapshot.connectionState == ConnectionState.done &&
-              userSnapshot.data == null) {
-            completed = false;
-            return const ListTile();
-          }
-          userPicture = Image.network(userSnapshot.data!['picture']!);
-          category = snapshot?.data!.docs[index].data()!['category'];
-          username = userSnapshot.data!['name'];
-          rating = userSnapshot.data!['rating'];
-          date = snapshot?.data!.docs[index].data()!['createdAt'] != null
-              ? snapshot?.data!.docs[index].data()!['createdAt'].toDate()
-              : DateTime.now();
-
-          return const ListTile();
-        });
-  }
-
-  @override
-  State<post> createState() => _postState();
-}
-
-class _postState extends State<post> {
-  final _postManager = PostManager();
-
-  Widget _buildPostIcon(IconData ic) {
-    return IconButton(
-        onPressed: () {
-          const snackBar = SnackBar(content: Text('Not implemented yet'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        },
-        icon: Icon(ic, color: Colors.grey));
-  }
-
-  Widget _buildSaveButton() {
-    return IconButton(
-        onPressed: () {
-          if (widget.user.isAuthenticated) {
-            widget.isSaved = !widget.isSaved;
-            setState(() {});
-            if (!widget.isSaved) {
-              const snackBar =
-                  SnackBar(content: Text('Deleting post from saved'));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              widget.user.modifySaved(
-                  widget.snapshot?.data!.docs[widget.index].id, true);
-            } else {
-              const snackBar = SnackBar(content: Text('Saving post'));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              widget.user.modifySaved(
-                  widget.snapshot?.data!.docs[widget.index].id, false);
-            }
-          } else {
-            const snackBar =
-                SnackBar(content: Text('You need to sign in to save posts'));
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
-        },
-        icon:  Icon(Icons.bookmark,
-            color: widget.isSaved ? appTheme : Colors.grey));
-  }
-  @override
-  Widget build(BuildContext context) {
-    widget.user = Provider.of<AuthRepository>(context);
-    var saved = [];
-    if (widget.user.isAuthenticated) {
-      var saved = widget.user.savedPosts;
-      widget.isSaved = saved == null
-          ? false
-          : saved.contains(widget.snapshot?.data!.docs[widget.index].id);
-      var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
-      if (widget.goalFiltered != null &&
-          widget.goalFiltered! &&
-          cat == 'Blog') {
-        return Container();
-      }
-
-      if (widget.goalFiltered != null && widget.goalFiltered!) {
-        var postGoals =
-            widget.snapshot?.data!.docs[widget.index].data()!['goals'];
-        if (cat == "Blog") {
-          Container();
-        }
-        
-          var userGoal = widget.user.userData.goal;
-          if (!postGoals[userGoal]!) {
-            return Container();
-          }
-
-      }
-    }
-
-    var tmp = widget.snapshot?.data!.docs[widget.index].data()!['description']
-        as String;
-
-    return InkWell(
-      onTap: () {
-        var cat = widget.snapshot?.data!.docs[widget.index].data()!['category'];
-        if (cat == 'Blog') {
-          Navigator.pushNamed(context, viewBlogRoute,
-              arguments: widget.snapshot?.data!.docs[widget.index].data()!);
-        } else if (cat == 'Workout') {
-          Navigator.pushNamed(context, viewWorkoutRoute,
-              arguments: widget.snapshot?.data!.docs[widget.index].data()!);
-        } else {
-          Navigator.pushNamed(context, viewMealPlanRoute,
-              arguments: widget.snapshot?.data!.docs[widget.index].data()!);
-        }
-      },
-      child: Card(
-          color: Theme.of(context).cardColor,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// user pic + name + 3 dots
-                StreamBuilder<Map<String, dynamic>?>(
-                    stream: _postManager
-                        .getUserInfo(widget.snapshot?.data!.docs[widget.index]
-                            .data()!['user_uid'])
-                        .asStream(),
-                    builder: (context, userSnapshot) {
-                      if (userSnapshot.connectionState ==
-                              ConnectionState.waiting &&
-                          userSnapshot.data == null) {
-                        return const Center(child: LinearProgressIndicator());
-                      }
-                      if (userSnapshot.connectionState ==
-                              ConnectionState.done &&
-                          userSnapshot.data == null) {
-                        return const ListTile();
-                      }
-                      return ListTile(
-                        contentPadding: const EdgeInsets.all(0),
-                        leading: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: widget.userPicture != null
-                              ? widget.userPicture?.image
-                              : NetworkImage(userSnapshot.data!['picture']!),
-                        ),
-                        title: RichText(
-                          text: TextSpan(
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1!
-                                .copyWith(fontSize: 16),
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: widget.category ??
-                                      widget.snapshot?.data!.docs[widget.index]
-                                          .data()!['category'],
-                                  style: TextStyle(
-                                      //fontWeight: FontWeight.bold,
-                                      color: Theme.of(context)
-                                          .appBarTheme
-                                          .backgroundColor)),
-                              const TextSpan(text: ' by '),
-                              TextSpan(text: userSnapshot.data!['name']),
-                            ],
-                          ),
-                        ),
-                        subtitle: Text(
-                            widget.date != null
-                                ? timeago.format(widget.date!,
-                                    allowFromNow: true)
-                                : timeago.format(
-                                    widget.snapshot?.data!.docs[widget.index]
-                                                .data()!['createdAt'] !=
-                                            null
-                                        ? widget
-                                            .snapshot?.data!.docs[widget.index]
-                                            .data()!['createdAt']
-                                            .toDate()
-                                        : DateTime.now(),
-                                    allowFromNow: true),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText2!
-                                .copyWith(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.normal,
-                                    color: Colors.grey)),
-                        trailing: widget.screen == 'timeline'
-                            ? null
-                            : PopupMenuButton(
-                                icon: const Icon(Icons.more_horiz),
-                                /*onSelected: (value) {
-                                  PostManager().deletePost(widget
-                                      .snapshot?.data!.docs[widget.index].id);
-                                },*/
-                                onSelected: (value) async {
-                                  Widget cancel = TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text(
-                                        'Cancel',
-                                        style: TextStyle(color: appTheme),
-                                      ));
-                                  Widget confirm = TextButton(
-                                      onPressed: () {
-                                        widget.user.modifySaved(
-                                            widget.snapshot?.data!
-                                                .docs[widget.index].id,
-                                            true);
-                                        PostManager().deletePost(widget.snapshot
-                                            ?.data!.docs[widget.index].id);
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Confirm',
-                                          style: TextStyle(color: appTheme)));
-                                  AlertDialog alert = AlertDialog(
-                                    title: const Text('Are you sure?'),
-                                    content: const Text(
-                                        'Posts are not retrievable after deletion.'),
-                                    actions: [cancel, confirm],
-                                  );
-                                  showDialog(
-                                      context: context,
-                                      builder: (_) {
-                                        return alert;
-                                      });
-                                },
-                                itemBuilder: (BuildContext context) => [
-                                  const PopupMenuItem(
-                                      value: 1, child: Text('Delete post'))
-                                ],
-                              ),
-                      );
-                    }),
-                Text(
-                  widget.snapshot?.data!.docs[widget.index].data()!['title']!,
-                  textAlign: TextAlign.left,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                    widget.snapshot?.data!.docs[widget.index]
-                            .data()!['description']!
-                            .substring(0, min(65, tmp.length)) +
-                        (65 < tmp.length ? '...' : ''),
-                    textAlign: TextAlign.left,
-                    maxLines: 5),
-                const SizedBox(height: 5),
-                (widget.snapshot?.data!.docs[widget.index]
-                            .data()!['image_url'] !=
-                        null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          widget.snapshot?.data!.docs[widget.index]
-                              .data()!['image_url']!,
-                          //height: 200,
-                          width: MediaQuery.of(context).size.width,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                    : Container()),
-                widget.hide
-                    ? Center(
-                        child: (widget.user != null && widget.user.isAuthenticated)? _buildSaveButton() : Container(),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              _buildPostIcon(Icons.arrow_upward),
-                              Text(
-                                (widget.snapshot?.data.docs[widget.index]
-                                        .data()['rating'])!
-                                    .toString(),
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.black.withOpacity(0.9),
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              _buildPostIcon(Icons.arrow_downward),
-                            ],
-                          ),
-                          _buildPostIcon(Icons.chat_bubble),
-                          _buildSaveButton(),
-                        ],
-                      )
-              ],
-            ),
-          )),
-    );
-  }
-}
-
-class wideButton extends StatefulWidget {
+class WideButton extends StatefulWidget {
   late double height, width;
   late Future<void> onPressed;
   late Color? color;
 
-  wideButton(
+  WideButton(
       {Key? key,
       required this.height,
       required this.width,
@@ -524,73 +188,51 @@ class wideButton extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<wideButton> createState() => _wideButtonState();
+  State<WideButton> createState() => _WideButtonState();
 }
 
-class _wideButtonState extends State<wideButton> {
+class _WideButtonState extends State<WideButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      child: const Text("SIGN UP"),
       style: ElevatedButton.styleFrom(
           primary: widget.color ?? const Color(0xff84C59E),
           shadowColor: appTheme,
           elevation: 17,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
           fixedSize: Size(widget.width * 0.9, widget.height * 0.055),
-          textStyle: const TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-          )),
+          textStyle: const TextStyle(fontSize: 20, color: Colors.white)),
       onPressed: () {
         widget.onPressed;
       },
+      child: const Text("SIGN UP"),
     );
   }
 }
 
-/*
-return ElevatedButton(
-      child: const Text("SIGN IN"),
-      style: ElevatedButton.styleFrom(
-          primary: const Color(0xff84C59E),
-          shadowColor: appTheme,
-          elevation: 17,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-          fixedSize: Size(width * 0.9, height * 0.055),
-          textStyle: const TextStyle(
-            fontSize: 20,
-            color: Colors.white,
-          )),
-      onPressed: () async {
-        _validateLogin();
-      },
-    );
 
-
-    ElevatedButton(
-                      child: const Text("SIGN UP"),
-                      style: ElevatedButton.styleFrom(
-                          primary: const Color(0xff84C59E),
-                          shadowColor: appTheme,
-                          elevation: 17,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                          fixedSize: Size(width * 0.9, height * 0.055),
-                          textStyle: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                          )),
-                      onPressed: () {
-                        _validateSignUp();
-                      },
-                    ),
-
-
-
-
-
-
- */
+Widget emptyNote(String text, double height, double width) {
+  return Card(
+          color: Colors.grey[200],
+          child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    height: height * 0.01,
+                  ),
+                  Flexible(
+                      child: Text(
+                        text,
+                        style: const TextStyle(fontSize: 20),
+                      )),
+                  Flexible(
+                      child: Image.asset(
+                        'images/decorations/binoculars.png',
+                        width: width * 0.3,
+                        height: height * 0.3,
+                      ))
+                ],
+              )));
+}

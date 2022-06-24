@@ -1,12 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:yourfitnessguide/managers/notifications_manager.dart';
 import 'package:yourfitnessguide/utils/globals.dart';
 import 'package:flutter/services.dart';
-import 'package:yourfitnessguide/utils/post_manager.dart';
+import 'package:yourfitnessguide/managers/post_manager.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:yourfitnessguide/utils/users.dart';
 
 class ViewMealPlanScreen extends StatefulWidget {
   late var post_data;
+  late bool? isDownvoted = null;
+  late bool? isUpvoted = null;
+  late bool isAuthenticated;
+  late bool? isSaved = null;
+  late String? rating = null;
 
   ViewMealPlanScreen({Key? key, this.post_data}) : super(key: key);
 
@@ -20,10 +28,10 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController mealNameController = TextEditingController();
   TextEditingController mealIngredientsController = TextEditingController();
-  TextEditingController KcalController = TextEditingController();
-  TextEditingController ProteinsController = TextEditingController();
-  TextEditingController CarbsController = TextEditingController();
-  TextEditingController FatsController = TextEditingController();
+  late String calories;
+  late String proteins;
+  late String carbs;
+  late String fats;
   bool? loseWeight = false;
   bool? gainMuscle = false;
   bool? gainWeight = false;
@@ -36,6 +44,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
   final List<int> _mealsContents = [0, 0, 0, 0];
   final PostManager _postManager = PostManager();
   late var user_data;
+  var user;
 
   Widget _buildButton(String Name, double height, double width) {
     int index = _mealNames.indexOf(Name);
@@ -179,7 +188,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
               */
               TextField(
                 minLines: 1,
-                maxLines: 8,
+                maxLines: 40,
                 keyboardType: TextInputType.multiline,
                 controller: descriptionController,
                 textAlign: TextAlign.left,
@@ -191,8 +200,8 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                             child: Text("Description"),
                           )
                         : Text("Description"),
-                    hintStyle: TextStyle(
-                        height: 1, fontSize: 16, color: Colors.grey),
+                    hintStyle:
+                        TextStyle(height: 1, fontSize: 16, color: Colors.grey),
                     labelStyle: TextStyle(
                       color: appTheme,
                       fontSize: 27,
@@ -243,13 +252,10 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     );
   }
 
-  Widget _buildStat(String stat, TextEditingController ctrl) {
-    var val = ctrl.text;
+  Widget _buildStat(String stat, String val) {
     Widget content = Column(
       children: [
-        SizedBox(
-          height: height * 0.02,
-        ),
+        SizedBox(height: height * 0.02),
         Text(
           stat,
           style: const TextStyle(
@@ -274,7 +280,6 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         ),
         child: content);
   }
-
 
   Widget _buildContents(double height) {
     final iconSize = height * 0.050;
@@ -305,21 +310,21 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(0,0,iconSize,0),
+                padding: EdgeInsets.fromLTRB(0, 0, iconSize, 0),
                 child: TextField(
                   minLines: 1,
-                  maxLines: 15,
+                  maxLines: 40,
                   keyboardType: TextInputType.multiline,
                   controller: mealIngredientsController,
                   textAlign: TextAlign.left,
                   readOnly: true,
                   decoration: InputDecoration(
-                    //prefix: Icon(Icons.ac_unit),
-                    border: InputBorder.none,
-                    filled: true,
-                    fillColor: Colors.grey[100]
-                    //fillColor: Colors.red
-                  ),
+                      //prefix: Icon(Icons.ac_unit),
+                      border: InputBorder.none,
+                      filled: true,
+                      fillColor: Colors.grey[100]
+                      //fillColor: Colors.red
+                      ),
                 ),
               )
             ],
@@ -385,25 +390,13 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: _buildStat('Kcal', KcalController)),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            Expanded(
-              child: _buildStat('Proteins', ProteinsController),
-            ),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            Expanded(
-              child: _buildStat('Carbs', CarbsController),
-            ),
-            SizedBox(
-              width: 0.05 * width,
-            ),
-            Expanded(
-              child: _buildStat('Fats', FatsController),
-            )
+            Expanded(child: _buildStat('Calories', calories)),
+            SizedBox(width: 0.05 * width),
+            Expanded(child: _buildStat('Proteins', proteins)),
+            SizedBox(width: 0.05 * width),
+            Expanded(child: _buildStat('Carbs', carbs)),
+            SizedBox(width: 0.05 * width),
+            Expanded(child: _buildStat('Fats', fats))
           ],
         ));
   }
@@ -469,7 +462,8 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Dialog(
               insetPadding: const EdgeInsets.all(5),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.0)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25.0)),
               elevation: 0,
               child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -479,12 +473,14 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                     SizedBox(height: height * 0.01),
                     Container(
                       padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                      child: _buildContents(height),//Padding(padding: EdgeInsets.all(0))//
+                      child: _buildContents(
+                          height), //Padding(padding: EdgeInsets.all(0))//
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 10),
-                        child: Row(
-                      //mainAxisSize: MainAxisSize.min,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 1, horizontal: 10),
+                      child: Row(
+                          //mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -508,6 +504,129 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     );
   }
 
+  Widget _buildUpvoteButton() {
+    String? postId = post_data!['uid'];
+    String? postOwnerId = post_data!['user_uid'];
+
+    List? upvotesList = post_data['upvotes'];
+    widget.isUpvoted =
+        widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
+
+    List? downvotesList = post_data['downvotes'];
+    widget.isDownvoted =
+        widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
+
+    return IconButton(
+        onPressed: () {
+          if (widget.isAuthenticated) {
+            widget.isUpvoted = !widget.isUpvoted!;
+            if (widget.isUpvoted! && widget.isDownvoted!) {
+              widget.isDownvoted = false;
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
+              user.modifyVote(
+                  postId, postOwnerId, 'downvotes', widget.isDownvoted);
+            }
+            setState(() {});
+            user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
+            setState(() {});
+
+            /// Notification
+            if (widget.isUpvoted!) {
+              widget.rating = (int.parse(widget.rating!) + 1).toString();
+              NotificationsManager().addNotification(postId!, 'upvote', '');
+            } else {
+              widget.rating = (int.parse(widget.rating!) - 1).toString();
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
+            }
+          } else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to upvote posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.thumb_up,
+            color: widget.isUpvoted! ? appTheme : Colors.white));
+  }
+
+  Widget _buildDownvoteButton() {
+    String? postId = post_data!['uid'];
+    String? postOwnerId = post_data!['user_uid'];
+
+    List? upvotesList = post_data['upvotes'];
+    widget.isUpvoted =
+        widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
+
+    List? downvotesList = post_data['downvotes'];
+    widget.isDownvoted =
+        widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
+
+    return IconButton(
+        onPressed: () {
+          if (widget.isAuthenticated) {
+            widget.isDownvoted = !widget.isDownvoted!;
+            if (widget.isDownvoted! && widget.isUpvoted!) {
+              widget.isUpvoted = false;
+              user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'upvote');
+            }
+            setState(() {});
+            user.modifyVote(
+                postId, postOwnerId, 'downvotes', widget.isDownvoted);
+
+            /// Notification
+            if (widget.isDownvoted!) {
+              widget.rating = (int.parse(widget.rating!) - 1).toString();
+              NotificationsManager().addNotification(postId!, 'downvote', '');
+            } else {
+              widget.rating = (int.parse(widget.rating!) + 1).toString();
+              NotificationsManager()
+                  .removeNotification(postOwnerId!, postId!, 'downvote');
+            }
+          } else {
+            const snackBar = SnackBar(
+                content: Text('You need to sign in to downvote posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.thumb_down,
+            color: widget.isDownvoted! ? appTheme : Colors.white));
+  }
+
+  Widget _buildSaveButton() {
+    return IconButton(
+        onPressed: () {
+          if (widget.isAuthenticated) {
+            widget.isSaved = !widget.isSaved!;
+            setState(() {});
+            if (!widget.isSaved!) {
+              user.modifySaved(post_data['uid'], true);
+            } else {
+              user.modifySaved(post_data['uid'], false);
+            }
+          } else {
+            const snackBar =
+                SnackBar(content: Text('You need to sign in to save posts'));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        },
+        icon: Icon(Icons.bookmark,
+            color: widget.isSaved! ? appTheme : Colors.white));
+  }
+
+  Widget _buildCommentButton() {
+    return IconButton(
+        onPressed: () {
+          String postId = post_data['uid'];
+          Navigator.pushNamed(context, commentsRoute, arguments: {
+            'postId': postId,
+          });
+        },
+        icon: const Icon(Icons.chat_bubble, color: Colors.white));
+  }
+
 // todo to check what happens when we dont add anything
   @override
   Widget build(BuildContext context) {
@@ -516,10 +635,14 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     width = screenSize.width;
     mealPlanNameController.text = post_data["title"];
     descriptionController.text = post_data["description"];
-    KcalController.text = post_data["meals_contents"][0].toString();
-    ProteinsController.text = post_data["meals_contents"][1].toString();
-    CarbsController.text = post_data["meals_contents"][2].toString();
-    FatsController.text = post_data["meals_contents"][3].toString();
+    calories = post_data["meals_contents"][0].toString();
+    proteins = post_data["meals_contents"][1].toString();
+    carbs = post_data["meals_contents"][2].toString();
+    fats = post_data["meals_contents"][3].toString();
+    user = Provider.of<AuthRepository>(context);
+    widget.isAuthenticated = user.isAuthenticated;
+    widget.isSaved = widget.isSaved ?? post_data['isSaved'];
+    widget.rating = widget.rating ?? post_data['rating'].toString();
     if (_mealNames.isEmpty) {
       for (int i = 0; i < post_data["meals_name"].length; i++) {
         _mealNames.add(post_data["meals_name"][i] as String);
@@ -538,6 +661,27 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
         backgroundColor: appTheme,
         centerTitle: false,
       ),
+      bottomSheet: Container(
+          alignment: Alignment(0.0, -1.0),
+          height: 50,
+          width: double.maxFinite,
+          decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20.0))),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _buildUpvoteButton(),
+              Text(
+                widget.rating!,
+                style: TextStyle(color: Colors.white),
+              ),
+              _buildDownvoteButton(),
+              _buildCommentButton(),
+              _buildSaveButton(),
+            ],
+          )),
       body: SingleChildScrollView(
           child: GestureDetector(
         onTap: () {
@@ -563,11 +707,18 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                   }
                   return ListTile(
                     contentPadding: const EdgeInsets.all(0),
-                    leading: CircleAvatar(
-                      radius: 25,
-                      backgroundImage:
-                          NetworkImage(userSnapshot.data!['picture']!),
-                    ),
+                    leading: GestureDetector(
+                        onTap: () {
+                          SearchArguments arg = SearchArguments(
+                              uid: post_data["user_uid"], isUser: true);
+                          Navigator.pushNamed(context, '/profile',
+                              arguments: arg);
+                        },
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundImage:
+                              NetworkImage(userSnapshot.data!['picture']!),
+                        )),
                     title: RichText(
                       text: TextSpan(
                         style: Theme.of(context)
@@ -614,12 +765,12 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
                 )
               : const Padding(padding: EdgeInsets.all(0))),
           post_data['image_url'] != null
-            ? Divider(
-                height: height * 0.00001,
-                thickness: 1,
-                color: Colors.black45,
-              )
-            : const Padding(padding: EdgeInsets.all(0)),
+              ? Divider(
+                  height: height * 0.00001,
+                  thickness: 1,
+                  color: Colors.black45,
+                )
+              : const Padding(padding: EdgeInsets.all(0)),
           Container(
             padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
             child: _buildDescription(height),
@@ -636,6 +787,7 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
             child: _buildMealContents(height, width),
           ),
+          SizedBox(height: height * 0.03,)
         ]),
       )),
       resizeToAvoidBottomInset: true,

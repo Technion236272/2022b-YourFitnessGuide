@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _validateLogin() async {
     FocusManager.instance.primaryFocus?.unfocus();
     var email = emailField.controller.text;
-    emailField.controller.clear();
+    //emailField.controller.clear();
     var password = passwordController.text;
     passwordController.clear();
 
@@ -144,12 +144,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <TextSpan>[
               TextSpan(
                   text: 'Not an existing user?',
-                  style: TextStyle(color: appTheme, fontSize: 16)// fontWeight: FontWeight.bold)
-              ),
+                  style: TextStyle(
+                      color: appTheme,
+                      fontSize: 16) // fontWeight: FontWeight.bold)
+                  ),
               TextSpan(
-                text: ' Click here to sign up!',
-                style: TextStyle(color: appTheme,)// fontWeight: FontWeight.bold),
-              ),
+                  text: ' Click here to sign up!',
+                  style: TextStyle(
+                    color: appTheme,
+                  ) // fontWeight: FontWeight.bold),
+                  ),
             ],
                 style: TextStyle(
                   color: appTheme,
@@ -228,9 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
           break;
       }
     } catch (e) {
-      const snackBar =
-          SnackBar(content: Text('There was an error logging into the app'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      
     }
   }
 
@@ -267,10 +269,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     vertical: height * 0.012, horizontal: width * 0.1),
                 child: _buildPassword(height),
               ),
-              user.status == Status.Authenticating
+              user.status == Status.authenticating
                   ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                            child: CircularProgressIndicator.adaptive())
                   : Container(
                       child: _buildSignIn(height, width),
                     ),
@@ -299,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: height * 0.025,
               ),
               Image.asset(
-                'images/decorations/LoginDecoration.png',
+                'images/decorations/LoginDecoration.jpeg',
                 width: width,
                 height: height * 0.21,
               )
