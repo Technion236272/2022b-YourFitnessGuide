@@ -42,7 +42,7 @@ class NotificationsManager with ChangeNotifier {
             "type": type, ///'upvote', 'downvote', 'comment, 'follow'
             "userId": getCurrUid(),
             "postId": postId,
-            "timestamp": timestamp,
+            "timestamp": DateTime.now(),
             "commentData" : commentData,
           });
     }
@@ -75,7 +75,7 @@ class NotificationsManager with ChangeNotifier {
       "type": 'follow',
       "userId": getCurrUid(),
       "postId": '',
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "commentData": ''
     });
   }

@@ -273,25 +273,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   initializeWeights(){
-    if(firstTime){
-      weights['initialWeight'] = 1;
-      weights['currentWeight'] = 1;
-      weights['goalWeight'] = 1;
-      return;
-    }
-    if(userData == null){
-      if (weights['initialWeight'] == 0) {
-        weights['initialWeight'] = 1;
-      }
-      if (weights['currentWeight'] == 0) {
-        weights['currentWeight'] = 1;
-      }
-      if (weights['goalWeight'] == 0) {
-        weights['goalWeight'] = 1;
-      }
-      return;
-    }
-    else {
+    if(userData != null) {
       if (weights['initialWeight'] == 0) {
         weights['initialWeight'] = userData.iWeight;
       }
@@ -302,7 +284,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         weights['goalWeight'] = userData.gWeight;
       }
     }
-
+    if (weights['initialWeight'] == 0) {
+        weights['initialWeight'] = 1;
+    }
+    if (weights['currentWeight'] == 0) {
+        weights['currentWeight'] = 1;
+    }
+    if (weights['goalWeight'] == 0) {
+        weights['goalWeight'] = 1;
+    }
   }
 
 

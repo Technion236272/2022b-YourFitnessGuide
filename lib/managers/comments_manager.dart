@@ -12,7 +12,7 @@ class CommentsManager with ChangeNotifier {
         .collection("comments")
         .add({
           "comment": comment,
-          "timestamp": timestamp,
+          "timestamp": DateTime.now(),
           "userId": getCurrUid()!,
         });
     incrementCommentsNum(postId);
