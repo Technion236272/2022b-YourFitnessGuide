@@ -226,10 +226,10 @@ class NotificationItem extends StatelessWidget {
                     if (snapshot1.data?[0] != null) {
                       postData =
                           snapshot1.data?[0].data() as Map<String, dynamic>;
+                      var post_uid = snapshot1.data?[0].id;
+                      bool isSaved = savedPosts!.contains(post_uid);
+                      postData?.addAll({'uid' : post_uid, 'isSaved': isSaved, });
                     }
-                    var post_uid = snapshot1.data?[0].id;
-                    bool isSaved = savedPosts!.contains(post_uid);
-                    postData.addAll({'uid' : post_uid, 'isSaved': isSaved, });
                     var postCat = postData?['category'];
                     return InkWell(
                         onTap: () {
