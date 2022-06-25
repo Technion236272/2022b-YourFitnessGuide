@@ -533,9 +533,7 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
             padding: const EdgeInsets.fromLTRB(8, 8, 40, 10),
             child: _buildExercises(height, width),
           ),
-          SizedBox(
-            height: height * 0.015,
-          ),
+          SizedBox(height: height * 0.1),
         ]),
       )),
       resizeToAvoidBottomInset: true,
