@@ -2,7 +2,7 @@
 
 > A social user-friendly app for get and share experiences in nutrition and working out. The application guides users to their fitness goals while interacting with other users. 
 
-<img src="docs/googleplaybadge.png" width="180">
+<a href='https://play.google.com/store/apps/details?id=com.technion.yourfitnessguide'><img src="docs/googleplaybadge.png" width="180">
 
 <img src="docs/1.jpeg" width="180"> <img src="docs/2.jpeg" width="180"> <img src="docs/3.jpeg" width="180"> <img src="docs/4.jpeg" width="180"> <img src="docs/5.jpeg" width="180">
 
