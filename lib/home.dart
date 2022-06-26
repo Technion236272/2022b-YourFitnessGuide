@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBar(
               showSelectedLabels: false,   // <-- HERE
               showUnselectedLabels: false,
-            //type: BottomNavigationBarType.fixed,
+            type: BottomNavigationBarType.fixed,
             items: [
               BottomNavigationBarItem(icon: Icon(Icons.home, size: height * 0.04,), label: 'Home'),
               BottomNavigationBarItem(icon: Icon(Icons.search, size: height * 0.04,), label: 'Search'),
