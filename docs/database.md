@@ -48,3 +48,19 @@ This is a collection of documents, each is related to different YourFitnessGuide
 - [ ] rating
 - [ ] upvotes
 - [ ] downvotes
+
+
+# comments
+- [ ] timestamp
+- [ ] userId
+- [ ] comment
+
+
+# notifications
+- [ ] timestamp
+- [ ] userId
+- [ ] commentData
+- [ ] postId
+- [ ] type
+
+
