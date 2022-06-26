@@ -5,9 +5,13 @@ This doc explains the structure of our databases in Firebase
 ## Firestore
 ### versions
 This is a collection of documents, each is related to different YourFitnessGuide version.
-* v1: This is a document, which contains two collections:   
+* v2: This is a document, which contains two collections:   
     *  users
     *  posts
+    *  comments
+    *  notifications
+    
+
 
 # users
 - [ ] name
@@ -19,6 +23,12 @@ This is a collection of documents, each is related to different YourFitnessGuide
 - [ ] saved
 - [ ] saved_posts
 - [ ] goal
+- [ ] following
+- [ ] folowers
+- [ ] imFollowing
+- [ ] followingMe
+- [ ] privacySettings
+
 
 
 # posts
@@ -34,3 +44,7 @@ This is a collection of documents, each is related to different YourFitnessGuide
 - [ ] meals_name
 - [ ] meal_contents
 - [ ] meal_ingredients
+- [ ] commentsNum
+- [ ] rating
+- [ ] upvotes
+- [ ] downvotes
