@@ -25,3 +25,4 @@ The diagram below shows the exploring scenario of the app:
 - [ ] Comment Page
 - [ ] Leaderboard Page
 - [ ] Notificatons Page
+
