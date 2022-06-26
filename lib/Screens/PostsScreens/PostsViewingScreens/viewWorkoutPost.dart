@@ -324,12 +324,10 @@ class _ViewWorkoutScreenState extends State<ViewWorkoutScreen> {
               widget.rating = (int.parse(widget.rating!) - 1).toString();
               widget.isUpvoted = false;
               user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
-              NotificationsManager()
-                  .removeNotification(postOwnerId!, postId!, 'upvote');
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'upvote');
             }
             setState(() {});
-            user.modifyVote(
-                postId, postOwnerId, 'downvotes', widget.isDownvoted);
+            user.modifyVote(postId, postOwnerId, 'downvotes', widget.isDownvoted);
 
             /// Notification
             if (widget.isDownvoted!) {

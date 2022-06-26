@@ -334,8 +334,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                             color: Colors.white,
                           ))
                     ): const Padding(padding: EdgeInsets.all(0))),
-    (user.isAuthenticated
-    ?
+        (user.isAuthenticated
+        ?
               Padding(
                       padding: const EdgeInsets.only(right: 1.0),
                       child:
@@ -352,7 +352,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
             ]),
         floatingActionButton: SpeedDial(
-          animatedIcon: AnimatedIcons.menu_close,
+          icon: Icons.add,
+          activeIcon: Icons.close,
+
+          //animatedIcon: AnimatedIcons.menu_close,
           openCloseDial: isDialOpen,
           backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
           //todo change
