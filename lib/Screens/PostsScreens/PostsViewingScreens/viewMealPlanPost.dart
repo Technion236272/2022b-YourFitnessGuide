@@ -509,27 +509,24 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
     String? postOwnerId = post_data!['user_uid'];
 
     List? upvotesList = post_data['upvotes'];
-    widget.isUpvoted =
-        widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
+    widget.isUpvoted = widget.isUpvoted ?? (upvotesList?.contains(getCurrUid()) ?? false);
 
     List? downvotesList = post_data['downvotes'];
-    widget.isDownvoted =
-        widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
+    widget.isDownvoted = widget.isDownvoted ?? (downvotesList?.contains(getCurrUid()) ?? false);
 
     return IconButton(
         onPressed: () {
           if (widget.isAuthenticated) {
             widget.isUpvoted = !widget.isUpvoted!;
             if (widget.isUpvoted! && widget.isDownvoted!) {
+              widget.rating = (int.parse(widget.rating!) + 1).toString();
               widget.isDownvoted = false;
-              NotificationsManager()
-                  .removeNotification(postOwnerId!, postId!, 'downvote');
-              user.modifyVote(
-                  postId, postOwnerId, 'downvotes', widget.isDownvoted);
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
+              user.modifyVote(postId, postOwnerId, 'downvotes', widget.isDownvoted);
             }
             setState(() {});
             user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
-            setState(() {});
+            //setState(() {});
 
             /// Notification
             if (widget.isUpvoted!) {
@@ -537,12 +534,10 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
               NotificationsManager().addNotification(postId!, 'upvote', '');
             } else {
               widget.rating = (int.parse(widget.rating!) - 1).toString();
-              NotificationsManager()
-                  .removeNotification(postOwnerId!, postId!, 'downvote');
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'downvote');
             }
           } else {
-            const snackBar =
-                SnackBar(content: Text('You need to sign in to upvote posts'));
+            const snackBar = SnackBar(content: Text('You need to sign in to upvote posts'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
         },
@@ -567,10 +562,10 @@ class _ViewMealPlanScreenState extends State<ViewMealPlanScreen> {
           if (widget.isAuthenticated) {
             widget.isDownvoted = !widget.isDownvoted!;
             if (widget.isDownvoted! && widget.isUpvoted!) {
+              widget.rating = (int.parse(widget.rating!) - 1).toString();
               widget.isUpvoted = false;
               user.modifyVote(postId, postOwnerId, 'upvotes', widget.isUpvoted);
-              NotificationsManager()
-                  .removeNotification(postOwnerId!, postId!, 'upvote');
+              NotificationsManager().removeNotification(postOwnerId!, postId!, 'upvote');
             }
             setState(() {});
             user.modifyVote(

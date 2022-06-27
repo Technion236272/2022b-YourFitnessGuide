@@ -381,9 +381,7 @@ class _ViewBlogPostScreenState extends State<ViewBlogPostScreen> {
           Container(
               padding: const EdgeInsets.fromLTRB(8, 10, 40, 10),
               child: _buildDescription(height)),
-          SizedBox(
-            height: height * 0.1,
-          ),
+          SizedBox(height: height * 0.1),
         ],
       )),
       resizeToAvoidBottomInset: true,
